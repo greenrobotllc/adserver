@@ -8,7 +8,8 @@
 
 
 
-Steps to install:
+## Steps to install:
+
 1. Git clone the adserver code from Github
 2. Edit database/seeds/UserTableSeeder.php with your preferred email and password.
 3. Install PHP Composer
