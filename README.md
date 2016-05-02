@@ -13,7 +13,7 @@
 1. Git clone the adserver code from Github
 2. Edit database/seeds/UserTableSeeder.php with your preferred email and password.
 3. Install PHP Composer
-4. php composer.php install
+4. php composer.phar install
 5. Install Laravel
 6. Create database
 7. Run php artisan migrate
