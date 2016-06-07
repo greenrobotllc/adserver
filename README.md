@@ -1,4 +1,5 @@
 ## GreenRobot Adserver
+This adserver rotates banner ads between Adsense, LifeStreetmedia and others based on RPM. For Adsense and Lifestreetmedia, the RPM is automatically retrieved by the server using network APIs, for other networks you will have to edit the RPM yourself.
 
 ![Screenshot 1](https://github.com/greenrobotllc/adserver/blob/master/sampleimages/image1.png)
 ![Screenshot 2](https://github.com/greenrobotllc/adserver/blob/master/sampleimages/image2.png)
