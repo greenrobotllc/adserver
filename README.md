@@ -21,4 +21,5 @@ This adserver rotates banner ads between Adsense, LifeStreetmedia and others bas
 8. Run php artisan db:seed
 9. You should setup a new subdomain for this adserver, and point it to the public folder
 10. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
-11. Email me if you have any questions: andy@greenrobot.com
+11. VERY IMPORTANT: Remember to set debug to false in config/app.php in a production install. Otherwise your database password may be exposed if a connection error occurs.
+12. Email me if you have any questions: andy@greenrobot.com
