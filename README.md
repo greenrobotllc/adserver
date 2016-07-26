@@ -23,4 +23,5 @@ This adserver rotates banner ads between Adsense, LifeStreetmedia and others bas
 10. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
 11. VERY IMPORTANT: Remember to set debug to false in config/app.php in a production install. Otherwise your database password may be exposed if a connection error occurs.
 12. I was getting the error: "zend_mm_heap corrupted" in my php error log and the page was blank. I solved this by editing my php.ini to include "opcache.enable_cli = 0". (https://github.com/laravel/framework/issues/6721)
+13. Even with that setting, I was still getting that error. I then ran the command: "export USE_ZEND_ALLOC=0" (http://stackoverflow.com/a/10092026/211457)
 12. Email me if you have any questions: andy@greenrobot.com
