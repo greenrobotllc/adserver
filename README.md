@@ -37,4 +37,8 @@ In php.ini make these changes
 report_memleaks = Off  
 report_zend_debug = 0  
 
-Unfortunately, I don't think this is ideal, so I am still looking for a better solution.
+Restart server.
+
+The problem seems to have gone away.
+
+Unfortunately, I don't think this is ideal, so I am still looking for a better solution, and I do expect the problem to come back eventually.
