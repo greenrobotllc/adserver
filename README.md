@@ -42,3 +42,9 @@ Restart server.
 The problem seems to have gone away.
 
 Unfortunately, I don't think this is ideal, so I am still looking for a better solution, and I do expect the problem to come back eventually.
+
+## Open Issue Update 9/13/2016:
+The problem came back and I hired https://getmyadmin.com to look into it. They added:
+output_buffering = 8192 to php.ini
+
+The problem has gone away for now.
