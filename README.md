@@ -29,7 +29,7 @@ This adserver is for desktop sites and mobile web, not native mobile apps.  Spec
 12. Email me if you have any questions: andy@greenrobot.com
 
 
-## Open Issue:
+## Open Issue 8/28/2016:
 Even with the above php.ini settings I was still getting that error in my php error log after running the server for a few days: "zend_mm_heap corrupted". Also no ads or pages would load on the ad server. I used another answer from that Stackoverflow thread referenced above: http://stackoverflow.com/a/5764877/211457
 
 In php.ini make these changes
