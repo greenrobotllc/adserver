@@ -26,17 +26,21 @@ This adserver is for desktop sites and mobile web, not native mobile apps.  Spec
 11. Setup something like the following in cron (your path to artisan may vary): * * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1
 14. Email me if you have any questions: andy@greenrobot.com
 
-## "zend_mm_heap corrupted" error
-After awhile, I was getting the error: "zend_mm_heap corrupted" in my php error log and the page was blank. I tried a variety of things, I will go through them all here. I edited my php.ini to include:
-opcache.enable_cli = 0
-report_memleaks = Off
-report_zend_debug = 0
+## `zend_mm_heap corrupted` error
+After awhile, I was getting the error: `zend_mm_heap corrupted` in my php error log and the page was blank. I tried a variety of things, I will go through them all here. I edited my `php.ini` to include:
+
+`opcache.enable_cli = 0`
+
+`report_memleaks = Off`
+
+`report_zend_debug = 0`
+
 (https://github.com/laravel/framework/issues/6721). 
 
-Even then after awhile, with those settings, I was still getting that error. I then ran the command: "export USE_ZEND_ALLOC=0" (http://stackoverflow.com/a/10092026/211457)
+Even then after awhile, with those settings, I was still getting that error. I then ran the command: `export USE_ZEND_ALLOC=0` (http://stackoverflow.com/a/10092026/211457)
 
-Even then after awhile, I was still getting the eror. I hired getmyadmin.com to look into this and they added output_buffering = 8192 to php.ini and that fixed the problem for me.
+Even then after awhile, I was still getting the eror. I hired getmyadmin.com to look into this and they added `output_buffering = 8192` to `php.ini` and that fixed the problem for me.
 
 ## Developer Notes
-Note for developers: I ahve set debug to false in config/app.php so this is ready to go for production installs. If you wish to debug, set this value to true. Setting it to true may cause your database password to be exposed if a connection error occurs.
+Note for developers: I have set debug to false in config/app.php so this is ready to go for production installs. If you wish to debug, set this value to true. Setting it to true may cause your database password to be exposed if a connection error occurs.
 
