@@ -25,7 +25,6 @@ This adserver is for desktop sites and mobile web, not native mobile apps.  Spec
 10. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
 11. Setup something like the following in cron (your path to artisan may vary): * * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1
 12. After running the adserver for awhile, you may run into the problem with `zend_mm_heap corrupted` in your PHP log file, and no adserver pages load properly. This may be due to the version of PHP?  I think what really solved this problem for me was adding `output_buffering = 8192` to `php.ini`. I also added some other settings and ran another command. See below for more info.
-13. Email me if you have any questions: andy@greenrobot.com
 
 ## `zend_mm_heap corrupted` error
 After awhile, I was getting the error: `zend_mm_heap corrupted` in my php error log and the page was blank. I tried a variety of things, I will go through them all here. I edited my `php.ini` to include:
@@ -44,4 +43,7 @@ Even then after awhile, I was still getting the eror. I hired getmyadmin.com to 
 
 ## Developer Notes
 Note for developers: I have set debug to false in config/app.php so this is ready to go for production installs. If you wish to debug, set this value to true. Setting it to true may cause your database password to be exposed if a connection error occurs.
+
+## Support
+Email me if you have any questions: andy@greenrobot.com
 
