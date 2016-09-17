@@ -21,31 +21,22 @@ This adserver is for desktop sites and mobile web, not native mobile apps.  Spec
 6. Create database
 7. Run php artisan migrate
 8. Run php artisan db:seed
-9. VERY IMPORTANT: Remember to set debug to false in config/app.php in a production install. Otherwise your database password may be exposed if a connection error occurs.
 9. You should setup a new subdomain for this adserver, and point it to the public folder.
 10. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
 11. Setup something like the following in cron (your path to artisan may vary): * * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1
-12. I was getting the error: "zend_mm_heap corrupted" in my php error log and the page was blank. I solved this by editing my php.ini to include "opcache.enable_cli = 0". (https://github.com/laravel/framework/issues/6721)
-13. Even with that setting, I was still getting that error. I then ran the command: "export USE_ZEND_ALLOC=0" (http://stackoverflow.com/a/10092026/211457)
 14. Email me if you have any questions: andy@greenrobot.com
 
+## "zend_mm_heap corrupted" error
+After awhile, I was getting the error: "zend_mm_heap corrupted" in my php error log and the page was blank. I tried a variety of things, I will go through them all here. I edited my php.ini to include:
+opcache.enable_cli = 0
+report_memleaks = Off
+report_zend_debug = 0
+(https://github.com/laravel/framework/issues/6721). 
 
-## Open Issue 8/28/2016:
-Even with the above php.ini settings I was still getting that error in my php error log after running the server for a few days: "zend_mm_heap corrupted". Also no ads or pages would load on the ad server. I used another answer from that Stackoverflow thread referenced above: http://stackoverflow.com/a/5764877/211457
+Even then after awhile, with those settings, I was still getting that error. I then ran the command: "export USE_ZEND_ALLOC=0" (http://stackoverflow.com/a/10092026/211457)
 
-In php.ini make these changes
+Even then after awhile, I was still getting the eror. I hired getmyadmin.com to look into this and they added output_buffering = 8192 to php.ini and that fixed the problem for me.
 
-report_memleaks = Off  
-report_zend_debug = 0  
+## Developer Notes
+Note for developers: I ahve set debug to false in config/app.php so this is ready to go for production installs. If you wish to debug, set this value to true. Setting it to true may cause your database password to be exposed if a connection error occurs.
 
-Restart server.
-
-The problem seems to have gone away.
-
-Unfortunately, I don't think this is ideal, so I am still looking for a better solution, and I do expect the problem to come back eventually.
-
-## Open Issue Update 9/13/2016:
-The problem came back and I hired https://getmyadmin.com to look into it. They added:
-output_buffering = 8192 to php.ini
-
-The problem has gone away for now.
