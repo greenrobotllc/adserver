@@ -2,16 +2,13 @@
 
 namespace Illuminate\Queue;
 
-use IlluminateQueueClosure;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Queue\Console\WorkCommand;
 use Illuminate\Queue\Console\ListenCommand;
 use Illuminate\Queue\Console\RestartCommand;
 use Illuminate\Queue\Connectors\SqsConnector;
-use Illuminate\Queue\Console\SubscribeCommand;
 use Illuminate\Queue\Connectors\NullConnector;
 use Illuminate\Queue\Connectors\SyncConnector;
-use Illuminate\Queue\Connectors\IronConnector;
 use Illuminate\Queue\Connectors\RedisConnector;
 use Illuminate\Queue\Failed\NullFailedJobProvider;
 use Illuminate\Queue\Connectors\DatabaseConnector;
@@ -40,11 +37,7 @@ class QueueServiceProvider extends ServiceProvider
 
         $this->registerListener();
 
-        $this->registerSubscriber();
-
         $this->registerFailedJobServices();
-
-        $this->registerQueueClosure();
     }
 
     /**
@@ -82,7 +75,10 @@ class QueueServiceProvider extends ServiceProvider
         $this->registerRestartCommand();
 
         $this->app->singleton('queue.worker', function ($app) {
-            return new Worker($app['queue'], $app['queue.failer'], $app['events']);
+            return new Worker(
+                $app['queue'], $app['events'],
+                $app['Illuminate\Contracts\Debug\ExceptionHandler']
+            );
         });
     }
 
@@ -143,20 +139,6 @@ class QueueServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the push queue subscribe command.
-     *
-     * @return void
-     */
-    protected function registerSubscriber()
-    {
-        $this->app->singleton('command.queue.subscribe', function () {
-            return new SubscribeCommand;
-        });
-
-        $this->commands('command.queue.subscribe');
-    }
-
-    /**
      * Register the connectors on the queue manager.
      *
      * @param  \Illuminate\Queue\QueueManager  $manager
@@ -164,7 +146,7 @@ class QueueServiceProvider extends ServiceProvider
      */
     public function registerConnectors($manager)
     {
-        foreach (['Null', 'Sync', 'Database', 'Beanstalkd', 'Redis', 'Sqs', 'Iron'] as $connector) {
+        foreach (['Null', 'Sync', 'Database', 'Beanstalkd', 'Redis', 'Sqs'] as $connector) {
             $this->{"register{$connector}Connector"}($manager);
         }
     }
@@ -250,37 +232,6 @@ class QueueServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the IronMQ queue connector.
-     *
-     * @param  \Illuminate\Queue\QueueManager  $manager
-     * @return void
-     */
-    protected function registerIronConnector($manager)
-    {
-        $app = $this->app;
-
-        $manager->addConnector('iron', function () use ($app) {
-            return new IronConnector($app['encrypter'], $app['request']);
-        });
-
-        $this->registerIronRequestBinder();
-    }
-
-    /**
-     * Register the request rebinding event for the Iron queue.
-     *
-     * @return void
-     */
-    protected function registerIronRequestBinder()
-    {
-        $this->app->rebinding('request', function ($app, $request) {
-            if ($app['queue']->connected('iron')) {
-                $app['queue']->connection('iron')->setRequest($request);
-            }
-        });
-    }
-
-    /**
      * Register the failed job services.
      *
      * @return void
@@ -299,18 +250,6 @@ class QueueServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the Illuminate queued closure job.
-     *
-     * @return void
-     */
-    protected function registerQueueClosure()
-    {
-        $this->app->singleton('IlluminateQueueClosure', function ($app) {
-            return new IlluminateQueueClosure($app['encrypter']);
-        });
-    }
-
-    /**
      * Get the services provided by the provider.
      *
      * @return array
@@ -319,8 +258,8 @@ class QueueServiceProvider extends ServiceProvider
     {
         return [
             'queue', 'queue.worker', 'queue.listener', 'queue.failer',
-            'command.queue.work', 'command.queue.listen', 'command.queue.restart',
-            'command.queue.subscribe', 'queue.connection',
+            'command.queue.work', 'command.queue.listen',
+            'command.queue.restart', 'queue.connection',
         ];
     }
 }

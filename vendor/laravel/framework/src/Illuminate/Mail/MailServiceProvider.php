@@ -21,9 +21,9 @@ class MailServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('mailer', function ($app) {
-            $this->registerSwiftMailer();
+        $this->registerSwiftMailer();
 
+        $this->app->singleton('mailer', function ($app) {
             // Once we have create the mailer instance, we will set a container instance
             // on the mailer. This allows us to resolve mailer classes via containers
             // for maximum testability on said classes instead of passing Closures.
@@ -48,13 +48,6 @@ class MailServiceProvider extends ServiceProvider
                 $mailer->alwaysTo($to['address'], $to['name']);
             }
 
-            // Here we will determine if the mailer should be in "pretend" mode for this
-            // environment, which will simply write out e-mail to the logs instead of
-            // sending it over the web, which is useful for local dev environments.
-            $pretend = $app['config']->get('mail.pretend', false);
-
-            $mailer->pretend($pretend);
-
             return $mailer;
         });
     }
@@ -70,12 +63,8 @@ class MailServiceProvider extends ServiceProvider
     {
         $mailer->setContainer($app);
 
-        if ($app->bound('Psr\Log\LoggerInterface')) {
-            $mailer->setLogger($app->make('Psr\Log\LoggerInterface'));
-        }
-
         if ($app->bound('queue')) {
-            $mailer->setQueue($app['queue.connection']);
+            $mailer->setQueue($app['queue']);
         }
     }
 

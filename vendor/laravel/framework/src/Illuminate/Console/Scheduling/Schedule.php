@@ -2,8 +2,8 @@
 
 namespace Illuminate\Console\Scheduling;
 
+use Illuminate\Container\Container;
 use Symfony\Component\Process\ProcessUtils;
-use Illuminate\Contracts\Foundation\Application;
 use Symfony\Component\Process\PhpExecutableFinder;
 
 class Schedule
@@ -38,17 +38,13 @@ class Schedule
      */
     public function command($command, array $parameters = [])
     {
+        if (class_exists($command)) {
+            $command = Container::getInstance()->make($command)->getName();
+        }
+
         $binary = ProcessUtils::escapeArgument((new PhpExecutableFinder)->find(false));
 
-        if (defined('HHVM_VERSION')) {
-            $binary .= ' --php';
-        }
-
-        if (defined('ARTISAN_BINARY')) {
-            $artisan = ProcessUtils::escapeArgument(ARTISAN_BINARY);
-        } else {
-            $artisan = 'artisan';
-        }
+        $artisan = defined('ARTISAN_BINARY') ? ProcessUtils::escapeArgument(ARTISAN_BINARY) : 'artisan';
 
         return $this->exec("{$binary} {$artisan} {$command}", $parameters);
     }
@@ -80,7 +76,15 @@ class Schedule
     protected function compileParameters(array $parameters)
     {
         return collect($parameters)->map(function ($value, $key) {
-            return is_numeric($key) ? $value : $key.'='.(is_numeric($value) ? $value : ProcessUtils::escapeArgument($value));
+            if (is_array($value)) {
+                $value = collect($value)->map(function ($value) {
+                    return ProcessUtils::escapeArgument($value);
+                })->implode(' ');
+            } elseif (! is_numeric($value) && ! preg_match('/^(-.$|--.*)/i', $value)) {
+                $value = ProcessUtils::escapeArgument($value);
+            }
+
+            return is_numeric($key) ? $value : "{$key}={$value}";
         })->implode(' ');
     }
 
@@ -100,7 +104,7 @@ class Schedule
      * @param  \Illuminate\Contracts\Foundation\Application  $app
      * @return array
      */
-    public function dueEvents(Application $app)
+    public function dueEvents($app)
     {
         return array_filter($this->events, function ($event) use ($app) {
             return $event->isDue($app);

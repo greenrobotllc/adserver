@@ -25,17 +25,19 @@ class AdzoneController extends Controller
     public function __construct($check = true)
     {
         if ($check):
-        $this->beforeFilter(function(){
-           if (!\Auth::check())
-        {
-           if (\Request::ajax())
-            {
-                abort(403, 'Unauthorized action.');
-            }
-            // abort(403, 'Unauthorized action.');
-            return \Redirect::to('login');
-        }
-        });
+			 $this->middleware('auth');
+			 
+       // $this->middleware(function(){
+           // if (!\Auth::check())
+       //  {
+       //     if (\Request::ajax())
+       //      {
+       //          abort(403, 'Unauthorized action.');
+       //      }
+       //      // abort(403, 'Unauthorized action.');
+       //      return \Redirect::to('login');
+       //  }
+        //});
         endif;
     }
     /**
@@ -74,6 +76,7 @@ class AdzoneController extends Controller
         try{
             $data = new AdZone;
             $data->name = $request->name;
+            $data->platform = $request->platform;
             $data->save();
         }catch(Exception $e)
         {
@@ -126,8 +129,10 @@ class AdzoneController extends Controller
         try{
             $id = $request->id;
             $name = $request->name;
+            $platform = $request->platform;
             $zone = AdZone::where('id',$id)->first();
             $zone->name=$name;
+            $zone->platform=$platform;
             $zone->save();
             return response("Adzone Updated", 200);
         }catch(Exception $e)

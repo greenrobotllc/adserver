@@ -18,8 +18,7 @@ class Util
     {
         $pathinfo = pathinfo($path) + compact('path');
         $pathinfo['dirname'] = array_key_exists('dirname', $pathinfo)
-            ? static::normalizeDirname($pathinfo['dirname'])
-            : '';
+            ? static::normalizeDirname($pathinfo['dirname']) : '';
 
         return $pathinfo;
     }
@@ -86,7 +85,7 @@ class Util
         $normalized = preg_replace('#\p{C}+|^\./#u', '', $path);
         $normalized = static::normalizeRelativePath($normalized);
 
-        if (preg_match('#/\.{2}|^\.{2}/|^\.{2}$#', $normalized)) {
+        if (preg_match('#(^|/)\.{2}(/|$)#', $normalized)) {
             throw new LogicException(
                 'Path is outside of the defined root, path: [' . $path . '], resolved: [' . $normalized . ']'
             );
@@ -111,7 +110,7 @@ class Util
         $path = preg_replace('#/\.(?=/)|^\./|(/|^)\./?$#', '', $path);
 
         // Regex for resolving relative paths
-        $regex = '#/*[^/\.]+/\.\.#Uu';
+        $regex = '#/*[^/\.]+/\.\.(?=/|$)#Uu';
 
         while (preg_match($regex, $path)) {
             $path = preg_replace($regex, '', $path);

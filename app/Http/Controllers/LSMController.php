@@ -25,7 +25,7 @@ class LSMController extends Controller
 
     public function __construct()
     {
-        $this->beforeFilter(function(){
+        //$this->beforeFilter(function(){
            if (!\Auth::check())
         {
            if (\Request::ajax())
@@ -35,7 +35,7 @@ class LSMController extends Controller
             return \Redirect::to('login');
         }
         $this::updateValues();
-        });
+        //});
 
     }
     /**

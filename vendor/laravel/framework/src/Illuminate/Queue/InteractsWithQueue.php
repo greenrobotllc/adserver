@@ -14,6 +14,16 @@ trait InteractsWithQueue
     protected $job;
 
     /**
+     * Get the number of times the job has been attempted.
+     *
+     * @return int
+     */
+    public function attempts()
+    {
+        return $this->job ? $this->job->attempts() : 1;
+    }
+
+    /**
      * Delete the job from the queue.
      *
      * @return void
@@ -22,6 +32,19 @@ trait InteractsWithQueue
     {
         if ($this->job) {
             return $this->job->delete();
+        }
+    }
+
+    /**
+     * Fail the job from the queue.
+     *
+     * @param  \Throwable  $exception
+     * @return void
+     */
+    public function fail($exception = null)
+    {
+        if ($this->job) {
+            return $this->job->failed($exception ?: new ManuallyFailedException);
         }
     }
 
@@ -36,16 +59,6 @@ trait InteractsWithQueue
         if ($this->job) {
             return $this->job->release($delay);
         }
-    }
-
-    /**
-     * Get the number of times the job has been attempted.
-     *
-     * @return int
-     */
-    public function attempts()
-    {
-        return $this->job ? $this->job->attempts() : 1;
     }
 
     /**

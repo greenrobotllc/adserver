@@ -3,7 +3,7 @@
 namespace Illuminate\Cache;
 
 use Illuminate\Contracts\Cache\Store;
-use Illuminate\Redis\Database as Redis;
+use Illuminate\Contracts\Redis\Database as Redis;
 
 class RedisStore extends TaggableStore implements Store
 {
@@ -40,20 +40,45 @@ class RedisStore extends TaggableStore implements Store
     {
         $this->redis = $redis;
         $this->setPrefix($prefix);
-        $this->connection = $connection;
+        $this->setConnection($connection);
     }
 
     /**
      * Retrieve an item from the cache by key.
      *
-     * @param  string  $key
+     * @param  string|array  $key
      * @return mixed
      */
     public function get($key)
     {
         if (! is_null($value = $this->connection()->get($this->prefix.$key))) {
-            return is_numeric($value) ? $value : unserialize($value);
+            return $this->unserialize($value);
         }
+    }
+
+    /**
+     * Retrieve multiple items from the cache by key.
+     *
+     * Items not found in the cache will have a null value.
+     *
+     * @param  array  $keys
+     * @return array
+     */
+    public function many(array $keys)
+    {
+        $return = [];
+
+        $prefixedKeys = array_map(function ($key) {
+            return $this->prefix.$key;
+        }, $keys);
+
+        $values = $this->connection()->mget($prefixedKeys);
+
+        foreach ($values as $index => $value) {
+            $return[$keys[$index]] = $this->unserialize($value);
+        }
+
+        return $return;
     }
 
     /**
@@ -61,16 +86,32 @@ class RedisStore extends TaggableStore implements Store
      *
      * @param  string  $key
      * @param  mixed   $value
-     * @param  int     $minutes
+     * @param  float|int  $minutes
      * @return void
      */
     public function put($key, $value, $minutes)
     {
-        $value = is_numeric($value) ? $value : serialize($value);
+        $value = $this->serialize($value);
 
-        $minutes = max(1, $minutes);
+        $this->connection()->setex($this->prefix.$key, (int) max(1, $minutes * 60), $value);
+    }
 
-        $this->connection()->setex($this->prefix.$key, $minutes * 60, $value);
+    /**
+     * Store multiple items in the cache for a given number of minutes.
+     *
+     * @param  array  $values
+     * @param  float|int  $minutes
+     * @return void
+     */
+    public function putMany(array $values, $minutes)
+    {
+        $this->connection()->multi();
+
+        foreach ($values as $key => $value) {
+            $this->put($key, $value, $minutes);
+        }
+
+        $this->connection()->exec();
     }
 
     /**
@@ -106,9 +147,7 @@ class RedisStore extends TaggableStore implements Store
      */
     public function forever($key, $value)
     {
-        $value = is_numeric($value) ? $value : serialize($value);
-
-        $this->connection()->set($this->prefix.$key, $value);
+        $this->connection()->set($this->prefix.$key, $this->serialize($value));
     }
 
     /**
@@ -193,5 +232,27 @@ class RedisStore extends TaggableStore implements Store
     public function setPrefix($prefix)
     {
         $this->prefix = ! empty($prefix) ? $prefix.':' : '';
+    }
+
+    /**
+     * Serialize the value.
+     *
+     * @param  mixed  $value
+     * @return mixed
+     */
+    protected function serialize($value)
+    {
+        return is_numeric($value) ? $value : serialize($value);
+    }
+
+    /**
+     * Unserialize the value.
+     *
+     * @param  mixed  $value
+     * @return mixed
+     */
+    protected function unserialize($value)
+    {
+        return is_numeric($value) ? $value : unserialize($value);
     }
 }

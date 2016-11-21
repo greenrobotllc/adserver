@@ -37,6 +37,7 @@ class IpUtilsTest extends \PHPUnit_Framework_TestCase
             array(true, '1.2.3.4', '0.0.0.0/0'),
             array(true, '1.2.3.4', '192.168.1.0/0'),
             array(false, '1.2.3.4', '256.256.256/0'), // invalid CIDR notation
+            array(false, 'an_invalid_ip', '192.168.1.0/24'),
         );
     }
 
@@ -63,6 +64,8 @@ class IpUtilsTest extends \PHPUnit_Framework_TestCase
             array(true, '2a01:198:603:0:396e:4789:8e99:890f', array('::1', '2a01:198:603:0::/65')),
             array(true, '2a01:198:603:0:396e:4789:8e99:890f', array('2a01:198:603:0::/65', '::1')),
             array(false, '2a01:198:603:0:396e:4789:8e99:890f', array('::1', '1a01:198:603:0::/65')),
+            array(false, '}__test|O:21:&quot;JDatabaseDriverMysqli&quot;:3:{s:2', '::1'),
+            array(false, '2a01:198:603:0:396e:4789:8e99:890f', 'unknown'),
         );
     }
 

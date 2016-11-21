@@ -18,7 +18,7 @@ class GoogleApiConsoleController extends Controller
 
     public function __construct()
     {
-        $this->beforeFilter(function(){
+        //$this->beforeFilter(function(){
            if (!\Auth::check())
         {
            if (\Request::ajax())
@@ -27,7 +27,7 @@ class GoogleApiConsoleController extends Controller
             }
             return \Redirect::to('login');
         }
-        });
+        //});
 
     }
 

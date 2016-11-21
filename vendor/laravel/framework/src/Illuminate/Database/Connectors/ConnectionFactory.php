@@ -3,6 +3,7 @@
 namespace Illuminate\Database\Connectors;
 
 use PDO;
+use PDOException;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
 use Illuminate\Database\MySqlConnection;
@@ -10,6 +11,7 @@ use Illuminate\Database\SQLiteConnection;
 use Illuminate\Database\PostgresConnection;
 use Illuminate\Database\SqlServerConnection;
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 
 class ConnectionFactory
 {
@@ -57,9 +59,11 @@ class ConnectionFactory
      */
     protected function createSingleConnection(array $config)
     {
-        $pdo = $this->createConnector($config)->connect($config);
+        $pdo = $this->createPdoResolver($config);
 
-        return $this->createConnection($config['driver'], $pdo, $config['database'], $config['prefix'], $config);
+        return $this->createConnection(
+            $config['driver'], $pdo, $config['database'], $config['prefix'], $config
+        );
     }
 
     /**
@@ -79,13 +83,70 @@ class ConnectionFactory
      * Create a new PDO instance for reading.
      *
      * @param  array  $config
-     * @return \PDO
+     * @return \Closure
      */
     protected function createReadPdo(array $config)
     {
-        $readConfig = $this->getReadConfig($config);
+        return $this->createPdoResolver($this->getReadConfig($config));
+    }
 
-        return $this->createConnector($readConfig)->connect($readConfig);
+    /**
+     * Create a new Closure that resolves to a PDO instance.
+     *
+     * @param  array  $config
+     * @return \Closure
+     */
+    protected function createPdoResolver(array $config)
+    {
+        if (array_key_exists('host', $config)) {
+            return $this->createPdoResolverWithHosts($config);
+        }
+
+        return $this->createPdoResolverWithoutHosts($config);
+    }
+
+    /**
+     * Create a new Closure that resolves to a PDO instance with a specific host or an array of hosts.
+     *
+     * @param  array  $config
+     * @return \Closure
+     */
+    protected function createPdoResolverWithHosts(array $config)
+    {
+        return function () use ($config) {
+            $hosts = is_array($config['host']) ? $config['host'] : [$config['host']];
+
+            if (empty($hosts)) {
+                throw new InvalidArgumentException('Database hosts array is empty.');
+            }
+
+            foreach (Arr::shuffle($hosts) as $key => $host) {
+                $config['host'] = $host;
+
+                try {
+                    return $this->createConnector($config)->connect($config);
+                } catch (PDOException $e) {
+                    if (count($hosts) - 1 === $key) {
+                        $this->container->make(ExceptionHandler::class)->report($e);
+                    }
+                }
+            }
+
+            throw $e;
+        };
+    }
+
+    /**
+     * Create a new Closure that resolves to a PDO instance where there is no configured host.
+     *
+     * @param  array  $config
+     * @return \Closure
+     */
+    protected function createPdoResolverWithoutHosts(array $config)
+    {
+        return function () use ($config) {
+            return $this->createConnector($config)->connect($config);
+        };
     }
 
     /**
@@ -97,12 +158,6 @@ class ConnectionFactory
     protected function getReadConfig(array $config)
     {
         $readConfig = $this->getReadWriteConfig($config, 'read');
-
-        if (isset($readConfig['host']) && is_array($readConfig['host'])) {
-            $readConfig['host'] = count($readConfig['host']) > 1
-                ? $readConfig['host'][array_rand($readConfig['host'])]
-                : $readConfig['host'][0];
-        }
 
         return $this->mergeReadWriteConfig($config, $readConfig);
     }
@@ -181,13 +236,10 @@ class ConnectionFactory
         switch ($config['driver']) {
             case 'mysql':
                 return new MySqlConnector;
-
             case 'pgsql':
                 return new PostgresConnector;
-
             case 'sqlite':
                 return new SQLiteConnector;
-
             case 'sqlsrv':
                 return new SqlServerConnector;
         }
@@ -199,7 +251,7 @@ class ConnectionFactory
      * Create a new connection instance.
      *
      * @param  string   $driver
-     * @param  \PDO     $connection
+     * @param  \PDO|\Closure     $connection
      * @param  string   $database
      * @param  string   $prefix
      * @param  array    $config
@@ -207,7 +259,7 @@ class ConnectionFactory
      *
      * @throws \InvalidArgumentException
      */
-    protected function createConnection($driver, PDO $connection, $database, $prefix = '', array $config = [])
+    protected function createConnection($driver, $connection, $database, $prefix = '', array $config = [])
     {
         if ($this->container->bound($key = "db.connection.{$driver}")) {
             return $this->container->make($key, [$connection, $database, $prefix, $config]);
@@ -216,13 +268,10 @@ class ConnectionFactory
         switch ($driver) {
             case 'mysql':
                 return new MySqlConnection($connection, $database, $prefix, $config);
-
             case 'pgsql':
                 return new PostgresConnection($connection, $database, $prefix, $config);
-
             case 'sqlite':
                 return new SQLiteConnection($connection, $database, $prefix, $config);
-
             case 'sqlsrv':
                 return new SqlServerConnection($connection, $database, $prefix, $config);
         }

@@ -6,6 +6,8 @@ use Illuminate\Contracts\Cache\Store;
 
 class NullStore extends TaggableStore implements Store
 {
+    use RetrievesMultipleKeys;
+
     /**
      * The array of stored values.
      *
@@ -29,7 +31,7 @@ class NullStore extends TaggableStore implements Store
      *
      * @param  string  $key
      * @param  mixed   $value
-     * @param  int     $minutes
+     * @param  float|int  $minutes
      * @return void
      */
     public function put($key, $value, $minutes)
@@ -50,7 +52,7 @@ class NullStore extends TaggableStore implements Store
     }
 
     /**
-     * Increment the value of an item in the cache.
+     * Decrement the value of an item in the cache.
      *
      * @param  string  $key
      * @param  mixed   $value

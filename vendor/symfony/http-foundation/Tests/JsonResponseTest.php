@@ -75,6 +75,19 @@ class JsonResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('application/vnd.acme.blog-v1+json', $response->headers->get('Content-Type'));
     }
 
+    public function testSetJson()
+    {
+        $response = new JsonResponse('1', 200, array(), true);
+        $this->assertEquals('1', $response->getContent());
+
+        $response = new JsonResponse('[1]', 200, array(), true);
+        $this->assertEquals('[1]', $response->getContent());
+
+        $response = new JsonResponse(null, 200, array());
+        $response->setJson('true');
+        $this->assertEquals('true', $response->getContent());
+    }
+
     public function testCreate()
     {
         $response = JsonResponse::create(array('foo' => 'bar'), 204);
@@ -205,13 +218,20 @@ class JsonResponseTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Exception
      * @expectedExceptionMessage This error is expected
-     * @requires PHP 5.4
      */
     public function testSetContentJsonSerializeError()
     {
         $serializable = new JsonSerializableObject();
 
         JsonResponse::create($serializable);
+    }
+
+    public function testSetComplexCallback()
+    {
+        $response = JsonResponse::create(array('foo' => 'bar'));
+        $response->setCallback('ಠ_ಠ["foo"].bar[0]');
+
+        $this->assertEquals('/**/ಠ_ಠ["foo"].bar[0]({"foo":"bar"});', $response->getContent());
     }
 }
 

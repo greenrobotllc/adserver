@@ -38,6 +38,10 @@ class LoadConfiguration
             $this->loadConfigurationFiles($app, $config);
         }
 
+        $app->detectEnvironment(function () use ($config) {
+            return $config->get('app.env', 'production');
+        });
+
         date_default_timezone_set($config['app.timezone']);
 
         mb_internal_encoding('UTF-8');
@@ -87,7 +91,7 @@ class LoadConfiguration
      */
     protected function getConfigurationNesting(SplFileInfo $file, $configPath)
     {
-        $directory = dirname($file->getRealPath());
+        $directory = $file->getPath();
 
         if ($tree = trim(str_replace($configPath, '', $directory), DIRECTORY_SEPARATOR)) {
             $tree = str_replace(DIRECTORY_SEPARATOR, '.', $tree).'.';

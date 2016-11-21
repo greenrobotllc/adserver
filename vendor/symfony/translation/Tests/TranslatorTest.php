@@ -285,12 +285,12 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
 
         $resources = $translator->getCatalogue('en')->getResources();
         $this->assertCount(1, $resources);
-        $this->assertContains( __DIR__.DIRECTORY_SEPARATOR.'fixtures'.DIRECTORY_SEPARATOR.'resources.yml', $resources);
+        $this->assertContains(__DIR__.DIRECTORY_SEPARATOR.'fixtures'.DIRECTORY_SEPARATOR.'resources.yml', $resources);
 
         $resources = $translator->getCatalogue('en_GB')->getResources();
         $this->assertCount(2, $resources);
-        $this->assertContains( __DIR__.DIRECTORY_SEPARATOR.'fixtures'.DIRECTORY_SEPARATOR.'empty.yml', $resources);
-        $this->assertContains( __DIR__.DIRECTORY_SEPARATOR.'fixtures'.DIRECTORY_SEPARATOR.'resources.yml', $resources);
+        $this->assertContains(__DIR__.DIRECTORY_SEPARATOR.'fixtures'.DIRECTORY_SEPARATOR.'empty.yml', $resources);
+        $this->assertContains(__DIR__.DIRECTORY_SEPARATOR.'fixtures'.DIRECTORY_SEPARATOR.'resources.yml', $resources);
     }
 
     /**
@@ -514,120 +514,6 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
         // consistent behavior with Translator::trans(), which returns the string
         // unchanged if it can't be found
         $this->assertEquals('some_message2', $translator->transChoice('some_message2', 10, array('%count%' => 10)));
-    }
-
-    /**
-     * @dataProvider dataProviderGetMessages
-     */
-    public function testGetMessages($resources, $locale, $expected)
-    {
-        $locales = array_keys($resources);
-        $_locale = null !== $locale ? $locale : reset($locales);
-        $locales = array_slice($locales, 0, array_search($_locale, $locales));
-
-        $translator = new Translator($_locale, new MessageSelector());
-        $translator->setFallbackLocales(array_reverse($locales));
-        $translator->addLoader('array', new ArrayLoader());
-        foreach ($resources as $_locale => $domainMessages) {
-            foreach ($domainMessages as $domain => $messages) {
-                $translator->addResource('array', $messages, $_locale, $domain);
-            }
-        }
-        $result = $translator->getMessages($locale);
-
-        $this->assertEquals($expected, $result);
-    }
-
-    public function dataProviderGetMessages()
-    {
-        $resources = array(
-            'en' => array(
-                'jsmessages' => array(
-                    'foo' => 'foo (EN)',
-                    'bar' => 'bar (EN)',
-                ),
-                'messages' => array(
-                    'foo' => 'foo messages (EN)',
-                ),
-                'validators' => array(
-                    'int' => 'integer (EN)',
-                ),
-            ),
-            'pt-PT' => array(
-                'messages' => array(
-                    'foo' => 'foo messages (PT)',
-                ),
-                'validators' => array(
-                    'str' => 'integer (PT)',
-                ),
-            ),
-            'pt_BR' => array(
-                'validators' => array(
-                    'int' => 'integer (BR)',
-                ),
-            ),
-        );
-
-        return array(
-            array($resources, null,
-                array(
-                    'jsmessages' => array(
-                        'foo' => 'foo (EN)',
-                        'bar' => 'bar (EN)',
-                    ),
-                    'messages' => array(
-                        'foo' => 'foo messages (EN)',
-                    ),
-                    'validators' => array(
-                        'int' => 'integer (EN)',
-                    ),
-                ),
-            ),
-            array($resources, 'en',
-                array(
-                    'jsmessages' => array(
-                        'foo' => 'foo (EN)',
-                        'bar' => 'bar (EN)',
-                    ),
-                    'messages' => array(
-                        'foo' => 'foo messages (EN)',
-                    ),
-                    'validators' => array(
-                        'int' => 'integer (EN)',
-                    ),
-                ),
-            ),
-            array($resources, 'pt-PT',
-                array(
-                    'jsmessages' => array(
-                        'foo' => 'foo (EN)',
-                        'bar' => 'bar (EN)',
-                    ),
-                    'messages' => array(
-                        'foo' => 'foo messages (PT)',
-                    ),
-                    'validators' => array(
-                        'int' => 'integer (EN)',
-                        'str' => 'integer (PT)',
-                    ),
-                ),
-            ),
-            array($resources, 'pt_BR',
-                array(
-                    'jsmessages' => array(
-                        'foo' => 'foo (EN)',
-                        'bar' => 'bar (EN)',
-                    ),
-                    'messages' => array(
-                        'foo' => 'foo messages (PT)',
-                    ),
-                    'validators' => array(
-                        'int' => 'integer (BR)',
-                        'str' => 'integer (PT)',
-                    ),
-                ),
-            ),
-        );
     }
 }
 

@@ -7,6 +7,52 @@
                       <div class="col-sm-10">
                         <input type="text" name="name" value="{{$data->name}}" class="form-control" id="name" placeholder="Name" minlength="3" maxlenght="50" required>
                       </div>
+					  
+                      <div class="form-group">
+                        <label for="platform" class="col-sm-2 control-label" required>Platform</label>
+                        <div class="col-sm-10">
+							
+					  <select name="platform">
+					    <option 
+						
+						@if($data->platform == 0) 							selected
+						@else 
+							
+						@endif
+						
+						
+						
+						value="0">Web</option>
+					    <option 
+					
+						
+						@if($data->platform == 1) 							selected
+						@else 
+
+						@endif
+						
+						
+						
+						value="1">iOS</option>
+					    <option 
+						
+						
+						@if($data->platform == 2) 							selected
+						@else 
+
+						@endif
+						
+						
+						
+							value="2">Android</option>
+					  </select>
+					  
+		
+			
+					  
+                        </div>
+						
+				
                     </div>
                      
 

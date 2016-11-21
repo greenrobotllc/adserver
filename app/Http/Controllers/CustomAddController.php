@@ -19,7 +19,7 @@ class CustomAddController extends Controller
     private $type = "other";
     public function __construct()
     {
-        $this->beforeFilter(function(){
+        //$this->beforeFilter(function(){
            if (!\Auth::check())
         {
            if (\Request::ajax())
@@ -28,9 +28,9 @@ class CustomAddController extends Controller
             }
             // abort(403, 'Unauthorized action.');
             return \Redirect::to('login');
-        }
+		}
         $this::updateValues();
-        });
+        //});
 
     }
     /**

@@ -42,6 +42,17 @@ class QueueManager implements FactoryContract, MonitorContract
     }
 
     /**
+     * Register an event listener for the before job event.
+     *
+     * @param  mixed  $callback
+     * @return void
+     */
+    public function before($callback)
+    {
+        $this->app['events']->listen(Events\JobProcessing::class, $callback);
+    }
+
+    /**
      * Register an event listener for the after job event.
      *
      * @param  mixed  $callback
@@ -49,7 +60,18 @@ class QueueManager implements FactoryContract, MonitorContract
      */
     public function after($callback)
     {
-        $this->app['events']->listen('illuminate.queue.after', $callback);
+        $this->app['events']->listen(Events\JobProcessed::class, $callback);
+    }
+
+    /**
+     * Register an event listener for the exception occurred job event.
+     *
+     * @param  mixed  $callback
+     * @return void
+     */
+    public function exceptionOccurred($callback)
+    {
+        $this->app['events']->listen(Events\JobExceptionOccurred::class, $callback);
     }
 
     /**
@@ -71,7 +93,7 @@ class QueueManager implements FactoryContract, MonitorContract
      */
     public function failing($callback)
     {
-        $this->app['events']->listen('illuminate.queue.failed', $callback);
+        $this->app['events']->listen(Events\JobFailed::class, $callback);
     }
 
     /**
@@ -82,7 +104,7 @@ class QueueManager implements FactoryContract, MonitorContract
      */
     public function stopping($callback)
     {
-        $this->app['events']->listen('illuminate.queue.stopping', $callback);
+        $this->app['events']->listen(Events\WorkerStopping::class, $callback);
     }
 
     /**
@@ -113,8 +135,6 @@ class QueueManager implements FactoryContract, MonitorContract
             $this->connections[$name] = $this->resolve($name);
 
             $this->connections[$name]->setContainer($this->app);
-
-            $this->connections[$name]->setEncrypter($this->app['encrypter']);
         }
 
         return $this->connections[$name];
@@ -182,6 +202,10 @@ class QueueManager implements FactoryContract, MonitorContract
      */
     protected function getConfig($name)
     {
+        if (is_null($name) || $name === 'null') {
+            return ['driver' => 'null'];
+        }
+
         return $this->app['config']["queue.connections.{$name}"];
     }
 
@@ -236,8 +260,6 @@ class QueueManager implements FactoryContract, MonitorContract
      */
     public function __call($method, $parameters)
     {
-        $callable = [$this->connection(), $method];
-
-        return call_user_func_array($callable, $parameters);
+        return $this->connection()->$method(...$parameters);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Illuminate\Database\Console\Migrations;
 
-use Illuminate\Foundation\Composer;
+use Illuminate\Support\Composer;
 use Illuminate\Database\Migrations\MigrationCreator;
 
 class MigrateMakeCommand extends BaseCommand
@@ -34,7 +34,7 @@ class MigrateMakeCommand extends BaseCommand
     /**
      * The Composer instance.
      *
-     * @var \Illuminate\Foundation\Composer
+     * @var \Illuminate\Support\Composer
      */
     protected $composer;
 
@@ -42,7 +42,7 @@ class MigrateMakeCommand extends BaseCommand
      * Create a new migration install command instance.
      *
      * @param  \Illuminate\Database\Migrations\MigrationCreator  $creator
-     * @param  \Illuminate\Foundation\Composer  $composer
+     * @param  \Illuminate\Support\Composer  $composer
      * @return void
      */
     public function __construct(MigrationCreator $creator, Composer $composer)
@@ -63,14 +63,16 @@ class MigrateMakeCommand extends BaseCommand
         // It's possible for the developer to specify the tables to modify in this
         // schema operation. The developer may also specify if this table needs
         // to be freshly created so we can create the appropriate migrations.
-        $name = $this->input->getArgument('name');
+        $name = trim($this->input->getArgument('name'));
 
         $table = $this->input->getOption('table');
 
-        $create = $this->input->getOption('create');
+        $create = $this->input->getOption('create') ?: false;
 
         if (! $table && is_string($create)) {
             $table = $create;
+
+            $create = true;
         }
 
         // Now we are ready to write the migration out to disk. Once we've written
@@ -95,7 +97,7 @@ class MigrateMakeCommand extends BaseCommand
 
         $file = pathinfo($this->creator->create($name, $path, $table, $create), PATHINFO_FILENAME);
 
-        $this->line("<info>Created Migration:</info> $file");
+        $this->line("<info>Created Migration:</info> {$file}");
     }
 
     /**

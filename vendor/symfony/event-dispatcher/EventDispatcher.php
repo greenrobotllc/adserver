@@ -39,9 +39,6 @@ class EventDispatcher implements EventDispatcherInterface
             $event = new Event();
         }
 
-        $event->setDispatcher($this);
-        $event->setName($eventName);
-
         if ($listeners = $this->getListeners($eventName)) {
             $this->doDispatch($listeners, $eventName, $event);
         }
@@ -76,14 +73,7 @@ class EventDispatcher implements EventDispatcherInterface
     }
 
     /**
-     * Gets the listener priority for a specific event.
-     *
-     * Returns null if the event or the listener does not exist.
-     *
-     * @param string   $eventName The name of the event
-     * @param callable $listener  The listener
-     *
-     * @return int|null The event listener priority
+     * {@inheritdoc}
      */
     public function getListenerPriority($eventName, $listener)
     {
@@ -92,7 +82,7 @@ class EventDispatcher implements EventDispatcherInterface
         }
 
         foreach ($this->listeners[$eventName] as $priority => $listeners) {
-            if (false !== ($key = array_search($listener, $listeners, true))) {
+            if (false !== in_array($listener, $listeners, true)) {
                 return $priority;
             }
         }
@@ -171,24 +161,24 @@ class EventDispatcher implements EventDispatcherInterface
      * This method can be overridden to add functionality that is executed
      * for each listener.
      *
-     * @param callable[] $listeners The event listeners.
-     * @param string     $eventName The name of the event to dispatch.
-     * @param Event      $event     The event object to pass to the event handlers/listeners.
+     * @param callable[] $listeners The event listeners
+     * @param string     $eventName The name of the event to dispatch
+     * @param Event      $event     The event object to pass to the event handlers/listeners
      */
     protected function doDispatch($listeners, $eventName, Event $event)
     {
         foreach ($listeners as $listener) {
-            call_user_func($listener, $event, $eventName, $this);
             if ($event->isPropagationStopped()) {
                 break;
             }
+            call_user_func($listener, $event, $eventName, $this);
         }
     }
 
     /**
      * Sorts the internal list of listeners for the given event by priority.
      *
-     * @param string $eventName The name of the event.
+     * @param string $eventName The name of the event
      */
     private function sortListeners($eventName)
     {

@@ -2,11 +2,12 @@
 
 namespace DummyNamespace;
 
-use DummyRootNamespaceJobs\Job;
-use Illuminate\Contracts\Bus\SelfHandling;
+use Illuminate\Bus\Queueable;
 
-class DummyClass extends Job implements SelfHandling
+class DummyClass
 {
+    use Queueable;
+
     /**
      * Create a new job instance.
      *

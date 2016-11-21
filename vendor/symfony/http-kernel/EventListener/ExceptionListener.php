@@ -49,7 +49,7 @@ class ExceptionListener implements EventSubscriberInterface
         try {
             $response = $event->getKernel()->handle($request, HttpKernelInterface::SUB_REQUEST, false);
         } catch (\Exception $e) {
-            $this->logException($e, sprintf('Exception thrown when handling an exception (%s: %s at %s line %s)', get_class($e), $e->getMessage(), $e->getFile(), $e->getLine()), false);
+            $this->logException($e, sprintf('Exception thrown when handling an exception (%s: %s at %s line %s)', get_class($e), $e->getMessage(), $e->getFile(), $e->getLine()));
 
             $wrapper = $e;
 
@@ -96,10 +96,10 @@ class ExceptionListener implements EventSubscriberInterface
     /**
      * Clones the request for the exception.
      *
-     * @param \Exception $exception The thrown exception.
-     * @param Request    $request   The original request.
+     * @param \Exception $exception The thrown exception
+     * @param Request    $request   The original request
      *
-     * @return Request $request The cloned request.
+     * @return Request $request The cloned request
      */
     protected function duplicateRequest(\Exception $exception, Request $request)
     {
@@ -107,10 +107,6 @@ class ExceptionListener implements EventSubscriberInterface
             '_controller' => $this->controller,
             'exception' => FlattenException::create($exception),
             'logger' => $this->logger instanceof DebugLoggerInterface ? $this->logger : null,
-            // keep for BC -- as $format can be an argument of the controller callable
-            // see src/Symfony/Bundle/TwigBundle/Controller/ExceptionController.php
-            // @deprecated since version 2.4, to be removed in 3.0
-            'format' => $request->getRequestFormat(),
         );
         $request = $request->duplicate(null, null, $attributes);
         $request->setMethod('GET');

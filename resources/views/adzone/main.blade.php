@@ -57,6 +57,18 @@
                       </div>
                     </div>
                     <div class="form-group">
+                      <label for="platform" class="col-sm-2 control-label" required>Platform</label>
+                      <div class="col-sm-10">
+						  <select name="platform">
+						    <option value="0">Web</option>
+						    <option value="1">iOS</option>
+						    <option value="2">Android</option>
+						  </select>
+						  
+                        <!-- <input type="text" name="platform" class="form-control" id="name" placeholder="Platform" minlength="3" maxlenght="50" required> -->
+                      </div>
+                    </div>
+                    <div class="form-group">
                       <div class="col-sm-offset-2 col-sm-10">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
@@ -73,6 +85,7 @@
                 <thead>
                 <tr>
                   <th>Zone id</th>
+                  <th>Platform</th>
                   <th>Name</th>
                   <th>Ads in Zone</th>
                   <th>Controls</th>
@@ -82,6 +95,7 @@
              @foreach($zones as $z)
                 <tr id="cus">
                   <td>{{$z->id}}</td>
+                  <td>{{$z->platform}}</td>
                   <td>{{$z->name}}</td>
                   <td>{{$z->ad_count}}</td>
                   <td><a href="#" data-toggle="modal" onclick="setData({{$z->id}})" data-target="#myModal">View Code</a> - <a href="#" data-toggle="modal" onclick="setEdit({{$z->id}})" data-target="#editModal">Edit</a></td>

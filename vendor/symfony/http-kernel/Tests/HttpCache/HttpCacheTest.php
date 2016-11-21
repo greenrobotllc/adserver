@@ -14,6 +14,7 @@ namespace Symfony\Component\HttpKernel\Tests\HttpCache;
 use Symfony\Component\HttpKernel\HttpCache\HttpCache;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
  * @group time-sensitive
@@ -27,15 +28,11 @@ class HttpCacheTest extends HttpCacheTestCase
             ->getMock();
 
         // does not implement TerminableInterface
-        $kernelMock = $this->getMockBuilder('Symfony\\Component\\HttpKernel\\HttpKernelInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $kernel = new TestKernel();
+        $httpCache = new HttpCache($kernel, $storeMock);
+        $httpCache->terminate(Request::create('/'), new Response());
 
-        $kernelMock->expects($this->never())
-            ->method('terminate');
-
-        $kernel = new HttpCache($kernelMock, $storeMock);
-        $kernel->terminate(Request::create('/'), new Response());
+        $this->assertFalse($kernel->terminateCalled, 'terminate() is never called if the kernel class does not implement TerminableInterface');
 
         // implements TerminableInterface
         $kernelMock = $this->getMockBuilder('Symfony\\Component\\HttpKernel\\Kernel')
@@ -182,6 +179,31 @@ class HttpCacheTest extends HttpCacheTestCase
         $this->request('GET', '/', array('HTTP_IF_NONE_MATCH' => '12345', 'HTTP_IF_MODIFIED_SINCE' => $time->format(DATE_RFC2822)));
         $this->assertHttpKernelIsCalled();
         $this->assertEquals(304, $this->response->getStatusCode());
+    }
+
+    public function testIncrementsMaxAgeWhenNoDateIsSpecifiedEventWhenUsingETag()
+    {
+        $this->setNextResponse(
+            200,
+            array(
+                'ETag' => '1234',
+                'Cache-Control' => 'public, s-maxage=60',
+            )
+        );
+
+        $this->request('GET', '/');
+        $this->assertHttpKernelIsCalled();
+        $this->assertEquals(200, $this->response->getStatusCode());
+        $this->assertTraceContains('miss');
+        $this->assertTraceContains('store');
+
+        sleep(2);
+
+        $this->request('GET', '/');
+        $this->assertHttpKernelIsNotCalled();
+        $this->assertEquals(200, $this->response->getStatusCode());
+        $this->assertTraceContains('fresh');
+        $this->assertEquals(2, $this->response->headers->get('Age'));
     }
 
     public function testValidatesPrivateResponsesCachedOnTheClient()
@@ -777,6 +799,21 @@ class HttpCacheTest extends HttpCacheTestCase
         $this->assertTraceNotContains('miss');
     }
 
+    public function testValidatesCachedResponsesUseSameHttpMethod()
+    {
+        $test = $this;
+
+        $this->setNextResponse(200, array(), 'Hello World', function ($request, $response) use ($test) {
+            $test->assertSame('OPTIONS', $request->getMethod());
+        });
+
+        // build initial request
+        $this->request('OPTIONS', '/');
+
+        // build subsequent request
+        $this->request('OPTIONS', '/');
+    }
+
     public function testValidatesCachedResponsesWithETagAndNoFreshnessInformation()
     {
         $this->setNextResponse(200, array(), 'Hello World', function ($request, $response) {
@@ -853,11 +890,10 @@ class HttpCacheTest extends HttpCacheTestCase
 
     public function testPassesHeadRequestsThroughDirectlyOnPass()
     {
-        $that = $this;
-        $this->setNextResponse(200, array(), 'Hello World', function ($request, $response) use ($that) {
+        $this->setNextResponse(200, array(), 'Hello World', function ($request, $response) {
             $response->setContent('');
             $response->setStatusCode(200);
-            $that->assertEquals('HEAD', $request->getMethod());
+            $this->assertEquals('HEAD', $request->getMethod());
         });
 
         $this->request('HEAD', '/', array('HTTP_EXPECT' => 'something ...'));
@@ -867,12 +903,11 @@ class HttpCacheTest extends HttpCacheTestCase
 
     public function testUsesCacheToRespondToHeadRequestsWhenFresh()
     {
-        $that = $this;
-        $this->setNextResponse(200, array(), 'Hello World', function ($request, $response) use ($that) {
+        $this->setNextResponse(200, array(), 'Hello World', function ($request, $response) {
             $response->headers->set('Cache-Control', 'public, max-age=10');
             $response->setContent('Hello World');
             $response->setStatusCode(200);
-            $that->assertNotEquals('HEAD', $request->getMethod());
+            $this->assertNotEquals('HEAD', $request->getMethod());
         });
 
         $this->request('GET', '/');
@@ -889,8 +924,7 @@ class HttpCacheTest extends HttpCacheTestCase
     public function testSendsNoContentWhenFresh()
     {
         $time = \DateTime::createFromFormat('U', time());
-        $that = $this;
-        $this->setNextResponse(200, array(), 'Hello World', function ($request, $response) use ($that, $time) {
+        $this->setNextResponse(200, array(), 'Hello World', function ($request, $response) use ($time) {
             $response->headers->set('Cache-Control', 'public, max-age=10');
             $response->headers->set('Last-Modified', $time->format(DATE_RFC2822));
         });
@@ -1226,5 +1260,34 @@ class HttpCacheTest extends HttpCacheTestCase
         $this->request('GET', '/', array(), array(), true);
         $this->assertNull($this->response->getETag());
         $this->assertNull($this->response->getLastModified());
+    }
+
+    public function testDoesNotCacheOptionsRequest()
+    {
+        $this->setNextResponse(200, array('Cache-Control' => 'public, s-maxage=60'), 'get');
+        $this->request('GET', '/');
+        $this->assertHttpKernelIsCalled();
+
+        $this->setNextResponse(200, array('Cache-Control' => 'public, s-maxage=60'), 'options');
+        $this->request('OPTIONS', '/');
+        $this->assertHttpKernelIsCalled();
+
+        $this->request('GET', '/');
+        $this->assertHttpKernelIsNotCalled();
+        $this->assertSame('get', $this->response->getContent());
+    }
+}
+
+class TestKernel implements HttpKernelInterface
+{
+    public $terminateCalled = false;
+
+    public function terminate(Request $request, Response $response)
+    {
+        $this->terminateCalled = true;
+    }
+
+    public function handle(Request $request, $type = self::MASTER_REQUEST, $catch = true)
+    {
     }
 }

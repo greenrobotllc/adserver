@@ -2,12 +2,10 @@
 
 namespace Illuminate\Routing;
 
-use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
 use Illuminate\Support\Arr;
 use ReflectionFunctionAbstract;
-use Illuminate\Database\Eloquent\Model;
 
 trait RouteDependencyResolverTrait
 {
@@ -89,36 +87,6 @@ trait RouteDependencyResolverTrait
     }
 
     /**
-     * Determine if the given type-hinted class is an implict Eloquent binding.
-     *
-     * Must not already be resolved in the parameter list by an explicit model binding.
-     *
-     * @param  \ReflectionClass  $class
-     * @param  array  $parameters
-     * @return bool
-     */
-    protected function vacantEloquentParameter(ReflectionClass $class, array $parameters)
-    {
-        return $class->isSubclassOf(Model::class) &&
-             ! $this->alreadyInParameters($class->name, $parameters);
-    }
-
-    /**
-     * Extract an implicit model binding's key out of the parameter list.
-     *
-     * @param  \ReflectionParameter  $parameter
-     * @param  array  $originalParameters
-     *
-     * @return mixed
-     */
-    protected function extractModelIdentifier(ReflectionParameter $parameter, array $originalParameters)
-    {
-        return Arr::first($originalParameters, function ($parameterKey) use ($parameter) {
-            return $parameterKey === $parameter->name;
-        });
-    }
-
-    /**
      * Determine if an object of the given class is in a list of parameters.
      *
      * @param  string  $class
@@ -127,7 +95,7 @@ trait RouteDependencyResolverTrait
      */
     protected function alreadyInParameters($class, array $parameters)
     {
-        return ! is_null(Arr::first($parameters, function ($key, $value) use ($class) {
+        return ! is_null(Arr::first($parameters, function ($value) use ($class) {
             return $value instanceof $class;
         }));
     }

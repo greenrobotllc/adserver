@@ -3,12 +3,15 @@
 namespace Illuminate\Cache;
 
 use Exception;
+use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Contracts\Cache\Store;
 
 class FileStore implements Store
 {
+    use RetrievesMultipleKeys;
+
     /**
      * The Illuminate Filesystem instance.
      *
@@ -39,7 +42,7 @@ class FileStore implements Store
     /**
      * Retrieve an item from the cache by key.
      *
-     * @param  string  $key
+     * @param  string|array  $key
      * @return mixed
      */
     public function get($key)
@@ -61,7 +64,9 @@ class FileStore implements Store
         // just return null. Otherwise, we'll get the contents of the file and get
         // the expiration UNIX timestamps from the start of the file's contents.
         try {
-            $expire = substr($contents = $this->files->get($path), 0, 10);
+            $expire = substr(
+                $contents = $this->files->get($path, true), 0, 10
+            );
         } catch (Exception $e) {
             return ['data' => null, 'time' => null];
         }
@@ -69,7 +74,7 @@ class FileStore implements Store
         // If the current time is greater than expiration timestamps we will delete
         // the file and return null. This helps clean up the old files and keeps
         // this directory much cleaner for us as old files aren't hanging out.
-        if (time() >= $expire) {
+        if (Carbon::now()->getTimestamp() >= $expire) {
             $this->forget($key);
 
             return ['data' => null, 'time' => null];
@@ -79,8 +84,8 @@ class FileStore implements Store
 
         // Next, we'll extract the number of minutes that are remaining for a cache
         // so that we can properly retain the time for things like the increment
-        // operation that may be performed on the cache. We'll round this out.
-        $time = ceil(($expire - time()) / 60);
+        // operation that may be performed on the cache.
+        $time = ($expire - Carbon::now()->getTimestamp()) / 60;
 
         return compact('data', 'time');
     }
@@ -90,7 +95,7 @@ class FileStore implements Store
      *
      * @param  string  $key
      * @param  mixed   $value
-     * @param  int     $minutes
+     * @param  float|int  $minutes
      * @return void
      */
     public function put($key, $value, $minutes)
@@ -99,7 +104,7 @@ class FileStore implements Store
 
         $this->createCacheDirectory($path = $this->path($key));
 
-        $this->files->put($path, $value);
+        $this->files->put($path, $value, true);
     }
 
     /**
@@ -128,7 +133,7 @@ class FileStore implements Store
 
         $int = ((int) $raw['data']) + $value;
 
-        $this->put($key, $int, (int) $raw['time']);
+        $this->put($key, $int, $raw['time']);
 
         return $int;
     }
@@ -196,7 +201,7 @@ class FileStore implements Store
      */
     protected function path($key)
     {
-        $parts = array_slice(str_split($hash = md5($key), 2), 0, 2);
+        $parts = array_slice(str_split($hash = sha1($key), 2), 0, 2);
 
         return $this->directory.'/'.implode('/', $parts).'/'.$hash;
     }
@@ -204,18 +209,18 @@ class FileStore implements Store
     /**
      * Get the expiration time based on the given minutes.
      *
-     * @param  int  $minutes
+     * @param  float|int  $minutes
      * @return int
      */
     protected function expiration($minutes)
     {
-        $time = time() + ($minutes * 60);
+        $time = Carbon::now()->getTimestamp() + (int) ($minutes * 60);
 
         if ($minutes === 0 || $time > 9999999999) {
             return 9999999999;
         }
 
-        return $time;
+        return (int) $time;
     }
 
     /**

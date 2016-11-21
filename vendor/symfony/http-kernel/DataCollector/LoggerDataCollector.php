@@ -22,6 +22,24 @@ use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
  */
 class LoggerDataCollector extends DataCollector implements LateDataCollectorInterface
 {
+    private $errorNames = array(
+        E_DEPRECATED => 'E_DEPRECATED',
+        E_USER_DEPRECATED => 'E_USER_DEPRECATED',
+        E_NOTICE => 'E_NOTICE',
+        E_USER_NOTICE => 'E_USER_NOTICE',
+        E_STRICT => 'E_STRICT',
+        E_WARNING => 'E_WARNING',
+        E_USER_WARNING => 'E_USER_WARNING',
+        E_COMPILE_WARNING => 'E_COMPILE_WARNING',
+        E_CORE_WARNING => 'E_CORE_WARNING',
+        E_USER_ERROR => 'E_USER_ERROR',
+        E_RECOVERABLE_ERROR => 'E_RECOVERABLE_ERROR',
+        E_COMPILE_ERROR => 'E_COMPILE_ERROR',
+        E_PARSE => 'E_PARSE',
+        E_ERROR => 'E_ERROR',
+        E_CORE_ERROR => 'E_CORE_ERROR',
+    );
+
     private $logger;
 
     public function __construct($logger = null)
@@ -51,18 +69,6 @@ class LoggerDataCollector extends DataCollector implements LateDataCollectorInte
     }
 
     /**
-     * Gets the called events.
-     *
-     * @return array An array of called events
-     *
-     * @see TraceableEventDispatcherInterface
-     */
-    public function countErrors()
-    {
-        return isset($this->data['error_count']) ? $this->data['error_count'] : 0;
-    }
-
-    /**
      * Gets the logs.
      *
      * @return array An array of logs
@@ -75,6 +81,11 @@ class LoggerDataCollector extends DataCollector implements LateDataCollectorInte
     public function getPriorities()
     {
         return isset($this->data['priorities']) ? $this->data['priorities'] : array();
+    }
+
+    public function countErrors()
+    {
+        return isset($this->data['error_count']) ? $this->data['error_count'] : 0;
     }
 
     public function countDeprecations()
@@ -106,6 +117,9 @@ class LoggerDataCollector extends DataCollector implements LateDataCollectorInte
             if (isset($context['type'], $context['file'], $context['line'], $context['level'])) {
                 $errorId = md5("{$context['type']}/{$context['line']}/{$context['file']}\x00{$log['message']}", true);
                 $silenced = !($context['type'] & $context['level']);
+                if (isset($this->errorNames[$context['type']])) {
+                    $context = array_merge(array('name' => $this->errorNames[$context['type']]), $context);
+                }
 
                 if (isset($errorContextById[$errorId])) {
                     if (isset($errorContextById[$errorId]['errorCount'])) {
@@ -154,6 +168,10 @@ class LoggerDataCollector extends DataCollector implements LateDataCollectorInte
         }
 
         if (is_object($context)) {
+            if ($context instanceof \Exception) {
+                return sprintf('Exception(%s): %s', get_class($context), $context->getMessage());
+            }
+
             return sprintf('Object(%s)', get_class($context));
         }
 

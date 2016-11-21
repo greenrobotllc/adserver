@@ -27,7 +27,7 @@ interface KernelInterface extends HttpKernelInterface, \Serializable
     /**
      * Returns an array of bundles to register.
      *
-     * @return BundleInterface[] An array of bundle instances.
+     * @return BundleInterface[] An array of bundle instances
      */
     public function registerBundles();
 
@@ -56,17 +56,6 @@ interface KernelInterface extends HttpKernelInterface, \Serializable
      * @return BundleInterface[] An array of registered bundle instances
      */
     public function getBundles();
-
-    /**
-     * Checks if a given class name belongs to an active bundle.
-     *
-     * @param string $class A class name
-     *
-     * @return bool true if the class belongs to an active bundle, false otherwise
-     *
-     * @deprecated since version 2.6, to be removed in 3.0.
-     */
-    public function isClassInActiveBundle($class);
 
     /**
      * Returns a bundle and optionally its descendants by its name.

@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'debug' => env('APP_DEBUG', false),
+    'debug' => env('APP_DEBUG', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -26,7 +26,7 @@ return [
     |
     */
 
-    'url' => env('URL', 'http://adserver.app'),
+    'url' => env('URL', 'http://adserver1.app'),
 
     /*
     |--------------------------------------------------------------------------
@@ -119,7 +119,6 @@ return [
         Illuminate\Bus\BusServiceProvider::class,
         Illuminate\Cache\CacheServiceProvider::class,
         Illuminate\Foundation\Providers\ConsoleSupportServiceProvider::class,
-        Illuminate\Routing\ControllerServiceProvider::class,
         Illuminate\Cookie\CookieServiceProvider::class,
         Illuminate\Database\DatabaseServiceProvider::class,
         Illuminate\Encryption\EncryptionServiceProvider::class,
@@ -148,8 +147,8 @@ return [
 
         // Custom Providers
         RachidLaasri\LaravelInstaller\Providers\LaravelInstallerServiceProvider::class,
-        'Torann\GeoIP\GeoIPServiceProvider',
 
+	    \Torann\GeoIP\GeoIPServiceProvider::class,
     ],
 
     /*
@@ -198,8 +197,8 @@ return [
         'URL'       => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
-        'GeoIP'     => 'Torann\GeoIP\GeoIPFacade',
 
+	    'GeoIP' => \Torann\GeoIP\Facades\GeoIP::class,
 
     ],
 
