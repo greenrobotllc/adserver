@@ -24,7 +24,7 @@ This adserver is for desktop sites and mobile web, not native mobile apps.  Spec
 9. You should setup a new subdomain for this adserver, and point it to the public folder.
 10. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
 11. Setup something like the following in cron (your path to artisan may vary): * * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1
-12. After running the adserver for awhile, you may run into the problem with `zend_mm_heap corrupted` in your PHP log file, and no adserver pages load properly. This may be due to the version of PHP?  I think what really solved this problem for me was adding `output_buffering = 8192` to `php.ini`. I also added some other settings and ran another command. See below for more info.
+12. After running the adserver for awhile, you may run into the problem with `zend_mm_heap corrupted` in your PHP log file, and no adserver pages load properly. This problem is currently unsolved. See below for more info.
 
 ## `zend_mm_heap corrupted` error
 After awhile, I was getting the error: `zend_mm_heap corrupted` in my php error log and the page was blank. I tried a variety of things, I will go through them all here. I edited my `php.ini` to include:
@@ -39,7 +39,9 @@ After awhile, I was getting the error: `zend_mm_heap corrupted` in my php error 
 
 Even then after awhile, with those settings, I was still getting that error. I then ran the command: `export USE_ZEND_ALLOC=0` (http://stackoverflow.com/a/10092026/211457)
 
-Even then after awhile, I was still getting the eror. I hired getmyadmin.com to look into this and they added `output_buffering = 8192` to `php.ini` and that fixed the problem for me.
+Even then after awhile, I was still getting the eror. I hired getmyadmin.com to look into this and they added `output_buffering = 8192` to `php.ini` and that fixed the problem for me for awhile.
+
+I then noticed the problem again. I updated to the latest version of PHP and Centos and Laravel. The problem was still there sporadically. I opened my first PHP bug about this issue: https://bugs.php.net/bug.php?id=73598. This was thanks to this very helpful Stackoverflow answer: http://stackoverflow.com/questions/2247977/what-does-zend-mm-heap-corrupted-mean/36350601#36350601
 
 ## Developer Notes
 Note for developers: I have set debug to false in config/app.php so this is ready to go for production installs. If you wish to debug, set this value to true. Setting it to true may cause your database password to be exposed if a connection error occurs.
@@ -49,3 +51,6 @@ You can use Github issues for regular bugs and feature requests. For security is
 
 ## Facebook Discussion Group
 Join the discussion on Facebook about GreenRobot Adserver: https://www.facebook.com/groups/greenrobotadserver/
+
+## Demo Server
+If you are interested in me setting up a demo adserver on a server I control for you to evaluate please let me know.
