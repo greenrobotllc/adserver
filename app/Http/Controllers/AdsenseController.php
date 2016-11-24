@@ -26,14 +26,14 @@ class AdsenseController extends Controller
     public function __construct()
     {
        // $this->middleware(function(){
-           if (!\Auth::check())
-        {
-           if (\Request::ajax())
-            {
-                abort(403, 'Unauthorized action.');
-            }
-            return \Redirect::to('login');
-        }
+        //    if (!\Auth::check())
+        // {
+        //    if (\Request::ajax())
+        //     {
+        //         abort(403, 'Unauthorized action.');
+        //     }
+        //     return \Redirect::to('login');
+        // }
         $this::updateValues();
        // });
 
