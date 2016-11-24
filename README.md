@@ -47,7 +47,7 @@ I then noticed the problem again. I updated to the latest version of PHP and Cen
 Note for developers: I have set debug to false in config/app.php so this is ready to go for production installs. If you wish to debug, set this value to true. Setting it to true may cause your database password to be exposed if a connection error occurs.
 
 ## Contact / Security Bugs
-You can use Github issues for regular bugs and feature requests. For security issues or if you have have any questions you don't want to discuss publicly you can email me: andy@greenrobot.com
+You can use Github issues for regular bugs and feature requests. For security issues or if you have any questions you don't want to discuss publicly you can email me: andy@greenrobot.com
 
 ## Facebook Discussion Group
 Join the discussion on Facebook about GreenRobot Adserver: https://www.facebook.com/groups/greenrobotadserver/
