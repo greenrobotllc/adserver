@@ -24,8 +24,9 @@ class AdzoneController extends Controller
 
     public function __construct($check = true)
     {
-        if ($check):
-			 $this->middleware('auth');
+        //if ($check):
+		$this->middleware('auth');
+	
 			 
        // $this->middleware(function(){
            // if (!\Auth::check())
@@ -38,7 +39,7 @@ class AdzoneController extends Controller
        //      return \Redirect::to('login');
        //  }
         //});
-        endif;
+        //endif;
     }
     /**
      * Display a listing of the resource.

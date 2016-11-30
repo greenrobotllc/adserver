@@ -11,7 +11,8 @@
         "doctrine/dbal": "v2.5.4",
         "rachidlaasri/laravel-installer": "1.4.1",
         "torann/geoip": "1.*",
-        "geoip2/geoip2": "~2.1"
+        "geoip2/geoip2": "~2.1",
+        "league/csv": "^8.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

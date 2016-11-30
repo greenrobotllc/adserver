@@ -29,6 +29,7 @@ class CustomAddController extends Controller
 		//             // abort(403, 'Unauthorized action.');
 		//             return \Redirect::to('login');
 		// }
+		$this->middleware('auth');
         $this::updateValues();
         //});
 

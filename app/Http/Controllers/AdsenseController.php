@@ -25,6 +25,7 @@ class AdsenseController extends Controller
 
     public function __construct()
     {
+		
        // $this->middleware(function(){
         //    if (!\Auth::check())
         // {
@@ -34,6 +35,7 @@ class AdsenseController extends Controller
         //     }
         //     return \Redirect::to('login');
         // }
+		$this->middleware('auth');
         $this::updateValues();
        // });
 

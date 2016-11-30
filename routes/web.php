@@ -41,6 +41,7 @@ Route::group(['middleware' => 'timezone_check'], function () {
 	Route::get('refresh','AdminController@refresh');
 	Route::post('saveadsense','AdminController@saveAdsense');
 	Route::post('savelsm','AdminController@saveLSM');
+	Route::post('savemopub','AdminController@saveMopub');
 	Route::post('saveadsensecode','AdminController@updateAdsenseAdCode');
 	Route::post('savelsmcode','AdminController@updateLsmAdCode');
 

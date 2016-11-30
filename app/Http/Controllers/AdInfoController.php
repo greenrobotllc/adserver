@@ -11,7 +11,9 @@ use App\AdProviderConfig;
 use App\IncomeReport;
 use App\RpmReport;
 use App\GeographicReport;
-
+use League\Csv\Reader;
+use DateTime;
+use DateInterval;
 
 class AdInfoController extends Controller
 {
@@ -43,12 +45,52 @@ class AdInfoController extends Controller
       $lsm_output="";
       $lsm_output = AdInfoController::lsm_update($arr['email'], $arr['pass']); // set this from YOURWEBSITE/admin
       $adsense_output = AdInfoController::adsense_update($adsense_config); // set this from YOURWEBSITE/admin
-      // $ads_output = AdInfoController::adslots_update();
-      $ads_map_update = new AdzoneController(false);
-      $ads_output = $ads_map_update->WeightageCalculator();
 
-      return $lsm_output.$adsense_output.$ads_output;
-    }
+      //$ads_output = AdInfoController::adslots_update();
+     $ads_map_update = new AdzoneController(false);
+     $ads_output = $ads_map_update->WeightageCalculator();
+
+     return $lsm_output.$adsense_output.$ads_output;
+  		// $mopub_output =AdInfoController::mopub_update();
+	// 	return $mopub_output;
+	
+	}
+	private function mopub_update() {
+        $output = "Processing MoPub...<br />";
+
+		$date = new DateTime();
+		$date->add(DateInterval::createFromDateString('yesterday'));
+		$yesterday = $date->format('Y-m-j');
+		$url="addme" . $yesterday;
+		$output .= "<pre>" . print_r("url: $url", true) . "</pre>";
+		
+		//die();
+		$str = file_get_contents($url);
+		$csv = Reader::createFromString($str);
+		
+		//get the first row, usually the CSV header
+		$headers = $csv->fetchOne();
+
+		//get 25 rows starting from the 11th row
+		$res = $csv->setOffset(1)->fetchAll();
+		$output .= "<pre>" . print_r($headers, true) . "</pre>";
+		$total_revenue=0;
+		foreach($res as $row) {
+			$type = $row[10];
+			if($type == "Marketplace") {
+				$revenue = $row[24];
+				$total_revenue += $revenue;
+				$output .= "<pre>" . print_r($row, true) . "</pre>";
+				
+			}
+		}
+		
+		$output .= "<pre>" . print_r("total revenue: $total_revenue", true) . "</pre>";
+		
+		//$s = str_getcsv(file_get_contents($url));
+//		$output .= "<pre>" . print_r($res, true) . "</pre>";
+		return $output;
+	}
     
     private function saveAccessToken($token)
     {

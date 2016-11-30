@@ -66,9 +66,22 @@ class AdminController extends Controller
 		}
 		// $timezone_set = TimeZoneController::isTimeZoneSet();
 		$custom_add  = \App\CustomAdd::orderBy('rpm', 'desc')->take(10)->get();
+		$mopub_api_key="ok";
+		$mopub_report_id="ok id";
+		
+		$configs = \App\AdProviderConfig::where('type','=','mopub')->where('user_id','=',\Auth::user()->id)->value('config');
+		if ($configs)
+		{
+			$config_array = unserialize($configs);
+			$mopub_api_key = $config_array['api_key'];
+			$mopub_report_id = $config_array['report_id'];
+		}
+		
 		return \View::make('home',[
 			'ad_slot_id'=>$my_slot_id,
 			'adsense_pub'=>$adsense_pub,
+			'mopub_api_key'=>$mopub_api_key,
+			'mopub_report_id'=>$mopub_report_id,
 			'lsm_pass'=>$lsm_password,
 			'lsm_email'=>$lsm_email,
 			'lsm_rpm'=>$lsm_rpm, 
@@ -104,6 +117,19 @@ class AdminController extends Controller
 		$data->save();
 		return \Redirect::to('admin');
 	}
+	
+
+	public function saveMopub()
+	{
+		$arr = array('api_key' => \Input::get('mopub_api_key'), 'report_id'=>\Input::get('mopub_report_id'));
+		$input = serialize($arr);
+		$data = \App\AdProviderConfig::firstOrNew(array('type'=>'mopub','user_id'=>\Auth::id()));
+		$data->config = $input;
+		$data->save();
+		return \Redirect::to('admin');
+	}
+	
+	
 	/**
      * Show the login form for login process.
      *

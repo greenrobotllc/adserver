@@ -35,6 +35,7 @@ return array(
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
     'MaxMind\\' => array($vendorDir . '/maxmind/web-service-common/src'),
     'League\\Flysystem\\' => array($vendorDir . '/league/flysystem/src'),
+    'League\\Csv\\' => array($vendorDir . '/league/csv/src'),
     'Illuminate\\' => array($vendorDir . '/laravel/framework/src/Illuminate'),
     'GeoIp2\\' => array($vendorDir . '/geoip2/geoip2/src'),
     'Faker\\' => array($vendorDir . '/fzaninotto/faker/src/Faker'),

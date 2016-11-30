@@ -34,6 +34,7 @@ class LSMController extends Controller
         //     }
         //     return \Redirect::to('login');
         // }
+		$this->middleware('auth');
         $this::updateValues();
         //});
 
