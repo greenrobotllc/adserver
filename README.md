@@ -54,6 +54,3 @@ Join the discussion on Facebook about GreenRobot Adserver: https://www.facebook.
 
 ## Twitter Updates
 Follow GreenRobot Adserver on Twitter: https://twitter.com/GRAdserver
-
-## Demo Server
-If you are interested in me setting up a demo adserver on a server I control for you to evaluate please let me know.
