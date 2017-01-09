@@ -10,6 +10,8 @@ This adserver is for desktop sites and mobile web, not native mobile apps.  Spec
 ![Screenshot 5](https://github.com/greenrobotllc/adserver/blob/master/sampleimages/image5.png)
 
 
+## Requirements:
+I recommend using Linux or Mac OS X. I have not tried this under Windows. For production/linux, I have it deployed to a Centos server on Linode and it's running currently. For development I use Mac OS X with Laravel Homestead development environment.
 
 ## Steps to install:
 
