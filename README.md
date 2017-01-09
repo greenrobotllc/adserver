@@ -19,12 +19,13 @@ This adserver is for desktop sites and mobile web, not native mobile apps.  Spec
 4. php composer.phar install
 5. Install Laravel
 6. Create database
-7. Run php artisan migrate
-8. Run php artisan db:seed
-9. You should setup a new subdomain for this adserver, and point it to the public folder.
-10. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
-11. Setup something like the following in cron (your path to artisan may vary): * * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1
-12. After running the adserver for awhile, you may run into the problem with `zend_mm_heap corrupted` in your PHP log file, and no adserver pages load properly. This problem is currently unsolved. See below for more info.
+7. Edit config/database.php with your database credentials.
+8. Run php artisan migrate
+9. Run php artisan db:seed
+10. You should setup a new subdomain for this adserver, and point it to the public folder.
+11. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
+12. Setup something like the following in cron (your path to artisan may vary): * * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1
+13. After running the adserver for awhile, you may run into the problem with `zend_mm_heap corrupted` in your PHP log file, and no adserver pages load properly. This problem is currently unsolved. See below for more info.
 
 ## `zend_mm_heap corrupted` error
 After awhile, I was getting the error: `zend_mm_heap corrupted` in my php error log and the page was blank. I tried a variety of things, I will go through them all here. I edited my `php.ini` to include:
