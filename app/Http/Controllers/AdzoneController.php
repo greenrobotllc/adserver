@@ -173,8 +173,29 @@ class AdzoneController extends Controller
                     switch ($value1->type) {
                         case 'adsense':
                             $rpm[$key][$rpm_index] = Adsense::where('id','=',$value1->add_id)->first();
-                            $rpm[$key][$rpm_index]->rpm = Ad::where('name','adsense 1')->first()->last_rpm;
-                            $total += $rpm[$key][$rpm_index]->rpm;
+                            //$rpm[$key][$rpm_index]->rpm = Ad::where('name','adsense 1')->first()->last_rpm;
+							$adzone_id=$rpm[$key][$rpm_index]->adsense_zone;
+							print_r("adzone_id = $adzone_id");
+							//$zone_report_id = DB::table('adsenses')->where('id', $adzone_id)->value('adsense_zone');
+							//print_r($zone_report_id);
+							//print_r("zone_report_id = $zone_report_id");
+							
+							$adsense_id = DB::table('adsense_zones')->where('id', $adzone_id)->value('adsense_id');
+							print_r("adsense_id = $adsense_id");
+							
+							//print_r($adsense_id);
+							$myRpm=DB::table('zone_reports')->where('adunit_id', $adsense_id)->value('rpm');
+							//print_r("rpm is $rpm");
+							$rpm[$key][$rpm_index]->rpm=$myRpm;
+							
+							//$zone_report_id = DB::table('adsenses')->where('id', $adzone_id)->value('adsense_zone');
+							//print_r($zone_report_id);
+							//$adsense_id = DB::table('adsense_zones')->where('id', $zone_report_id)->value('adsense_id');
+							//print_r($adsense_id);
+							//$rpm=DB::table('zone_reports')->where('adunit_id', $adsense_id)->value('rpm');
+                            
+							
+							$total += $rpm[$key][$rpm_index]->rpm;
                             break;
                         case 'lsm':
                             $rpm[$key][$rpm_index] = LSM::where('id','=',$value1->add_id)->first();

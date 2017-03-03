@@ -2,12 +2,14 @@
               <div class="row">
                 <div class="col-md-12">
                   <form class="form-horizontal" id="edit_add" method="POST">
-                    <div class="form-group">
+                    
+					<div class="form-group">
                       <label for="name" class="col-sm-2 control-label" required>Name</label>
                       <div class="col-sm-10">
                         <input type="text" name="name" value="{{$data->name}}" class="form-control" id="name" placeholder="Name" minlength="3" maxlenght="50" required>
                       </div>
                     </div>
+					
                      <div class="form-group">
                       <label for="rpm" class="col-sm-2 control-label">AdZone</label>
                       <div class="col-sm-10">
@@ -17,7 +19,43 @@
                           @endforeach
                         </select>
                       </div>
+				  </div>
+					  
+
+
+
+
+					  <div class="form-group">
+                      <label for="adsense_zone" class="col-sm-2 control-label">Adsense Unit</label>
+					  
+                      <div class="col-sm-10">
+						<?php //echo $data->my_ad; 
+						?>
+						
+                          <select name="adsense_zone" class="form-control">
+						  	<@foreach($data->adsense_zone as $z)
+						  	<option value="{{$z->id}}" 
+								<?php
+								if($z->id == $data->my_ad) {
+									echo("selected");
+										}
+										?>
+										>
+										{{$z->name}}</option>
+                          	@endforeach>
+						  </select>
+						  
+                      </div>
+				  
+					  
                     </div>
+					
+					
+					
+					
+   
+   
+   
                     <div class="form-group">
                       <label for="adcode" class="col-sm-2 control-label">Ad Code</label>
                       <div class="col-sm-10">

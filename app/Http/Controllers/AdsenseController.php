@@ -10,11 +10,12 @@ use App\Http\Controllers\Controller;
 use App\AdZone;
 use App\Adsense;
 use App\AdZoneMapping;
-
+use Illuminate\Support\Facades\Log;
 use DB;
 use Exception;
 use Input;
 use View;
+use App\AdsenseZone;
 
 use App\Http\Requests\AdsenseRequest;
 class AdsenseController extends Controller
@@ -49,8 +50,8 @@ class AdsenseController extends Controller
     {
         $data  = Adsense::all();
         $zones = AdZone::all();
-
-
+        $adsense_zones = AdsenseZone::orderBy('name')->get();//AdsenseZone::all();
+		//AdsenseZone::orderBy('name')->get();
                //get table name
         $zones_tablename =  with(new AdZone)->getTable();
         $zone_mapping_tablename = with(new AdZoneMapping)->getTable();
@@ -65,7 +66,8 @@ class AdsenseController extends Controller
         return \View::make('adsense.manage',[
             'data'=>$data,
             'page'=>"adsense",
-            'zones'=>$zones
+            'zones'=>$zones,
+			'adsense_zones'=>$adsense_zones
             ]);
     }
 
@@ -94,6 +96,7 @@ class AdsenseController extends Controller
         try{
             $adsense->name = $request->name;
             $adsense->adcode = $request->adcode;
+			$adsense->adsense_zone=$request->adsense_zone;
             $adsense->save();
 
             $AdZoneMapping->adzone = $request->adzone;
@@ -125,6 +128,10 @@ class AdsenseController extends Controller
         $id = Input::get('id');
         $data = Adsense::where('id','=',$id)->first();
         $data->zone = AdZone::all();
+		//$data->adsense_zone = AdsenseZone::all();
+		$data->my_ad=Adsense::whereId($id)->first()->adsense_zone;
+		
+		$data->adsense_zone = AdsenseZone::orderBy('name')->get();
         $data->adzone = AdZoneMapping::where('add_id',$id)->where('type',$this->type)->first()->adzone;
         return View::make('adsense.showsettings',['data'=>$data]);
     }
@@ -142,13 +149,16 @@ class AdsenseController extends Controller
         $data->adcode = Input::get('adcode');
         $data->name = Input::get('name');
         $data->adzone = Input::get('adzone');
-
+        $data->adsense_zone = Input::get('adsense_zone');
+		Log::debug($data->adsense_zone);
+		//$data->adsense_zone=2;
         $db_col = Adsense::whereId($data->id)->first();
         $db_map = AdZoneMapping::where('add_id',$data->id)->where('type',$this->type)->first();
         DB::beginTransaction();
         try{
             $db_col->name = $data->name;
             $db_col->adcode = $data->adcode;
+			$db_col->adsense_zone = $data->adsense_zone;
             $db_col->save();
 
             $db_map->adzone = $data->adzone;
@@ -209,6 +219,7 @@ class AdsenseController extends Controller
         try{
             echo "<h1>DONT CLICK ON YOUR AD</h1>";
             echo Adsense::whereId($id)->first()->adcode;
+            //echo "Adsense zone:" . Adsense::whereId($id)->first()->adsense_zone;
         }catch(Exception $e)
         {
             echo $e->getMessage();

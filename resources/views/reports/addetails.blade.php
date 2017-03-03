@@ -23,7 +23,8 @@
               <td>{{$ad->getadsense->name}}</td>
               <td>Adsense</td>
               <td>{{$ad->weight*100}}%</td>
-              <td>${{$adsense_rpm->last_rpm}}</td>
+              <!-- <td>${{$adsense_rpm->last_rpm}}</td> -->
+              <td>${{$ad->rpm}}</td>
               <td>{{$ad->getadzone->name}}</td>
             </tr>
         @endforeach

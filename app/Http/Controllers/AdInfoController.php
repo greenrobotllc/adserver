@@ -14,49 +14,50 @@ use App\GeographicReport;
 use League\Csv\Reader;
 use DateTime;
 use DateInterval;
+use App\AdsenseZone;
+use App\ZoneReports;
 
 class AdInfoController extends Controller
 {
 
+	private $access_token_data_setter; //database access
 
-  private $access_token_data_setter; //database access
-
-    public function refresh()
-    {
-      $asi = new TimeZoneController;
-        $timezone = $asi->show();
-        date_default_timezone_set($timezone);
-        \Config::set('app.timezone', $timezone);
+	public function refresh()
+	{
+		$asi = new TimeZoneController;
+		$timezone = $asi->show();
+		date_default_timezone_set($timezone);
+		\Config::set('app.timezone', $timezone);
 
         
-      // ini_set('memory_limit', '2048M');//memory hack
-      ini_set('max_execution_time', 3000);//execution hack
-      session()->forget('access_token');
-      $lsm_config = \App\AdProviderConfig::where('type','=','lsm')->value('config');
-      $arr = unserialize($lsm_config);
-      $adsense_access_token = \App\AdProviderConfig::where('type','=','adsense_access_token')->value('config');
+		// ini_set('memory_limit', '2048M');//memory hack
+		ini_set('max_execution_time', 3000);//execution hack
+		session()->forget('access_token');
+		$lsm_config = \App\AdProviderConfig::where('type','=','lsm')->value('config');
+		$arr = unserialize($lsm_config);
+		$adsense_access_token = \App\AdProviderConfig::where('type','=','adsense_access_token')->value('config');
       
-      if ($adsense_access_token)
-      {
-        session(['access_token'=>$adsense_access_token]);
-      }
+		if ($adsense_access_token)
+		{
+			session(['access_token'=>$adsense_access_token]);
+		}
 
-      $adsense_config = \App\AdProviderConfig::where('type','=','adsense')->value('config');
-      $lsm_output="";
-      $lsm_output = AdInfoController::lsm_update($arr['email'], $arr['pass']); // set this from YOURWEBSITE/admin
-      $adsense_output = AdInfoController::adsense_update($adsense_config); // set this from YOURWEBSITE/admin
+		$adsense_config = \App\AdProviderConfig::where('type','=','adsense')->value('config');
+		$lsm_output="";
+		$lsm_output = AdInfoController::lsm_update($arr['email'], $arr['pass']); // set this from YOURWEBSITE/admin
+		$adsense_output = AdInfoController::adsense_update($adsense_config); // set this from YOURWEBSITE/admin
 
-      //$ads_output = AdInfoController::adslots_update();
-     $ads_map_update = new AdzoneController(false);
-     $ads_output = $ads_map_update->WeightageCalculator();
+		//$ads_output = AdInfoController::adslots_update();
+		$ads_map_update = new AdzoneController(false);
+		$ads_output = $ads_map_update->WeightageCalculator();
 
-     return $lsm_output.$adsense_output.$ads_output;
-  		// $mopub_output =AdInfoController::mopub_update();
-	// 	return $mopub_output;
+		return $lsm_output.$adsense_output.$ads_output;
+		// $mopub_output =AdInfoController::mopub_update();
+		// 	return $mopub_output;
 	
 	}
 	private function mopub_update() {
-        $output = "Processing MoPub...<br />";
+		$output = "Processing MoPub...<br />";
 
 		$date = new DateTime();
 		$date->add(DateInterval::createFromDateString('yesterday'));
@@ -88,246 +89,385 @@ class AdInfoController extends Controller
 		$output .= "<pre>" . print_r("total revenue: $total_revenue", true) . "</pre>";
 		
 		//$s = str_getcsv(file_get_contents($url));
-//		$output .= "<pre>" . print_r($res, true) . "</pre>";
+		//		$output .= "<pre>" . print_r($res, true) . "</pre>";
 		return $output;
 	}
     
-    private function saveAccessToken($token)
-    {
-        $access_token_data_setter = \App\AdProviderConfig::firstOrNew(array('type'=>'adsense_access_token','user_id'=>\Auth::id()));
-        $access_token_data_setter->config = $token;
-        $access_token_data_setter->save();
-    }
+	private function saveAccessToken($token)
+	{
+		$access_token_data_setter = \App\AdProviderConfig::firstOrNew(array('type'=>'adsense_access_token','user_id'=>\Auth::id()));
+		$access_token_data_setter->config = $token;
+		$access_token_data_setter->save();
+	}
 
-    public function deleteAccessToken()
-    {
-            session()->forget('access_token');
+	public function deleteAccessToken()
+	{
+		session()->forget('access_token');
 
-        $access_token_data_setter = AdProviderConfig::where('type','adsense_access_token')->where('user_id',\Auth::id())->delete();
-    }
-
-
-    private function lsm_update($user, $pass) 
-    {
-      $income = 0;
-      $output = "<p>.:: Processing LifeStreet Media ::. <br />";
-
-     if (!$user && !$pass)
-      {
-        $output .= "!! PLEASE ADD YOUR LSM ACCOUNT DETAILS !! <br /><hr>";
-        return $output;
-      }
-
-      $url = 'https://my.lifestreetmedia.com/reporting/run/';
-      $params = array(
-          'measurements' => array('adImps', 'adCost'),
-          'dimensions' => array('Date','Country.name'),
-          'date_range' => 'today',
-      );
-
-      $ch = curl_init();
-      curl_setopt( $ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-      curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false);
-      curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, false);
-      curl_setopt ($ch, CURLOPT_URL, $url);
-      curl_setopt ($ch, CURLOPT_USERPWD, $user . ':' . $pass);
-      curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
-      if (!empty($params)) {
-      	curl_setopt ($ch, CURLOPT_POST, 1);
-      	curl_setopt ($ch, CURLOPT_POSTFIELDS, array('data' => json_encode($params)));
-      }
-      // $or = curl_exec($ch);
-      $response = json_decode(curl_exec($ch), true);
-      // error_log(print_r($response, true));
-      curl_close($ch);
-      if(is_array($response) && array_key_exists('error', $response) && $response['error'] === false) {
-
-        $output .= "Got LSM results<br />";
-        $getAdImp = 0;
-        $getAdCost = 0;
-
-        foreach ($response['data'] as $key => $value) {
-          $getAdImp += $value['adImps'];
-          $getAdCost += $value['adCost'];
-          if ($value['adImps'] == 0)
-          {
-            $cva = 0;
-          }else{
-            $cva = $value['adCost'] / $value['adImps'];
-          }
-          $this::addgeographic($value['Country.name'],$value['adCost'],round(($cva)*1000, 3), 'lsm');
-        }
-        // $data = array_pop($response['data']);
-        $adImpsM = $getAdImp / 1000;
-        $income = $getAdCost;
-        $rpm = round($getAdCost / $adImpsM, 3);
-        // $output.="\n Today Income: ".$income;
-      }
-
-      if(is_array($response) && array_key_exists('error', $response) && $response['error'] === true) {
-        $output .= $response['message'] . "<br />";
-        if (strcmp($response['message'], "Reporting service returned no data.") === 0)
-            $rpm = 0;
-      }
-
-      if (isset($rpm))
-      {
-        $output .= "LSM RPM: ".$rpm."<br />";
-
-        DB::table('ads')->where('id', 2)->update([
-          'last_rpm' => $rpm,
-          'updated_at' => date("Y-m-d H:i:s")
-        ]);
-
-        //add income to lsm entry
-        $this::addIncome('lsm',$income);
-        $this::addRpm('lsm',$rpm);
-
-        $output .= "Updated Database with LSM RPM<br />";
-      }else{
-        $output .= "Unable to Proceed <br />";
-      }
-
-      $output .= "LifeStreet Media Processing Done</p><hr>";
-      return $output;
-    }
-
-    private function adsense_update($account_id) 
-    {
-
-      $output = ".:: Processing Adsense ::. <br />";
-
-      if (!$account_id)
-      {
-        $output .= "!! PLEASE ADD YOUR ADSENSE ACCOUNT ID OR PUBLISHER ID !!<hr>";
-        return $output;
-      }
+		$access_token_data_setter = AdProviderConfig::where('type','adsense_access_token')->where('user_id',\Auth::id())->delete();
+	}
 
 
-      $client = new \Google_Client();
-      $client->addScope('https://www.googleapis.com/auth/adsense.readonly');
-      $client->setAccessType('offline');
-      $client->setApprovalPrompt('force');
-      $client->setAuthConfigFile(config_path().'/google_client_secrets.json');
-      // $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/adserver/public/adinfo_refresh');
+	private function lsm_update($user, $pass) 
+	{
+		$income = 0;
+		$output = "<p>.:: Processing LifeStreet Media ::. <br />";
 
-      if (isset($_GET['code']) && !session('access_token')) {
-     $client->authenticate($_GET['code']);
-     $redirect = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
-      header('Location: ' . filter_var($redirect, FILTER_SANITIZE_URL));
-     session(['access_token'=>$client->getAccessToken()]); 
-     AdInfoController::saveAccessToken(session("access_token"));
-     $output .= "Done";
-      }
-      //ya29.rQI2GR2_7uKr0b4tHhsXg-j-66sLb4uUAgPXUROiW7gQCenmjc7ymDBOT7DgLeZYAg
-      //1/Iyh1ocDfRQQhyR0zz2xzFzEhfAqqdWr60BCGES5oYWE
-      // $client->revokeToken("ya29.rQI2GR2_7uKr0b4tHhsXg-j-66sLb4uUAgPXUROiW7gQCenmjc7ymDBOT7DgLeZYAg");
-      if (isset($_GET['code']))
-      {
-          return  \Redirect::to('refresh');
-      }
+		if (!$user && !$pass)
+		{
+			$output .= "!! PLEASE ADD YOUR LSM ACCOUNT DETAILS !! <br /><hr>";
+			return $output;
+		}
 
-          if (session('access_token')) {
-            $client->setAccessToken(session('access_token'));
-            $refresh_token = json_decode(session('access_token'))->refresh_token;
-          } else {
-            $authUrl = $client->createAuthUrl();
-          }
+		$url = 'https://my.lifestreetmedia.com/reporting/run/';
+		$params = array(
+			'measurements' => array('adImps', 'adCost'),
+			'dimensions' => array('Date','Country.name'),
+			'date_range' => 'today',
+		);
 
-            if ($client->getAccessToken()) {
-                   session(['access_token'=>$client->getAccessToken()]);
-                   $refresh_token = json_decode(session('access_token'))->refresh_token;
-            }
+		$ch = curl_init();
+		curl_setopt( $ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+		curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, false);
+		curl_setopt ($ch, CURLOPT_URL, $url);
+		curl_setopt ($ch, CURLOPT_USERPWD, $user . ':' . $pass);
+		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
+		if (!empty($params)) {
+			curl_setopt ($ch, CURLOPT_POST, 1);
+			curl_setopt ($ch, CURLOPT_POSTFIELDS, array('data' => json_encode($params)));
+		}
+		// $or = curl_exec($ch);
+		$response = json_decode(curl_exec($ch), true);
+		// error_log(print_r($response, true));
+		curl_close($ch);
+		if(is_array($response) && array_key_exists('error', $response) && $response['error'] === false) {
 
-            if (isset($authUrl)) {
-              $output .= "<a class='login' href='" . $authUrl . "'>Google Login IN to Confirm Your Account</a><br />"; 
-              } 
+			$output .= "Got LSM results<br />";
+			$getAdImp = 0;
+			$getAdCost = 0;
 
-      $service = new \Google_Service_AdSense($client);
+			foreach ($response['data'] as $key => $value) {
+				$getAdImp += $value['adImps'];
+				$getAdCost += $value['adCost'];
+				if ($value['adImps'] == 0)
+				{
+					$cva = 0;
+				}else{
+					$cva = $value['adCost'] / $value['adImps'];
+				}
+				$this::addgeographic($value['Country.name'],$value['adCost'],round(($cva)*1000, 3), 'lsm');
+			}
+			// $data = array_pop($response['data']);
+			$adImpsM = $getAdImp / 1000;
+			$income = $getAdCost;
+			$rpm = round($getAdCost / $adImpsM, 3);
+			// $output.="\n Today Income: ".$income;
+		}
 
-      // $client->setAccessToken($google_access_token);
+		if(is_array($response) && array_key_exists('error', $response) && $response['error'] === true) {
+			$output .= $response['message'] . "<br />";
+			if (strcmp($response['message'], "Reporting service returned no data.") === 0)
+				$rpm = 0;
+		}
 
-      if ($client->getAccessToken()) {
+		if (isset($rpm))
+		{
+			$output .= "LSM RPM: ".$rpm."<br />";
 
-        $optParams = array(
-          'metric' => array('AD_REQUESTS_RPM','EARNINGS'),
-          'dimension'=>array('COUNTRY_NAME'),
-        );
-        try{
-        $report = $service->accounts_reports->generate($account_id, 'today', 'today', $optParams);
-      }catch(Exception $e)
-      {
-        error_log($e->getMessage());
+			DB::table('ads')->where('id', 2)->update([
+				'last_rpm' => $rpm,
+				'updated_at' => date("Y-m-d H:i:s")
+					]);
 
-        //now using refresh token here
-        try{
-          $client->refreshToken($refresh_token);
-          session(['access_token'=>$client->getAccessToken()]);
-          AdInfoController::saveAccessToken(session("access_token"));
-        }catch(Exception $e)
-        {
-          error_log($e->getMessage());
-          //all things are done now we need to re-authenticate
-          //An Token Error Occured
-          $this::deleteAccessToken();
-        }
+				//add income to lsm entry
+				$this::addIncome('lsm',$income);
+				$this::addRpm('lsm',$rpm);
 
-       // Authentication Needs to Refreshed
-       return \Redirect::to('refresh');
-      }
-        if(isset($report)) {
-          $output .= "Got AdSense results<br />";
-          // error_log(print_r($report,true));
-          // print_r($report);
-          if (isset($report['rows']) && array_key_exists(0, $report['rows'])) {
-            foreach ($report['rows'] as $key => $value) {
-                $this::addgeographic($value[0],$value[2], $value[1], 'adsense');
-            }
-            $rpm = $report['totals'][1];
-            $income = $report['totals'][2];
-          } else {
-            $rpm = 0;
-            $income = 0;
-          }
+				$output .= "Updated Database with LSM RPM<br />";
+			}else{
+				$output .= "Unable to Proceed <br />";
+			}
 
-          $output .= "AdSense RPM: ".$rpm."<br />";
-          $output .= "AdSense Income: ".$income."<br />";
+			$output .= "LifeStreet Media Processing Done</p><hr>";
+			return $output;
+		}
 
-          DB::table('ads')->where('id', 1)->update([
-            'last_rpm' => $rpm,
-            'updated_at' => date("Y-m-d H:i:s")
-          ]);
-          $this::addIncome('adsense',$income);
-          $this::addRpm('adsense',$rpm);
-          $output .= "Updated Database with AdSense RPM<br />";
-        }
+		private function adsense_update($account_id) 
+		{
 
-      }
-              $output .= "AdSense Processing Done</p><hr>";
+			$output = ".:: Processing Adsense ::. <br />";
 
-      return $output;
-    }
+			if (!$account_id)
+			{
+				$output .= "!! PLEASE ADD YOUR ADSENSE ACCOUNT ID OR PUBLISHER ID !!<hr>";
+				return $output;
+			}
 
-    private function addIncome($type,$income)
-    {
-        $date = Date('Y-m-d');
-        $db = IncomeReport::firstOrNew(['type'=>$type,'date'=>$date]);
-        $db->income = $income;
-        $db->save();
-    }
-    private function addRpm($type, $rpm)
-    {
-        $date = Date('Y-m-d');
-        $db = RpmReport::firstOrNew(['type'=>$type,'date'=>$date]);
-        $db->rpm = $rpm;
-        $db->save();
-    }
-    private function addgeographic($country,$adcost,$adimp, $type)
-    {
-      $date = Date('Y-m-d');
-      $db = GeographicReport::firstOrNew(['type'=>$type,'date'=>$date,'country'=>$country]);
-      $db->impressions = $adimp;
-      $db->cost = $adcost;
-      $db->save();
-    }
-}
+
+			$client = new \Google_Client();
+			$client->addScope('https://www.googleapis.com/auth/adsense.readonly');
+			$client->setAccessType('offline');
+			$client->setApprovalPrompt('force');
+			$client->setAuthConfigFile(config_path().'/google_client_secrets.json');
+			// $client->setRedirectUri('http://' . $_SERVER['HTTP_HOST'] . '/adserver/public/adinfo_refresh');
+
+			if (isset($_GET['code']) && !session('access_token')) {
+				$client->authenticate($_GET['code']);
+				$redirect = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+				header('Location: ' . filter_var($redirect, FILTER_SANITIZE_URL));
+				session(['access_token'=>$client->getAccessToken()]); 
+				AdInfoController::saveAccessToken(session("access_token"));
+				$output .= "Done";
+			}
+			//ya29.rQI2GR2_7uKr0b4tHhsXg-j-66sLb4uUAgPXUROiW7gQCenmjc7ymDBOT7DgLeZYAg
+			//1/Iyh1ocDfRQQhyR0zz2xzFzEhfAqqdWr60BCGES5oYWE
+			// $client->revokeToken("ya29.rQI2GR2_7uKr0b4tHhsXg-j-66sLb4uUAgPXUROiW7gQCenmjc7ymDBOT7DgLeZYAg");
+			if (isset($_GET['code']))
+			{
+				return  \Redirect::to('refresh');
+			}
+
+			if (session('access_token')) {
+				$client->setAccessToken(session('access_token'));
+				$refresh_token = json_decode(session('access_token'))->refresh_token;
+			} else {
+				$authUrl = $client->createAuthUrl();
+			}
+
+			if ($client->getAccessToken()) {
+				session(['access_token'=>$client->getAccessToken()]);
+				$refresh_token = json_decode(session('access_token'))->refresh_token;
+			}
+
+			if (isset($authUrl)) {
+				$output .= "<a class='login' href='" . $authUrl . "'>Google Login IN to Confirm Your Account</a><br />"; 
+			} 
+
+			$service = new \Google_Service_AdSense($client);
+
+			// $client->setAccessToken($google_access_token);
+
+			//$accounts_adclients
+			if ($client->getAccessToken()) {
+				try{
+					//$optParams['pageToken'] = $pageToken;
+					$reportAdClients = $service->accounts_adclients->listAccountsAdclients($account_id,
+					Array());
+					//print_r($reportAdClients['modelData']['items']);
+					$items = $reportAdClients['modelData']['items'];
+					$adClients = array();
+			  
+					for($i = 0; $i < count($items); $i++) {
+						$myItem = $items[$i];
+						array_push($adClients, $myItem['id']);
+					}
+					//print_r($adClients);
+					//echo("<pre>");
+					//$adClients= array_slice($adClients, 0, 2); // return the first five elements
+						
+					for($j = 0; $j < count($adClients); $j++) {
+						$myAdClient = $adClients[$j];
+						$result = $service->accounts_adunits->listAccountsAdunits($account_id,
+						$myAdClient, Array());
+						if(array_key_exists('items', $result['modelData'])) {
+				  	  		$items = $result['modelData']['items'];
+							//$items= array_slice($items, 0, 2); // return the first five elements
+							
+							for($k = 0; $k < count($items); $k++) {
+								$myItem = $items[$k];
+								//if($myItem['status']  == 'ACTIVE') {
+									//print_r($myItem);
+									$myName=$myItem['name'];
+									$myAdsenseId = $myItem['id'];
+									
+									// Retrieve the flight by the attributes, or instantiate a new instance...
+									$ad = AdsenseZone::firstOrCreate(['name' => $myName, 'adsense_id'=>$myAdsenseId]);
+									//$ad.save();
+																				
+									//}
+							}
+						}
+						//print_r($result);
+					}
+				
+					   
+					//echo("</pre>");
+					 
+					//$reportAdClients = $service->adclients->list($account_id);
+			
+				}
+				catch(Exception $e)
+				{
+					error_log($e->getMessage());
+					print_r($e);
+				}
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			//zone level optimization
+			//$accounts_adclients
+			if ($client->getAccessToken()) {
+				try{
+		
+					
+					$optParams = array(
+						'metric' => array('AD_REQUESTS_RPM','EARNINGS'),
+						'dimension'=>array('AD_UNIT_ID', 'AD_UNIT_NAME'),
+					);
+					//$date = "2016-12-13";
+					$date = date('Y-m-d',strtotime("-1 days"));
+					
+					$report = $service->accounts_reports->generate($account_id, $date, $date, $optParams);
+			
+					if (isset($report['rows']) && array_key_exists(0, $report['rows'])) {
+						foreach ($report['rows'] as $key => $value) {
+							
+							
+							$ad = ZoneReports::firstOrCreate( ['adunit_id' => $value[0], 'revenue'=>$value[3], 'rpm' => $value[2], 'adunit_name' => $value[1], 'date' => $date ] );
+						}
+							//$this::addgeographic($value[0],$value[2], $value[1], 'adsense');
+					}
+			
+					//print_r($report);
+					   
+					echo("</pre>");
+					 
+					//$reportAdClients = $service->adclients->list($account_id);
+			
+				}
+				catch(Exception $e)
+				{
+					error_log($e->getMessage());
+					print_r($e);
+				}
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+			if ($client->getAccessToken()) {
+
+				$optParams = array(
+					'metric' => array('AD_REQUESTS_RPM','EARNINGS'),
+					'dimension'=>array('COUNTRY_NAME'),
+				);
+				try{
+					$report = $service->accounts_reports->generate($account_id, 'today', 'today', $optParams);
+				}catch(Exception $e)
+				{
+					error_log($e->getMessage());
+
+					//now using refresh token here
+					try{
+						$client->refreshToken($refresh_token);
+						session(['access_token'=>$client->getAccessToken()]);
+						AdInfoController::saveAccessToken(session("access_token"));
+					}catch(Exception $e)
+					{
+						error_log($e->getMessage());
+						//all things are done now we need to re-authenticate
+						//An Token Error Occured
+						$this::deleteAccessToken();
+					}
+
+					// Authentication Needs to Refreshed
+					return \Redirect::to('refresh');
+				}
+				if(isset($report)) {
+					$output .= "Got AdSense results<br />";
+					// error_log(print_r($report,true));
+					// print_r($report);
+					if (isset($report['rows']) && array_key_exists(0, $report['rows'])) {
+						foreach ($report['rows'] as $key => $value) {
+							$this::addgeographic($value[0],$value[2], $value[1], 'adsense');
+						}
+						$rpm = $report['totals'][1];
+						$income = $report['totals'][2];
+					} else {
+						$rpm = 0;
+						$income = 0;
+					}
+
+					$output .= "AdSense RPM: ".$rpm."<br />";
+					$output .= "AdSense Income: ".$income."<br />";
+
+					DB::table('ads')->where('id', 1)->update([
+						'last_rpm' => $rpm,
+						'updated_at' => date("Y-m-d H:i:s")
+							]);
+						$this::addIncome('adsense',$income);
+						$this::addRpm('adsense',$rpm);
+						$output .= "Updated Database with AdSense RPM<br />";
+					}
+
+				}
+				$output .= "AdSense Processing Done</p><hr>";
+
+				return $output;
+			}
+
+			private function addIncome($type,$income)
+			{
+				$date = Date('Y-m-d');
+				$db = IncomeReport::firstOrNew(['type'=>$type,'date'=>$date]);
+				$db->income = $income;
+				$db->save();
+			}
+			private function addRpm($type, $rpm)
+			{
+				$date = Date('Y-m-d');
+				$db = RpmReport::firstOrNew(['type'=>$type,'date'=>$date]);
+				$db->rpm = $rpm;
+				$db->save();
+			}
+			private function addgeographic($country,$adcost,$adimp, $type)
+			{
+				$date = Date('Y-m-d');
+				$db = GeographicReport::firstOrNew(['type'=>$type,'date'=>$date,'country'=>$country]);
+				$db->impressions = $adimp;
+				$db->cost = $adcost;
+				$db->save();
+			}
+		}

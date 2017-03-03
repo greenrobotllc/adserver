@@ -56,6 +56,8 @@
                         <input type="text" name="name" class="form-control" id="name" placeholder="Name" minlength="3"  maxlenght="50" required>
                       </div>
                     </div>
+					
+					
                      <div class="form-group">
                       <label for="rpm" class="col-sm-2 control-label">AdZone</label>
                       <div class="col-sm-10">
@@ -66,6 +68,23 @@
                         </select>
                       </div>
                     </div>
+					
+					
+					
+                     <div class="form-group">
+                      <label for="rpm" class="col-sm-2 control-label">Adsense Unit</label>
+                      <div class="col-sm-10">
+                        <select name="adsense_zone" class="form-control">
+                        @foreach($adsense_zones as $z)
+                          <option value="{{$z->id}}">{{$z->name}}</option>
+                          @endforeach
+                        </select>
+                      </div>
+                    </div>
+					
+					
+					
+					
                     <div class="form-group">
                       <label for="adcode" class="col-sm-2 control-label">Ad Code</label>
                       <div class="col-sm-10">
@@ -99,6 +118,7 @@
                   <th>Add id</th>
                   <th>Name</th>
                   <th>AdZone</th>
+                  <th>Adsense Unit</th>
                   <th>Weight</th>
                   <th>Total Views</th>
                   <th>Last Updated</th>
@@ -111,6 +131,7 @@
                   <td>{{$d->id}}</td>
                   <td>{{$d->name}}</td>
                   <td>{{$d->zonename}}</td>
+                  <td>{{$d->adsense_zone}}</td>
                   <td>{{$d->weight}}</td>
                   <td>{{$d->views}}</td>
                   <td>{{$d->updated_at}}</td>
