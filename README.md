@@ -26,8 +26,9 @@ I recommend using Linux or Mac OS X. I have not tried this under Windows. For pr
 9. Run php artisan db:seed
 10. You should setup a new subdomain for this adserver, and point it to the public folder.
 11. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
-12. Setup something like the following in cron (your path to artisan may vary): * * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1
-13. If you are using less than PHP 7, after running the adserver for awhile, you may run into the problem with `zend_mm_heap corrupted` in your PHP log file, and no adserver pages load properly. This problem is currently unsolved. See below for more info.
+12. What is the route I am suppose to provide for the Adsense Oauth Callback when setting up the google_clients_secrets.json? The route would be the address of your webserver. You should setup a domain or subdomain for it to work. For example: https://yoursubdomain.greenrobot.com/refresh
+13. Setup something like the following in cron (your path to artisan may vary): * * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1
+14. If you are using less than PHP 7, after running the adserver for awhile, you may run into the problem with `zend_mm_heap corrupted` in your PHP log file, and no adserver pages load properly. This problem is currently unsolved. See below for more info.
 
 ## `zend_mm_heap corrupted` error
 After awhile, I was getting the error: `zend_mm_heap corrupted` in my php error log and the page was blank. I tried a variety of things, I will go through them all here. I edited my `php.ini` to include:
