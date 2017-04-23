@@ -1,7 +1,7 @@
 ## GreenRobot Open-source Adserver
 This adserver rotates banner ads between Adsense, LifeStreetmedia, MoPub, and others based on RPM. For Adsense, Lifestreetmedia and MoPub, the RPM is automatically retrieved by the server using network APIs, for other networks you will have to edit the RPM yourself.
 
-This adserver is for desktop sites and mobile web, as well as native mobile apps.  Specifically, I use it on a Facebook app, which is also accessible outside of the Facebook frame once you're logged in via Facebook connect.  It should also work fine on desktop or mobile web sites not using Facebook login.  I also do mobile development, I will be working on some open source to interface with this adserver for native mobile apps. Right now the adserver returns some weightages of Admob/Adsense and MoPub and you will have to implement parsing the JSON and choosing between MoPub and AdMob in custom code.
+This adserver is for desktop sites and mobile web, as well as native mobile apps.  Specifically, I use it on a Facebook app, which is also accessible outside of the Facebook frame once you're logged in via Facebook connect.  It should also work fine on desktop or mobile web sites not using Facebook login.  I also do mobile development, I will be working on some open source code to interface with this adserver for native mobile apps. Right now the adserver returns some weightages of Admob/Adsense and MoPub and you will have to implement parsing the JSON and choosing between MoPub and AdMob in custom code.
 
 ![Screenshot 1](https://github.com/greenrobotllc/adserver/blob/master/sampleimages/image1.png)
 ![Screenshot 2](https://github.com/greenrobotllc/adserver/blob/master/sampleimages/image2.png)
