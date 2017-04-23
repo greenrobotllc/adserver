@@ -13,6 +13,7 @@ use App\Http\Requests\AdZoneRequest;
 use App\Adsense;
 use App\Ad;
 use App\LSM;
+use App\MoPub;
 use Exception;
 use Response;
 use Input;
@@ -95,7 +96,13 @@ class AdzoneController extends Controller
     public function show()
     {
         $id = Input::get('id');
-        return View::make('adzone.showcode',['id'=>$id]);
+        $data = AdZone::where('id','=',$id)->first();
+        if($data->platform ==0) {
+            return View::make('adzone.showcode',['id'=>$id]);
+        }
+        else {
+            return secure_url('/getadmobile/'.$id);
+        }
     }
 
 
@@ -159,10 +166,17 @@ class AdzoneController extends Controller
     {
         $logging = ".:: Processing Weightage Calculator::.<br />";
         $logging .= "Starting Updating AdZones";
-        try{
+        //try{
             //get all zones in the database
             $data = AdZone::all();
-            //initialize required variables usuallay counter variables
+            //print_r("Data: ");
+            //print_r($data);
+            //return;
+
+
+
+
+                        //initialize required variables usuallay counter variables
             $rpm_index = $total = $ipx = $total_cms = 0;
             $rpm_c = array();
             foreach ($data as $key => $value) {
@@ -171,21 +185,40 @@ class AdzoneController extends Controller
                 
                 foreach ($ad_id[$key] as $key1 => $value1) {
                     switch ($value1->type) {
+						case 'mopub':
+							$rpm[$key][$rpm_index] = MoPub::where('id','=',$value1->add_id)->first();
+							$adzone_id=$rpm[$key][$rpm_index]->mopub_zone;
+							
+							$mopub_id = DB::table('mopub_zones')->where('id', $adzone_id)->value('unit_id');
+							//print_r("adsense_id = $adsense_id");
+							
+							
+							//print_r($adsense_id);
+							$myRpm=DB::table('mopub_zone_reports')->where('adunit_id', $mopub_id)->value('rpm');
+							//print_r("rpm is");
+                            //print_r((float)$myRpm);
+							$rpm[$key][$rpm_index]->rpm=(float)$myRpm;
+            
+							
+							$total += $rpm[$key][$rpm_index]->rpm;
+							break;
+							
                         case 'adsense':
-                            $rpm[$key][$rpm_index] = Adsense::where('id','=',$value1->add_id)->first();
+                           $rpm[$key][$rpm_index] = Adsense::where('id','=',$value1->add_id)->first();
                             //$rpm[$key][$rpm_index]->rpm = Ad::where('name','adsense 1')->first()->last_rpm;
 							$adzone_id=$rpm[$key][$rpm_index]->adsense_zone;
-							print_r("adzone_id = $adzone_id");
+							//print_r("adzone_id = $adzone_id");
 							//$zone_report_id = DB::table('adsenses')->where('id', $adzone_id)->value('adsense_zone');
 							//print_r($zone_report_id);
 							//print_r("zone_report_id = $zone_report_id");
 							
 							$adsense_id = DB::table('adsense_zones')->where('id', $adzone_id)->value('adsense_id');
-							print_r("adsense_id = $adsense_id");
+							//print_r("adsense_id = $adsense_id");
 							
 							//print_r($adsense_id);
 							$myRpm=DB::table('zone_reports')->where('adunit_id', $adsense_id)->value('rpm');
-							//print_r("rpm is $rpm");
+							// print_r("rpm is");
+       //                      print_r($rpm);
 							$rpm[$key][$rpm_index]->rpm=$myRpm;
 							
 							//$zone_report_id = DB::table('adsenses')->where('id', $adzone_id)->value('adsense_zone');
@@ -229,6 +262,9 @@ class AdzoneController extends Controller
                     $total_cms += $value2->rpm + 0.001;// + $average;
                     $rpm_c[$ipx++] = $value2->rpm + 0.001;// + $average;
                 }
+                //print_r("rpm is");
+                //print_r($rpm);
+
                  // $logging .= "<br />Key done";
                 // endif;
                 // Added Average RPM per ad is in $rpm_c
@@ -245,13 +281,15 @@ class AdzoneController extends Controller
                 $rpm_c = array();
                 // $logging .= "<br />new done ".$value1->type;
             }
-        }catch(Exception $e)
-        {
-            $logging .= "<br />!!! Error updating AdZones - ".$e->getMessage()." !!!";
+//        }
+        // catch(Exception $e)
+        // {
+        //     $logging .= "<br />!!! Error updating AdZones - ".$e->getMessage()." !!!";
 
-            error_log("Error updating AdZones - ".$e->getMessage());
-            return $logging;
-        }
+        //     error_log("Error updating AdZones - ".$e->getMessage());
+        //     return $logging;
+        // }
+
         $logging .= "<br />AdZone Updated";
         return $logging;
     }

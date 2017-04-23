@@ -63,6 +63,37 @@
                 @endif
               </div>
             </div><!-- ./col -->
+			
+			
+			
+			
+            <div class="col-lg-3 col-xs-6">
+              <!-- small box -->
+              <div class="small-box bg-green">
+              @if($mopub_api_key)
+                <div class="inner">
+                  <h3><sup style="font-size: 20px">$</sup>{{$mopub_rpm->last_rpm}}</h3>
+                  <p>MoPub RPM</p>
+                </div>
+                @else
+                <div class="inner">
+                  <h3><sup style="font-size: 20px">Not Configured Yet</sup></h3>
+                  <p>MoPub RPM</p>
+                </div>
+                @endif
+                <div class="icon">
+                  <i class="ion ion-stats-bars"></i>
+                </div>
+                @if ($mopub_api_key)
+                <a href="{{URL::to('refresh')}}" class="small-box-footer">Last Updated: {{$mopub_rpm->updated_at}}<i class="fa fa-refresh"></i></a>
+                @endif
+              </div>
+            </div><!-- ./col -->
+			
+			
+			
+			
+			
             <div class="col-lg-3 col-xs-6">
               <!-- small box -->
 

@@ -15,7 +15,9 @@ use League\Csv\Reader;
 use DateTime;
 use DateInterval;
 use App\AdsenseZone;
+use App\MoPubZone;
 use App\ZoneReports;
+use App\MoPubZoneReports;
 
 class AdInfoController extends Controller
 {
@@ -24,14 +26,26 @@ class AdInfoController extends Controller
 
 	public function refresh()
 	{
+		// $ads_map_update = new AdzoneController(false);
+		// $ads_output = $ads_map_update->WeightageCalculator();
+
+		// return $ads_output;
+
 		$asi = new TimeZoneController;
 		$timezone = $asi->show();
 		date_default_timezone_set($timezone);
 		\Config::set('app.timezone', $timezone);
 
-        
-		// ini_set('memory_limit', '2048M');//memory hack
-		ini_set('max_execution_time', 3000);//execution hack
+	    $mopub_output =AdInfoController::mopub_update();
+	 	//return $mopub_output;
+	//
+	//
+		//ini_set('memory_limit', '4048M');//memory hack
+		//ini_set('memory_limit', '-1');
+		//ini_set('memory_limit', '10G');
+		ini_set('memory_limit', '500M');
+		 
+		ini_set('max_execution_time', 30000);//execution hack
 		session()->forget('access_token');
 		$lsm_config = \App\AdProviderConfig::where('type','=','lsm')->value('config');
 		$arr = unserialize($lsm_config);
@@ -45,15 +59,15 @@ class AdInfoController extends Controller
 		$adsense_config = \App\AdProviderConfig::where('type','=','adsense')->value('config');
 		$lsm_output="";
 		$lsm_output = AdInfoController::lsm_update($arr['email'], $arr['pass']); // set this from YOURWEBSITE/admin
+		//$adsense_output = "test";//AdInfoController::adsense_update($adsense_config); // set this from YOURWEBSITE/admin
 		$adsense_output = AdInfoController::adsense_update($adsense_config); // set this from YOURWEBSITE/admin
 
 		//$ads_output = AdInfoController::adslots_update();
 		$ads_map_update = new AdzoneController(false);
 		$ads_output = $ads_map_update->WeightageCalculator();
 
-		return $lsm_output.$adsense_output.$ads_output;
-		// $mopub_output =AdInfoController::mopub_update();
-		// 	return $mopub_output;
+		return $lsm_output.$adsense_output.$mopub_output.$ads_output;
+	
 	
 	}
 	private function mopub_update() {
@@ -62,8 +76,19 @@ class AdInfoController extends Controller
 		$date = new DateTime();
 		$date->add(DateInterval::createFromDateString('yesterday'));
 		$yesterday = $date->format('Y-m-j');
-		$url="addme" . $yesterday;
-		$output .= "<pre>" . print_r("url: $url", true) . "</pre>";
+		$yesterday = "2017-04-15";
+		$mopub_config = \App\AdProviderConfig::where('type','=','mopub')->value('config');
+		$arr = unserialize($mopub_config);
+		
+		//$a=print_r($arr, true);
+		//$output .= "<pre>" . print_r($arr, true) . "</pre>";
+		$api_key=$arr['api_key'];
+		$report_id=$arr['report_id'];
+		
+		//die();
+		$url="https://app.mopub.com/reports/custom/api/download_report?report_key=$report_id&api_key=$api_key&date=" . $yesterday;
+		//$output .= "<pre>" . print_r("url: $url", true) . "</pre>";
+		//return $output;
 		
 		//die();
 		$str = file_get_contents($url);
@@ -71,23 +96,80 @@ class AdInfoController extends Controller
 		
 		//get the first row, usually the CSV header
 		$headers = $csv->fetchOne();
-
+		
 		//get 25 rows starting from the 11th row
 		$res = $csv->setOffset(1)->fetchAll();
-		$output .= "<pre>" . print_r($headers, true) . "</pre>";
+		//$output .= "<pre>" . print_r($headers, true) . "</pre>";
 		$total_revenue=0;
+		$total_impressions=0;
+		$total_attempts=0;
 		foreach($res as $row) {
 			$type = $row[10];
 			if($type == "Marketplace") {
+				
+				$name=$row[3];
+				$unit_id = $row[4];
+				$app = $row[1];
+				$platform=$row[8];
+				$mopubZone = MoPubZone::firstOrCreate(['name' => $name, 'unit_id'=>$unit_id, 'app' => $app, 'platform' => $platform]);
+				
+				$attempts = $row[20];
+				$impressions = $row[21];
 				$revenue = $row[24];
+				$country = $row[6];
+				$device = $row[7];
 				$total_revenue += $revenue;
-				$output .= "<pre>" . print_r($row, true) . "</pre>";
+				$total_impressions += $impressions;
+				$total_attempts += $attempts;
+				//$output .= "<pre>" . print_r($row, true) . "</pre>";
+				
+				if($impressions == 0) {
+					$unit_rpm=0;
+				}
+				else {
+					$unit_rpm = $revenue/$impressions;
+					$unit_rpm=$unit_rpm*1000;
+				}
+				$ad = MoPubZoneReports::firstOrCreate( ['adunit_id' => $unit_id, 'revenue'=>$revenue, 'rpm' => $unit_rpm, 'adunit_name' => $name, 'date' => $yesterday, 'country'=> $country, 'platform'=> $device, 'app'=>$app ] );
+				
 				
 			}
 		}
+		//$new_impressions = $total_impressions/1000;
+		$rpm = $total_revenue/$total_impressions;
+		$rpm=$rpm*1000;
+		$fill = $total_impressions/$total_attempts;
 		
-		$output .= "<pre>" . print_r("total revenue: $total_revenue", true) . "</pre>";
+		// $output .= "<pre>" . print_r("total revenue: $total_revenue", true) . "</pre>";
+		// $output .= "<pre>" . print_r("total impressions: $total_impressions", true) . "</pre>";
+		// $output .= "<pre>" . print_r("total attempts: $total_attempts", true) . "</pre>";
+		// $output .= "<pre>" . print_r("rpm: $rpm", true) . "</pre>";
+		// $output .= "<pre>" . print_r("fill rate: $fill", true) . "</pre>";
+		$income = $total_revenue;
 		
+		if (isset($rpm))
+		{
+			$output .= "MoPub RPM: ".$rpm."<br />";
+
+			DB::table('ads')->where('id', 3)->update([
+				'last_rpm' => $rpm,
+				'updated_at' => date("Y-m-d H:i:s")
+					]);
+
+				//add income to lsm entry
+				$this::addIncome('mopub',$income);
+				$this::addRpm('mopub',$rpm);
+
+				$output .= "Updated Database with MoPub RPM<br />";
+		}
+		else
+		{
+			$output .= "Unable to Proceed <br />";
+		}
+
+			$output .= "MoPub Processing Done</p><hr>";
+			
+			
 		//$s = str_getcsv(file_get_contents($url));
 		//		$output .= "<pre>" . print_r($res, true) . "</pre>";
 		return $output;
@@ -191,10 +273,14 @@ class AdInfoController extends Controller
 
 			$output .= "LifeStreet Media Processing Done</p><hr>";
 			return $output;
+			
+			
 		}
 
 		private function adsense_update($account_id) 
 		{
+
+			\Log::debug("Updating Adsense : ", [$account_id]);
 
 			$output = ".:: Processing Adsense ::. <br />";
 
@@ -252,64 +338,67 @@ class AdInfoController extends Controller
 			if ($client->getAccessToken()) {
 				try{
 					//$optParams['pageToken'] = $pageToken;
+
+
+
+
 					$reportAdClients = $service->accounts_adclients->listAccountsAdclients($account_id,
 					Array());
+					
+
 					//print_r($reportAdClients['modelData']['items']);
 					$items = $reportAdClients['modelData']['items'];
 					$adClients = array();
-			  
+
 					for($i = 0; $i < count($items); $i++) {
 						$myItem = $items[$i];
 						array_push($adClients, $myItem['id']);
 					}
+
+
 					//print_r($adClients);
 					//echo("<pre>");
 					//$adClients= array_slice($adClients, 0, 2); // return the first five elements
-						
+
 					for($j = 0; $j < count($adClients); $j++) {
 						$myAdClient = $adClients[$j];
 						$result = $service->accounts_adunits->listAccountsAdunits($account_id,
 						$myAdClient, Array());
 						if(array_key_exists('items', $result['modelData'])) {
-				  	  		$items = $result['modelData']['items'];
+									  	  		$items = $result['modelData']['items'];
 							//$items= array_slice($items, 0, 2); // return the first five elements
-							
+
 							for($k = 0; $k < count($items); $k++) {
 								$myItem = $items[$k];
-								//if($myItem['status']  == 'ACTIVE') {
-									//print_r($myItem);
 									$myName=$myItem['name'];
 									$myAdsenseId = $myItem['id'];
-									
-									// Retrieve the flight by the attributes, or instantiate a new instance...
+
 									$ad = AdsenseZone::firstOrCreate(['name' => $myName, 'adsense_id'=>$myAdsenseId]);
-									//$ad.save();
-																				
-									//}
+									unset($ad);
+
 							}
 						}
 						//print_r($result);
 					}
 				
-					   
-					//echo("</pre>");
-					 
-					//$reportAdClients = $service->adclients->list($account_id);
-			
+
 				}
+
+
+
 				catch(Exception $e)
 				{
 					error_log($e->getMessage());
 					print_r($e);
 				}
 			}
-			
-			
-			
-			
-			
-			
-			
+
+
+
+
+
+
+
 			
 			
 			
@@ -321,37 +410,49 @@ class AdInfoController extends Controller
 			if ($client->getAccessToken()) {
 				try{
 		
-					
+
 					$optParams = array(
 						'metric' => array('AD_REQUESTS_RPM','EARNINGS'),
 						'dimension'=>array('AD_UNIT_ID', 'AD_UNIT_NAME'),
 					);
 					//$date = "2016-12-13";
 					$date = date('Y-m-d',strtotime("-1 days"));
-					
+
 					$report = $service->accounts_reports->generate($account_id, $date, $date, $optParams);
-			
+
 					if (isset($report['rows']) && array_key_exists(0, $report['rows'])) {
-						foreach ($report['rows'] as $key => $value) {
+						//foreach ($report['rows'] as $key => $value) {
+
+							//print_r(count($report['rows']));
+							//$output .= "<pre> number of rows:" . print_r(count($report['rows']), true) . "</pre>";
 							
+							for($i=0; $i < count($report['rows']); $i++) {
+								$value=$report['rows'][$i];
+								\Log::debug("Ad Value : ", [$value]);
+								
+								$ad = ZoneReports::firstOrCreate( ['adunit_id' => $value[0], 'revenue'=>$value[3], 'rpm' => $value[2], 'adunit_name' => $value[1], 'date' => $date ] );
+								
+								//$output .= "<pre> number of rows:" . print_r(($ad), true) . "</pre>";
+								\Log::debug("Ad Data : ", [$ad]);
+								unset($ad);
+								unset($value);
+
+							}
 							
-							$ad = ZoneReports::firstOrCreate( ['adunit_id' => $value[0], 'revenue'=>$value[3], 'rpm' => $value[2], 'adunit_name' => $value[1], 'date' => $date ] );
-						}
 							//$this::addgeographic($value[0],$value[2], $value[1], 'adsense');
-					}
+					//}
+	//
+	//
+	//
+	// 				$reportAdClients = $service->adclients->list($account_id);
 			
-					//print_r($report);
-					   
-					echo("</pre>");
-					 
-					//$reportAdClients = $service->adclients->list($account_id);
-			
-				}
+				} }
 				catch(Exception $e)
 				{
 					error_log($e->getMessage());
 					print_r($e);
 				}
+				
 			}
 			
 			

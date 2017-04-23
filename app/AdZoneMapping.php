@@ -18,7 +18,12 @@ class AdZoneMapping extends Model
 
         public function getlsm()
         {
-        	return $this->hasOne('App\LSM', 'id', 'add_id');
+            return $this->hasOne('App\LSM', 'id', 'add_id');
+        }
+
+        public function getmopub()
+        {
+            return $this->hasOne('App\MoPub', 'id', 'add_id');
         }
 
         public function getother()

@@ -47,6 +47,7 @@ class AdminController extends Controller
 		}
 		$lsm_rpm = DB::table('ads')->where('id', 2)->first();
 		$adsense_rpm = DB::table('ads')->where('id',1)->first();
+		$mopub_rpm = DB::table('ads')->where('id', 3)->first();
 		$lsm_email = $lsm_password = "";
 		//Get Configrations
 		$configs = \App\AdProviderConfig::where('type','=','lsm')->where('user_id','=',\Auth::user()->id)->value('config');
@@ -66,8 +67,8 @@ class AdminController extends Controller
 		}
 		// $timezone_set = TimeZoneController::isTimeZoneSet();
 		$custom_add  = \App\CustomAdd::orderBy('rpm', 'desc')->take(10)->get();
-		$mopub_api_key="ok";
-		$mopub_report_id="ok id";
+		$mopub_api_key="MoPub API Key";
+		$mopub_report_id="MoPub Report ID";
 		
 		$configs = \App\AdProviderConfig::where('type','=','mopub')->where('user_id','=',\Auth::user()->id)->value('config');
 		if ($configs)
@@ -87,6 +88,7 @@ class AdminController extends Controller
 			'lsm_rpm'=>$lsm_rpm, 
 			'adsense_rpm'=>$adsense_rpm,
 			'custom_add' => $custom_add,
+			'mopub_rpm' => $mopub_rpm,
 			// 'timezone_set' => $timezone_set,
 			'page'=>'home']);
 	}

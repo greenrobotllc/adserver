@@ -40,6 +40,18 @@
             </tr>
         @endforeach
 
+
+        @foreach($mopub_ads as $ad)
+            <tr>
+              <td>{{$ad->getmopub->id}}</td>
+              <td>{{$ad->getmopub->name}}</td>
+              <td>MoPub</td>
+              <td>{{$ad->weight*100}}%</td>
+              <td>${{$ad->rpm}}</td>
+              <td>{{$ad->getadzone->name}}</td>
+            </tr>
+        @endforeach
+
         @foreach($other_ads as $ad)
             <tr>
               <td>{{$ad->getother->id}}</td>

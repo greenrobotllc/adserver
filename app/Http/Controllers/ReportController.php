@@ -68,16 +68,39 @@ class ReportController extends Controller
         $adsense_rpm = DB::table('ads')->where('id',1)->first();
 
         $adsense_ads = AdZoneMapping::where('type','adsense')->get();
-		foreach($adsense_ads as $key=>$ad) {
-			$adzone_id=$ad->adzone;
-			$zone_report_id = DB::table('adsenses')->where('id', $adzone_id)->value('adsense_zone');
-			//print_r($zone_report_id);
-			$adsense_id = DB::table('adsense_zones')->where('id', $zone_report_id)->value('adsense_id');
-			//print_r($adsense_id);
-			$rpm=DB::table('zone_reports')->where('adunit_id', $adsense_id)->value('rpm');
-			$adsense_ads[$key]->rpm=$rpm;
-			//print_r($rpm);
-		}
+        foreach($adsense_ads as $key=>$ad) {
+            $adzone_id=$ad->adzone;
+            $zone_report_id = DB::table('adsenses')->where('id', $adzone_id)->value('adsense_zone');
+            //print_r($zone_report_id);
+            $adsense_id = DB::table('adsense_zones')->where('id', $zone_report_id)->value('adsense_id');
+            //print_r($adsense_id);
+            $rpm=DB::table('zone_reports')->where('adunit_id', $adsense_id)->value('rpm');
+            $adsense_ads[$key]->rpm=$rpm;
+            //print_r($rpm);
+        }
+
+
+
+
+        $mopub_ads = AdZoneMapping::where('type','mopub')->get();
+        //print_r("mopub ads: " . $mopub_ads . "\n");
+
+        foreach($mopub_ads as $key=>$ad) {
+
+            //$adzone_id=$ad->adzone;
+            $adzone_id=$ad->add_id;
+            //print_r("adzone_id: " . $adzone_id . "\n");
+            $zone_report_id = DB::table('mopubs')->where('id', $adzone_id)->value('mopub_zone');
+            //print_r("zone report id: " . $zone_report_id);
+            $mopub_id = DB::table('mopub_zones')->where('id', $zone_report_id)->value('unit_id');
+            //print_r("mopub_id:" . $mopub_id);
+            $rpm=DB::table('mopub_zone_reports')->where('adunit_id', $mopub_id)->value('rpm');
+            $mopub_ads[$key]->rpm=$rpm;
+            //print_r($rpm);
+        }
+
+
+
 		//print_r($adsense_ads);
         $lsm_ads = AdZoneMapping::where('type','lsm')->get();
         $other_ads = AdZoneMapping::where('type','other')->get();
@@ -143,6 +166,7 @@ class ReportController extends Controller
             'adsense_rpm'=>$adsense_rpm,
             'adsense_ads'=>$adsense_ads,
             'lsm_ads'=>$lsm_ads,
+            'mopub_ads'=>$mopub_ads,
             'other_ads'=>$other_ads,
             'lsm_rpm_week'=>$lsm_rpm_week,
             'adsense_rpm_week'=>$adsense_rpm_week,

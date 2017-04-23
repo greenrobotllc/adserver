@@ -56,6 +56,12 @@
                 <!-- <small class="label pull-right bg-yellow">99+</small> -->
               </a>
             </li>
+            <li {{ (strcmp($page,'mopub')==0)? 'class=active':''}}>
+              <a href="{{URL::to('mopub')}}">
+                <i class="fa fa-code"></i> <span>MoPub Network Code</span>
+                <!-- <small class="label pull-right bg-yellow">99+</small> -->
+              </a>
+            </li>
 <!--             <li {{ (strcmp($page,'lsm-ad-compare')==0)? 'class=active':''}}>
               <a href="{{URL::to('lsm-ad-compare')}}">
                 <i class="fa fa-balance-scale"></i> <span>LSM Ad Compare</span>

@@ -13,6 +13,7 @@ use View;
 use App\Adsense;
 use App\CustomAdd;
 use App\LSM;
+use App\MoPub;
 use App\DailyViews;
 use Exception;
 
@@ -30,6 +31,9 @@ class DisplayAddController extends Controller
             switch ($data->type) {
                 case 'adsense':
                     $code= Adsense::where('id',$data->add_id)->first()->adcode;
+                    break;
+                case 'mopub':
+                    $code= MoPub::where('id',$data->add_id)->first()->adcode;
                     break;
                 case 'lsm':
                     $query = LSM::where('id',$data->add_id)->first();
@@ -58,6 +62,63 @@ class DisplayAddController extends Controller
         return $response;
     }
 
+
+
+
+/**
+     * Display a listing of the resource for native mobile ads
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexmobile($ad_slot_id)
+    {
+        try{
+            //$data = DB::table('ad_zone_mappings')->select('add_id', 'weight', 'type')->where('adzone', $ad_slot_id)->orderBy(DB::raw('-LOG(RAND())/weight'), 'asc')->take(1)->first();
+            $myData = DB::table('ad_zone_mappings')->select('weight', 'type')->where('adzone', $ad_slot_id)->get();
+            //print_r($myData);
+            return response()->json(
+                $myData
+            );
+
+            // //return;
+            // switch ($data->type) {
+            //     case 'adsense':
+            //         $code= Adsense::where('id',$data->add_id)->first()->adcode;
+            //         break;
+            //     case 'mopub':
+            //         $code= MoPub::where('id',$data->add_id)->first()->adcode;
+            //         break;
+            //     case 'lsm':
+            //         $query = LSM::where('id',$data->add_id)->first();
+            //         $code = $query->adhead . $query->adcode;
+            //         break;
+            //     default:
+            //         $code = CustomAdd::where('id',$data->add_id)->first()->adcode;
+            //         break;
+            // }
+            // //update views
+            // $this::views($data->add_id,$data->type);
+
+            // //reporting
+            // $this::incrementDaily($data->add_id, $data->type, $ad_slot_id);
+
+            // $codearray = explode("\n", addslashes($code));
+            // $contents = View::make('uads',['add_code'=>$codearray]);
+        }catch(Exception $e)
+        {
+            $contents = "";
+            echo $e->getMessage();
+        }
+
+        $response = Response::make($contents, 200);
+        $response->header('Content-Type', 'application/javascript');
+        return $response;
+    }
+
+
+
+
+
     private function views($id, $type)
     {
         switch ($type) {
@@ -66,6 +127,9 @@ class DisplayAddController extends Controller
                 break;
             case 'lsm':
                 $code = LSM::where('id',$id)->first();
+                break;
+            case 'mopub':
+                $code = MoPub::where('id',$id)->first();
                 break;
             default:
                 $code = CustomAdd::where('id',$id)->first();

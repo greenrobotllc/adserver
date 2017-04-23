@@ -30,7 +30,7 @@ class AdsTableSeeder extends Seeder
       DB::table('ads')->insert([
         'user_id' => 1,
         'ad_provider_id' => 3,
-        'name' => 'test 1',
+        'name' => 'mopub 1',
         'active' => 1,
         'created_at' => date("Y-m-d H:i:s"),
         'updated_at' => date("Y-m-d H:i:s")

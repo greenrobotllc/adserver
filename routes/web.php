@@ -54,6 +54,13 @@ Route::group(['middleware' => 'timezone_check'], function () {
 	Route::put('adsense','AdsenseController@edit');
 
 
+	//MoPub
+	Route::get('mopub','MoPubController@index');
+	Route::post('mopub','MoPubController@store');
+	Route::delete('mopub',"MoPubController@destroy");
+	Route::put('mopub','MoPubController@edit');
+	Route::post('mopubeditview','MoPubController@show');
+
 
 	//LSM
 	Route::get('lsm','LSMController@index');
@@ -67,6 +74,9 @@ Route::group(['middleware' => 'timezone_check'], function () {
 
 	//Display Add
 	Route::get('getad/{id}',"DisplayAddController@index")->where('id', '[0-9]+');
+
+	//Display native mobile ad
+	Route::get('getadmobile/{id}',"DisplayAddController@indexmobile")->where('id', '[0-9]+');
 
 	//GoogleApiJSONEditor
 	Route::get('googleapiconsole','GoogleApiConsoleController@index');
