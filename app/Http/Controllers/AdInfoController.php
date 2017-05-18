@@ -84,7 +84,9 @@ class AdInfoController extends Controller
 		//$output .= "<pre>" . print_r($arr, true) . "</pre>";
 		$api_key=$arr['api_key'];
 		$report_id=$arr['report_id'];
-		
+		if(!$api_key || !$report_id) {
+			return "MoPub not setup; disabling it.<br />";
+		}
 		//die();
 		$url="https://app.mopub.com/reports/custom/api/download_report?report_key=$report_id&api_key=$api_key&date=" . $yesterday;
 		//$output .= "<pre>" . print_r("url: $url", true) . "</pre>";
