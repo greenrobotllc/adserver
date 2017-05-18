@@ -76,7 +76,6 @@ class AdInfoController extends Controller
 		$date = new DateTime();
 		$date->add(DateInterval::createFromDateString('yesterday'));
 		$yesterday = $date->format('Y-m-j');
-		$yesterday = "2017-04-15";
 		$mopub_config = \App\AdProviderConfig::where('type','=','mopub')->value('config');
 		$arr = unserialize($mopub_config);
 		
