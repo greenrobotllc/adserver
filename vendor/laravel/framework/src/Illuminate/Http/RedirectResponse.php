@@ -6,6 +6,7 @@ use BadMethodCallException;
 use Illuminate\Support\Str;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\ViewErrorBag;
+use Illuminate\Support\Traits\Macroable;
 use Illuminate\Session\Store as SessionStore;
 use Illuminate\Contracts\Support\MessageProvider;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
@@ -13,7 +14,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse as BaseRedirectResponse;
 
 class RedirectResponse extends BaseRedirectResponse
 {
-    use ResponseTrait;
+    use ResponseTrait, Macroable {
+        Macroable::__call as macroCall;
+    }
 
     /**
      * The request instance.
@@ -70,9 +73,9 @@ class RedirectResponse extends BaseRedirectResponse
      */
     public function withInput(array $input = null)
     {
-        $input = $input ?: $this->request->input();
-
-        $this->session->flashInput($this->removeFilesFromInput($input));
+        $this->session->flashInput($this->removeFilesFromInput(
+            ! is_null($input) ? $input : $this->request->input()
+        ));
 
         return $this;
     }
@@ -152,6 +155,16 @@ class RedirectResponse extends BaseRedirectResponse
     }
 
     /**
+     * Get the original response content.
+     *
+     * @return null
+     */
+    public function getOriginalContent()
+    {
+        //
+    }
+
+    /**
      * Get the request instance.
      *
      * @return \Illuminate\Http\Request|null
@@ -204,10 +217,16 @@ class RedirectResponse extends BaseRedirectResponse
      */
     public function __call($method, $parameters)
     {
+        if (static::hasMacro($method)) {
+            return $this->macroCall($method, $parameters);
+        }
+
         if (Str::startsWith($method, 'with')) {
             return $this->with(Str::snake(substr($method, 4)), $parameters[0]);
         }
 
-        throw new BadMethodCallException("Method [$method] does not exist on Redirect.");
+        throw new BadMethodCallException(
+            "Method [$method] does not exist on Redirect."
+        );
     }
 }

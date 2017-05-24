@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\HttpKernel\Tests\Controller;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver\RequestAttributeValueResolver;
@@ -23,7 +24,7 @@ use Symfony\Component\HttpKernel\Tests\Fixtures\Controller\NullableController;
 use Symfony\Component\HttpKernel\Tests\Fixtures\Controller\VariadicController;
 use Symfony\Component\HttpFoundation\Request;
 
-class ArgumentResolverTest extends \PHPUnit_Framework_TestCase
+class ArgumentResolverTest extends TestCase
 {
     /** @var ArgumentResolver */
     private static $resolver;
@@ -190,7 +191,7 @@ class ArgumentResolverTest extends \PHPUnit_Framework_TestCase
     public function testGetArgumentWithoutArray()
     {
         $factory = new ArgumentMetadataFactory();
-        $valueResolver = $this->getMock(ArgumentValueResolverInterface::class);
+        $valueResolver = $this->getMockBuilder(ArgumentValueResolverInterface::class)->getMock();
         $resolver = new ArgumentResolver($factory, array($valueResolver));
 
         $valueResolver->expects($this->any())->method('supports')->willReturn(true);
@@ -201,6 +202,17 @@ class ArgumentResolverTest extends \PHPUnit_Framework_TestCase
         $request->attributes->set('bar', 'foo');
         $controller = array($this, 'controllerWithFooAndDefaultBar');
         $resolver->getArguments($request, $controller);
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testIfExceptionIsThrownWhenMissingAnArgument()
+    {
+        $request = Request::create('/');
+        $controller = array($this, 'controllerWithFoo');
+
+        self::$resolver->getArguments($request, $controller);
     }
 
     /**

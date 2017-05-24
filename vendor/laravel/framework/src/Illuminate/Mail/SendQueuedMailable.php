@@ -12,27 +12,53 @@ class SendQueuedMailable
      *
      * @var Mailable
      */
-    protected $mailable;
+    public $mailable;
+
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries;
+
+    /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout;
 
     /**
      * Create a new job instance.
      *
-     * @param  MailableContract  $mailable
+     * @param  \Illuminate\Contracts\Mail\Mailable  $mailable
      * @return void
      */
     public function __construct(MailableContract $mailable)
     {
         $this->mailable = $mailable;
+        $this->tries = property_exists($mailable, 'tries') ? $mailable->tries : null;
+        $this->timeout = property_exists($mailable, 'timeout') ? $mailable->timeout : null;
     }
 
     /**
      * Handle the queued job.
      *
-     * @param  MailerContract  $mailer
+     * @param  \Illuminate\Contracts\Mail\Mailer  $mailer
      * @return void
      */
     public function handle(MailerContract $mailer)
     {
-        $mailer->send($this->mailable);
+        $this->mailable->send($mailer);
+    }
+
+    /**
+     * Get the display name for the queued job.
+     *
+     * @return string
+     */
+    public function displayName()
+    {
+        return get_class($this->mailable);
     }
 }

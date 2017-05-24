@@ -2,8 +2,6 @@
 
 namespace Illuminate\Contracts\Routing;
 
-use Closure;
-
 interface Registrar
 {
     /**
@@ -11,7 +9,7 @@ interface Registrar
      *
      * @param  string  $uri
      * @param  \Closure|array|string  $action
-     * @return void
+     * @return \Illuminate\Routing\Route
      */
     public function get($uri, $action);
 
@@ -20,7 +18,7 @@ interface Registrar
      *
      * @param  string  $uri
      * @param  \Closure|array|string  $action
-     * @return void
+     * @return \Illuminate\Routing\Route
      */
     public function post($uri, $action);
 
@@ -29,7 +27,7 @@ interface Registrar
      *
      * @param  string  $uri
      * @param  \Closure|array|string  $action
-     * @return void
+     * @return \Illuminate\Routing\Route
      */
     public function put($uri, $action);
 
@@ -38,7 +36,7 @@ interface Registrar
      *
      * @param  string  $uri
      * @param  \Closure|array|string  $action
-     * @return void
+     * @return \Illuminate\Routing\Route
      */
     public function delete($uri, $action);
 
@@ -47,7 +45,7 @@ interface Registrar
      *
      * @param  string  $uri
      * @param  \Closure|array|string  $action
-     * @return void
+     * @return \Illuminate\Routing\Route
      */
     public function patch($uri, $action);
 
@@ -56,7 +54,7 @@ interface Registrar
      *
      * @param  string  $uri
      * @param  \Closure|array|string  $action
-     * @return void
+     * @return \Illuminate\Routing\Route
      */
     public function options($uri, $action);
 
@@ -66,7 +64,7 @@ interface Registrar
      * @param  array|string  $methods
      * @param  string  $uri
      * @param  \Closure|array|string  $action
-     * @return void
+     * @return \Illuminate\Routing\Route
      */
     public function match($methods, $uri, $action);
 
@@ -83,11 +81,11 @@ interface Registrar
     /**
      * Create a route group with shared attributes.
      *
-     * @param  array     $attributes
-     * @param  \Closure  $callback
+     * @param  array  $attributes
+     * @param  \Closure|string  $routes
      * @return void
      */
-    public function group(array $attributes, Closure $callback);
+    public function group(array $attributes, $routes);
 
     /**
      * Substitute the route bindings onto the route.

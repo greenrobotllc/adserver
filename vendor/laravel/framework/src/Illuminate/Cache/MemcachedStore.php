@@ -4,8 +4,8 @@ namespace Illuminate\Cache;
 
 use Memcached;
 use Carbon\Carbon;
-use Illuminate\Contracts\Cache\Store;
 use ReflectionMethod;
+use Illuminate\Contracts\Cache\Store;
 
 class MemcachedStore extends TaggableStore implements Store
 {
@@ -49,7 +49,7 @@ class MemcachedStore extends TaggableStore implements Store
     /**
      * Retrieve an item from the cache by key.
      *
-     * @param  string|array  $key
+     * @param  string  $key
      * @return mixed
      */
     public function get($key)
@@ -184,22 +184,22 @@ class MemcachedStore extends TaggableStore implements Store
     /**
      * Remove all items from the cache.
      *
-     * @return void
+     * @return bool
      */
     public function flush()
     {
-        $this->memcached->flush();
+        return $this->memcached->flush();
     }
 
     /**
      * Get the UNIX timestamp for the given number of minutes.
      *
-     * @parma  int  $minutes
+     * @param  int  $minutes
      * @return int
      */
     protected function toTimestamp($minutes)
     {
-        return $minutes > 0 ? Carbon::now()->addMinutes($minutes)->getTimestamp() : 0;
+        return $minutes > 0 ? Carbon::now()->addSeconds($minutes * 60)->getTimestamp() : 0;
     }
 
     /**

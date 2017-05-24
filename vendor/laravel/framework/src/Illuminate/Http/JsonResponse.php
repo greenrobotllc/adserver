@@ -42,7 +42,7 @@ class JsonResponse extends BaseJsonResponse
      * Get the json_decoded data from the response.
      *
      * @param  bool  $assoc
-     * @param  int   $depth
+     * @param  int  $depth
      * @return mixed
      */
     public function getData($assoc = false, $depth = 512)
@@ -55,6 +55,8 @@ class JsonResponse extends BaseJsonResponse
      */
     public function setData($data = [])
     {
+        $this->original = $data;
+
         if ($data instanceof Arrayable) {
             $this->data = json_encode($data->toArray(), $this->encodingOptions);
         } elseif ($data instanceof Jsonable) {
@@ -65,7 +67,7 @@ class JsonResponse extends BaseJsonResponse
             $this->data = json_encode($data, $this->encodingOptions);
         }
 
-        if (JSON_ERROR_NONE !== json_last_error()) {
+        if (! $this->hasValidJson(json_last_error())) {
             throw new InvalidArgumentException(json_last_error_msg());
         }
 
@@ -73,33 +75,36 @@ class JsonResponse extends BaseJsonResponse
     }
 
     /**
-     * Get the JSON encoding options.
+     * Determine if an error occured during JSON encoding.
      *
-     * @return int
+     * @param  int  $jsonError
+     * @return bool
      */
-    public function getJsonOptions()
+    protected function hasValidJson($jsonError)
     {
-        return $this->getEncodingOptions();
+        return $jsonError === JSON_ERROR_NONE ||
+                ($jsonError === JSON_ERROR_UNSUPPORTED_TYPE &&
+                $this->hasEncodingOption(JSON_PARTIAL_OUTPUT_ON_ERROR));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setEncodingOptions($encodingOptions)
-    {
-        return $this->setJsonOptions($encodingOptions);
-    }
-
-    /**
-     * Set the JSON encoding options.
-     *
-     * @param  int  $options
-     * @return mixed
-     */
-    public function setJsonOptions($options)
+    public function setEncodingOptions($options)
     {
         $this->encodingOptions = (int) $options;
 
         return $this->setData($this->getData());
+    }
+
+    /**
+     * Determine if a JSON encoding option is set.
+     *
+     * @param  int  $option
+     * @return bool
+     */
+    public function hasEncodingOption($option)
+    {
+        return (bool) ($this->encodingOptions & $option);
     }
 }

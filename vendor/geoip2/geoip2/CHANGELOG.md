@@ -1,6 +1,17 @@
 CHANGELOG
 =========
 
+2.5.0 (2017-05-08)
+------------------
+
+* Added support for GeoLite2 ASN database.
+
+2.4.5 (2017-01-31)
+------------------
+
+* Additional error checking on the data returned from `MaxMind\Db\Reader`
+  was added to help detect corrupt databases. GitHub #83.
+
 2.4.4 (2016-10-11)
 ------------------
 

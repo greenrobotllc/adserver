@@ -65,6 +65,20 @@ class MessageBag implements Arrayable, Countable, Jsonable, JsonSerializable, Me
     }
 
     /**
+     * Determine if a key and message combination already exists.
+     *
+     * @param  string  $key
+     * @param  string  $message
+     * @return bool
+     */
+    protected function isUnique($key, $message)
+    {
+        $messages = (array) $this->messages;
+
+        return ! isset($messages[$key]) || ! in_array($message, $messages[$key]);
+    }
+
+    /**
      * Merge a new array of messages into the bag.
      *
      * @param  \Illuminate\Contracts\Support\MessageProvider|array  $messages
@@ -79,20 +93,6 @@ class MessageBag implements Arrayable, Countable, Jsonable, JsonSerializable, Me
         $this->messages = array_merge_recursive($this->messages, $messages);
 
         return $this;
-    }
-
-    /**
-     * Determine if a key and message combination already exists.
-     *
-     * @param  string  $key
-     * @param  string  $message
-     * @return bool
-     */
-    protected function isUnique($key, $message)
-    {
-        $messages = (array) $this->messages;
-
-        return ! isset($messages[$key]) || ! in_array($message, $messages[$key]);
     }
 
     /**
@@ -121,11 +121,13 @@ class MessageBag implements Arrayable, Countable, Jsonable, JsonSerializable, Me
     /**
      * Determine if messages exist for any of the given keys.
      *
-     * @param  array  $keys
+     * @param  array|string  $keys
      * @return bool
      */
     public function hasAny($keys = [])
     {
+        $keys = is_array($keys) ? $keys : func_get_args();
+
         foreach ($keys as $key) {
             if ($this->has($key)) {
                 return true;
@@ -146,7 +148,9 @@ class MessageBag implements Arrayable, Countable, Jsonable, JsonSerializable, Me
     {
         $messages = is_null($key) ? $this->all($format) : $this->get($key, $format);
 
-        return count($messages) > 0 ? $messages[0] : '';
+        $firstMessage = Arr::first($messages, null, '');
+
+        return is_array($firstMessage) ? Arr::first($firstMessage) : $firstMessage;
     }
 
     /**
@@ -234,18 +238,13 @@ class MessageBag implements Arrayable, Countable, Jsonable, JsonSerializable, Me
      */
     protected function transform($messages, $format, $messageKey)
     {
-        $messages = (array) $messages;
-
-        // We will simply spin through the given messages and transform each one
-        // replacing the :message place holder with the real message allowing
-        // the messages to be easily formatted to each developer's desires.
-        $replace = [':message', ':key'];
-
-        foreach ($messages as &$message) {
-            $message = str_replace($replace, [$message, $messageKey], $format);
-        }
-
-        return $messages;
+        return collect((array) $messages)
+            ->map(function ($message) use ($format, $messageKey) {
+                // We will simply spin through the given messages and transform each one
+                // replacing the :message place holder with the real message allowing
+                // the messages to be easily formatted to each developer's desires.
+                return str_replace([':message', ':key'], [$message, $messageKey], $format);
+            })->all();
     }
 
     /**

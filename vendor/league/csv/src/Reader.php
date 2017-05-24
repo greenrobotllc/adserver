@@ -4,7 +4,7 @@
 *
 * @license http://opensource.org/licenses/MIT
 * @link https://github.com/thephpleague/csv/
-* @version 8.1.1
+* @version 8.2.0
 * @package League.csv
 *
 * For the full copyright and license information, please view the LICENSE
@@ -17,7 +17,6 @@ use InvalidArgumentException;
 use Iterator;
 use League\Csv\Modifier\MapIterator;
 use LimitIterator;
-use SplFileObject;
 
 /**
  *  A class to manage extracting and filtering a CSV
@@ -44,7 +43,7 @@ class Reader extends AbstractCsv
      */
     public function fetchAll(callable $callable = null)
     {
-        return iterator_to_array($this->fetch($callable), false);
+        return iterator_to_array($this->applyCallable($this->getQueryIterator(), $callable), false);
     }
 
     /**
@@ -89,7 +88,7 @@ class Reader extends AbstractCsv
     public function each(callable $callable)
     {
         $index = 0;
-        $iterator = $this->fetch();
+        $iterator = $this->getQueryIterator();
         $iterator->rewind();
         while ($iterator->valid() && true === call_user_func(
             $callable,
@@ -117,7 +116,7 @@ class Reader extends AbstractCsv
     {
         $this->setOffset($offset);
         $this->setLimit(1);
-        $iterator = $this->fetch();
+        $iterator = $this->getQueryIterator();
         $iterator->rewind();
 
         return (array) $iterator->current();
@@ -148,14 +147,17 @@ class Reader extends AbstractCsv
         };
 
         $this->addFilter($filter_column);
-        $iterator = $this->fetch($select_column);
-        $iterator = $this->applyCallable($iterator, $callable);
 
-        return $iterator;
+        return $this->applyCallable(new MapIterator($this->getQueryIterator(), $select_column), $callable);
     }
 
     /**
      * Retrieve CSV data as pairs
+     *
+     * DEPRECATION WARNING! This method will be removed in the next major point release
+     *
+     * @deprecated deprecated since version 8.2
+     * @see Reader::fetchPairs
      *
      * Fetches an associative array of all rows as key-value pairs (first
      * column is the key, second column is the value).
@@ -207,21 +209,7 @@ class Reader extends AbstractCsv
         };
 
         $this->addFilter($filter_pairs);
-        $iterator = $this->fetch($select_pairs);
-        $iterator = $this->applyCallable($iterator, $callable);
-
-        return $this->generatePairs($iterator);
-    }
-
-    /**
-     * Return the key/pairs as a PHP generator
-     *
-     * @param Iterator $iterator
-     *
-     * @return Generator
-     */
-    protected function generatePairs(Iterator $iterator)
-    {
+        $iterator = $this->applyCallable(new MapIterator($this->getQueryIterator(), $select_pairs), $callable);
         foreach ($iterator as $row) {
             yield $row[0] => $row[1];
         }
@@ -254,10 +242,7 @@ class Reader extends AbstractCsv
             return array_combine($keys, $row);
         };
 
-        $iterator = $this->fetch($combine_array);
-        $iterator = $this->applyCallable($iterator, $callable);
-
-        return $iterator;
+        return $this->applyCallable(new MapIterator($this->getQueryIterator(), $combine_array), $callable);
     }
 
     /**
@@ -332,19 +317,23 @@ class Reader extends AbstractCsv
     protected function getRow($offset)
     {
         $fileObj = $this->getIterator();
-        $fileObj->setFlags(SplFileObject::READ_AHEAD | SplFileObject::SKIP_EMPTY);
         $iterator = new LimitIterator($fileObj, $offset, 1);
         $iterator->rewind();
-        $line = $iterator->current();
-
-        if (empty($line)) {
+        $row = $iterator->current();
+        if (empty($row)) {
             throw new InvalidArgumentException('the specified row does not exist or is empty');
         }
 
-        if (0 === $offset && $this->isBomStrippable()) {
-            $line = mb_substr($line, mb_strlen($this->getInputBOM()));
+        if (0 !== $offset || !$this->isBomStrippable()) {
+            return $row;
         }
 
-        return str_getcsv($line, $this->delimiter, $this->enclosure, $this->escape);
+        $bom_length = mb_strlen($this->getInputBOM());
+        $row[0] = mb_substr($row[0], $bom_length);
+        if ($this->enclosure == mb_substr($row[0], 0, 1) && $this->enclosure == mb_substr($row[0], -1, 1)) {
+            $row[0] = mb_substr($row[0], 1, -1);
+        }
+
+        return $row;
     }
 }

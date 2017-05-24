@@ -4,7 +4,7 @@
 *
 * @license http://opensource.org/licenses/MIT
 * @link https://github.com/thephpleague/csv/
-* @version 8.1.1
+* @version 8.2.0
 * @package League.csv
 *
 * For the full copyright and license information, please view the LICENSE
@@ -19,6 +19,7 @@ use League\Csv\Config\Controls;
 use League\Csv\Config\Output;
 use League\Csv\Modifier\QueryFilter;
 use League\Csv\Modifier\StreamFilter;
+use League\Csv\Modifier\StreamIterator;
 use SplFileInfo;
 use SplFileObject;
 use SplTempFileObject;
@@ -66,11 +67,11 @@ abstract class AbstractCsv implements JsonSerializable, IteratorAggregate
     const BOM_UTF32_LE = "\xFF\xFE\x00\x00";
 
     /**
-     * The constructor path
+     * The path
      *
-     * can be a SplFileInfo object or the string path to a file
+     * can be a StreamIterator object, a SplFileObject object or the string path to a file
      *
-     * @var SplFileObject|string
+     * @var StreamIterator|SplFileObject|string
      */
     protected $path;
 
@@ -88,8 +89,8 @@ abstract class AbstractCsv implements JsonSerializable, IteratorAggregate
      * an object that implements the `__toString` method
      * a path to a file
      *
-     * @param SplFileObject|string $path      The file path
-     * @param string               $open_mode The file open mode flag
+     * @param StreamIterator|SplFileObject|string $path      The file path
+     * @param string                              $open_mode The file open mode flag
      */
     protected function __construct($path, $open_mode = 'r+')
     {
@@ -127,12 +128,24 @@ abstract class AbstractCsv implements JsonSerializable, IteratorAggregate
     }
 
     /**
+     * Return a new {@link AbstractCsv} from a PHP resource stream or a StreamIterator
+     *
+     * @param resource $stream
+     *
+     * @return static
+     */
+    public static function createFromStream($stream)
+    {
+        return new static(new StreamIterator($stream));
+    }
+
+    /**
      * Return a new {@link AbstractCsv} from a string
      *
      * The string must be an object that implements the `__toString` method,
      * or a string
      *
-     * @param string|object $str the string
+     * @param string $str the string
      *
      * @return static
      */
@@ -162,7 +175,7 @@ abstract class AbstractCsv implements JsonSerializable, IteratorAggregate
     }
 
     /**
-     * Return a new {@link AbstractCsv} from a string
+     * Return a new {@link AbstractCsv} from a file path
      *
      * @param mixed  $path      file path
      * @param string $open_mode the file open mode flag
@@ -231,19 +244,30 @@ abstract class AbstractCsv implements JsonSerializable, IteratorAggregate
     }
 
     /**
-     * Returns the inner SplFileObject
+     * Returns the inner CSV Document Iterator object
      *
-     * @return SplFileObject
+     * @return StreamIterator|SplFileObject
      */
     public function getIterator()
     {
-        $iterator = $this->path;
-        if (!$iterator instanceof SplFileObject) {
-            $iterator = new SplFileObject($this->getStreamFilterPath(), $this->open_mode);
-        }
+        $iterator = $this->setIterator();
         $iterator->setCsvControl($this->delimiter, $this->enclosure, $this->escape);
         $iterator->setFlags(SplFileObject::READ_CSV | SplFileObject::READ_AHEAD | SplFileObject::SKIP_EMPTY);
 
         return $iterator;
+    }
+
+    /**
+     * Set the Inner Iterator
+     *
+     * @return StreamIterator|SplFileObject
+     */
+    protected function setIterator()
+    {
+        if ($this->path instanceof StreamIterator || $this->path instanceof SplFileObject) {
+            return $this->path;
+        }
+
+        return new SplFileObject($this->getStreamFilterPath(), $this->open_mode);
     }
 }

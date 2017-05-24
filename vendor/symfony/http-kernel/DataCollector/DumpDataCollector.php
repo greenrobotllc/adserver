@@ -98,7 +98,7 @@ class DumpDataCollector extends DataCollector implements DataDumperInterface
                         $info = $template->getDebugInfo();
                         if (isset($info[$trace[$i - 1]['line']])) {
                             $line = $info[$trace[$i - 1]['line']];
-                            $file = method_exists($template, 'getSourceContext') ? $template->getSourceContext()->getPath() : false;
+                            $file = method_exists($template, 'getSourceContext') ? $template->getSourceContext()->getPath() : null;
 
                             if ($src) {
                                 $src = explode("\n", $src);
@@ -152,6 +152,7 @@ class DumpDataCollector extends DataCollector implements DataDumperInterface
         ) {
             if ($response->headers->has('Content-Type') && false !== strpos($response->headers->get('Content-Type'), 'html')) {
                 $this->dumper = new HtmlDumper('php://output', $this->charset);
+                $this->dumper->setDisplayOptions(array('fileLinkFormat' => $this->fileLinkFormat));
             } else {
                 $this->dumper = new CliDumper('php://output', $this->charset);
             }
@@ -201,6 +202,7 @@ class DumpDataCollector extends DataCollector implements DataDumperInterface
 
         if ('html' === $format) {
             $dumper = new HtmlDumper($data, $this->charset);
+            $dumper->setDisplayOptions(array('fileLinkFormat' => $this->fileLinkFormat));
         } else {
             throw new \InvalidArgumentException(sprintf('Invalid dump format: %s', $format));
         }
@@ -237,6 +239,7 @@ class DumpDataCollector extends DataCollector implements DataDumperInterface
 
             if ('cli' !== PHP_SAPI && stripos($h[$i], 'html')) {
                 $this->dumper = new HtmlDumper('php://output', $this->charset);
+                $this->dumper->setDisplayOptions(array('fileLinkFormat' => $this->fileLinkFormat));
             } else {
                 $this->dumper = new CliDumper('php://output', $this->charset);
             }
@@ -254,17 +257,16 @@ class DumpDataCollector extends DataCollector implements DataDumperInterface
     private function doDump($data, $name, $file, $line)
     {
         if ($this->dumper instanceof CliDumper) {
-            $contextDumper = function ($name, $file, $line, $fileLinkFormat) {
+            $contextDumper = function ($name, $file, $line, $fmt) {
                 if ($this instanceof HtmlDumper) {
-                    if ('' !== $file) {
+                    if ($file) {
                         $s = $this->style('meta', '%s');
+                        $f = strip_tags($this->style('', $file));
                         $name = strip_tags($this->style('', $name));
-                        $file = strip_tags($this->style('', $file));
-                        if ($fileLinkFormat) {
-                            $link = strtr(strip_tags($this->style('', $fileLinkFormat)), array('%f' => $file, '%l' => (int) $line));
-                            $name = sprintf('<a href="%s" title="%s">'.$s.'</a>', $link, $file, $name);
+                        if ($fmt && $link = is_string($fmt) ? strtr($fmt, array('%f' => $file, '%l' => $line)) : $fmt->format($file, $line)) {
+                            $name = sprintf('<a href="%s" title="%s">'.$s.'</a>', strip_tags($this->style('', $link)), $f, $name);
                         } else {
-                            $name = sprintf('<abbr title="%s">'.$s.'</abbr>', $file, $name);
+                            $name = sprintf('<abbr title="%s">'.$s.'</abbr>', $f, $name);
                         }
                     } else {
                         $name = $this->style('meta', $name);
@@ -288,7 +290,7 @@ class DumpDataCollector extends DataCollector implements DataDumperInterface
     {
         $html = '';
 
-        $dumper = new HtmlDumper(function ($line) use (&$html) {$html .= $line;}, $this->charset);
+        $dumper = new HtmlDumper(function ($line) use (&$html) { $html .= $line; }, $this->charset);
         $dumper->setDumpHeader('');
         $dumper->setDumpBoundaries('', '');
 

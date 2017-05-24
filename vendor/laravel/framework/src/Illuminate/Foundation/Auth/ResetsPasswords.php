@@ -31,7 +31,7 @@ trait ResetsPasswords
      * Reset the given user's password.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function reset(Request $request)
     {
@@ -62,7 +62,8 @@ trait ResetsPasswords
     protected function rules()
     {
         return [
-            'token' => 'required', 'email' => 'required|email',
+            'token' => 'required',
+            'email' => 'required|email',
             'password' => 'required|confirmed|min:6',
         ];
     }
@@ -111,7 +112,7 @@ trait ResetsPasswords
      * Get the response for a successful password reset.
      *
      * @param  string  $response
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     protected function sendResetResponse($response)
     {
