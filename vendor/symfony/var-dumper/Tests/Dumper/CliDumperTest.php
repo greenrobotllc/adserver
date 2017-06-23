@@ -9,12 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\VarDumper\Tests;
+namespace Symfony\Component\VarDumper\Tests\Dumper;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\CliDumper;
 use Symfony\Component\VarDumper\Test\VarDumperTestTrait;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 /**
  * @author Nicolas Grekas <p@tchwork.com>
@@ -25,7 +27,7 @@ class CliDumperTest extends TestCase
 
     public function testGet()
     {
-        require __DIR__.'/Fixtures/dumb-var.php';
+        require __DIR__.'/../Fixtures/dumb-var.php';
 
         $dumper = new CliDumper('php://output');
         $dumper->setColors(false);
@@ -75,8 +77,8 @@ array:24 [
     +"bar": "bar"
   }
   "closure" => Closure {{$r}
-    class: "Symfony\Component\VarDumper\Tests\CliDumperTest"
-    this: Symfony\Component\VarDumper\Tests\CliDumperTest {{$r} …}
+    class: "Symfony\Component\VarDumper\Tests\Dumper\CliDumperTest"
+    this: Symfony\Component\VarDumper\Tests\Dumper\CliDumperTest {{$r} …}
     parameters: {
       \$a: {}
       &\$b: {
@@ -106,6 +108,67 @@ EOTXT
             ,
             $out
         );
+    }
+
+    /**
+     * @dataProvider provideDumpWithCommaFlagTests
+     */
+    public function testDumpWithCommaFlag($expected, $flags)
+    {
+        $dumper = new CliDumper(null, null, $flags);
+        $dumper->setColors(false);
+        $cloner = new VarCloner();
+
+        $var = array(
+            'array' => array('a', 'b'),
+            'string' => 'hello',
+            'multiline string' => "this\nis\na\multiline\nstring",
+        );
+
+        $dump = $dumper->dump($cloner->cloneVar($var), true);
+
+        $this->assertSame($expected, $dump);
+    }
+
+    public function provideDumpWithCommaFlagTests()
+    {
+        $expected = <<<'EOTXT'
+array:3 [
+  "array" => array:2 [
+    0 => "a",
+    1 => "b"
+  ],
+  "string" => "hello",
+  "multiline string" => """
+    this\n
+    is\n
+    a\multiline\n
+    string
+    """
+]
+
+EOTXT;
+
+        yield array($expected, CliDumper::DUMP_COMMA_SEPARATOR);
+
+        $expected = <<<'EOTXT'
+array:3 [
+  "array" => array:2 [
+    0 => "a",
+    1 => "b",
+  ],
+  "string" => "hello",
+  "multiline string" => """
+    this\n
+    is\n
+    a\multiline\n
+    string
+    """,
+]
+
+EOTXT;
+
+        yield array($expected, CliDumper::DUMP_TRAILING_COMMA);
     }
 
     /**
@@ -230,14 +293,14 @@ EOTXT
     }
 
     /**
-     * @requires function Twig_Template::getSourceContext
+     * @requires function Twig\Template::getSourceContext
      */
     public function testThrowingCaster()
     {
         $out = fopen('php://memory', 'r+b');
 
-        require_once __DIR__.'/Fixtures/Twig.php';
-        $twig = new \__TwigTemplate_VarDumperFixture_u75a09(new \Twig_Environment(new \Twig_Loader_Filesystem()));
+        require_once __DIR__.'/../Fixtures/Twig.php';
+        $twig = new \__TwigTemplate_VarDumperFixture_u75a09(new Environment(new FilesystemLoader()));
 
         $dumper = new CliDumper();
         $dumper->setColors(false);
@@ -253,12 +316,11 @@ EOTXT
             ':stream' => eval('return function () use ($twig) {
                 try {
                     $twig->render(array());
-                } catch (\Twig_Error_Runtime $e) {
+                } catch (\Twig\Error\RuntimeError $e) {
                     throw $e->getPrevious();
                 }
             };'),
         ));
-        $line = __LINE__ - 2;
         $ref = (int) $out;
 
         $data = $cloner->cloneVar($out);
@@ -271,7 +333,7 @@ EOTXT
 stream resource {@{$ref}
   ⚠: Symfony\Component\VarDumper\Exception\ThrowingCasterException {{$r}
     #message: "Unexpected Exception thrown from a caster: Foobar"
-    -trace: {
+    trace: {
       %sTwig.php:2: {
         : foo bar
         :   twig source
@@ -280,7 +342,7 @@ stream resource {@{$ref}
       %sTemplate.php:%d: {
         : try {
         :     \$this->doDisplay(\$context, \$blocks);
-        : } catch (Twig_Error \$e) {
+        : } catch (Twig%sError \$e) {
       }
       %sTemplate.php:%d: {
         : {
@@ -292,7 +354,7 @@ stream resource {@{$ref}
         :     \$this->display(\$context);
         : } catch (%s \$e) {
       }
-      %sCliDumperTest.php:{$line}: {
+      %sCliDumperTest.php:%d: {
 %A
       }
     }
@@ -416,7 +478,7 @@ EOTXT
      */
     public function testBuggyRefs()
     {
-        if (PHP_VERSION_ID >= 50600) {
+        if (\PHP_VERSION_ID >= 50600) {
             $this->markTestSkipped('PHP 5.6 fixed refs counting');
         }
 

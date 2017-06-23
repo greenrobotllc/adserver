@@ -12,12 +12,19 @@
 namespace Symfony\Component\HttpFoundation\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Exception\SuspiciousOperationException;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Request;
 
 class RequestTest extends TestCase
 {
+    protected function tearDown()
+    {
+        // reset
+        Request::setTrustedProxies(array(), -1);
+    }
+
     public function testInitialize()
     {
         $request = new Request();
@@ -733,7 +740,7 @@ class RequestTest extends TestCase
 
         $this->assertEquals(80, $port, 'Without trusted proxies FORWARDED_PROTO and FORWARDED_PORT are ignored.');
 
-        Request::setTrustedProxies(array('1.1.1.1'));
+        Request::setTrustedProxies(array('1.1.1.1'), Request::HEADER_X_FORWARDED_ALL);
         $request = Request::create('http://example.com', 'GET', array(), array(), array(), array(
             'HTTP_X_FORWARDED_PROTO' => 'https',
             'HTTP_X_FORWARDED_PORT' => '8443',
@@ -775,8 +782,6 @@ class RequestTest extends TestCase
         ));
         $port = $request->getPort();
         $this->assertEquals(80, $port, 'With only PROTO set and value is not recognized, getPort() defaults to 80.');
-
-        Request::setTrustedProxies(array());
     }
 
     /**
@@ -852,8 +857,6 @@ class RequestTest extends TestCase
         $request = $this->getRequestInstanceForClientIpTests($remoteAddr, $httpForwardedFor, $trustedProxies);
 
         $this->assertEquals($expected[0], $request->getClientIp());
-
-        Request::setTrustedProxies(array());
     }
 
     /**
@@ -864,8 +867,6 @@ class RequestTest extends TestCase
         $request = $this->getRequestInstanceForClientIpTests($remoteAddr, $httpForwardedFor, $trustedProxies);
 
         $this->assertEquals($expected, $request->getClientIps());
-
-        Request::setTrustedProxies(array());
     }
 
     /**
@@ -876,8 +877,6 @@ class RequestTest extends TestCase
         $request = $this->getRequestInstanceForClientIpsForwardedTests($remoteAddr, $httpForwarded, $trustedProxies);
 
         $this->assertEquals($expected, $request->getClientIps());
-
-        Request::setTrustedProxies(array());
     }
 
     public function getClientIpsForwardedProvider()
@@ -962,7 +961,7 @@ class RequestTest extends TestCase
             'HTTP_X_FORWARDED_FOR' => $httpXForwardedFor,
         );
 
-        Request::setTrustedProxies(array('88.88.88.88'));
+        Request::setTrustedProxies(array('88.88.88.88'), Request::HEADER_X_FORWARDED_ALL | Request::HEADER_FORWARDED);
 
         $request->initialize(array(), array(), array(), array(), array(), $server);
 
@@ -994,13 +993,11 @@ class RequestTest extends TestCase
             'HTTP_X_FORWARDED_FOR' => $httpXForwardedFor,
         );
 
-        Request::setTrustedProxies(array('88.88.88.88'));
+        Request::setTrustedProxies(array('88.88.88.88'), Request::HEADER_X_FORWARDED_ALL);
 
         $request->initialize(array(), array(), array(), array(), array(), $server);
 
         $clientIps = $request->getClientIps();
-
-        Request::setTrustedProxies(array());
 
         $this->assertSame($expectedIps, $clientIps);
     }
@@ -1039,7 +1036,7 @@ class RequestTest extends TestCase
         $req = new Request(array(), array(), array(), array(), array(), array(), 'MyContent');
         $resource = $req->getContent(true);
 
-        $this->assertTrue(is_resource($resource));
+        $this->assertInternalType('resource', $resource);
         $this->assertEquals('MyContent', stream_get_contents($resource));
     }
 
@@ -1060,7 +1057,7 @@ class RequestTest extends TestCase
      */
     public function testGetContentCantBeCalledTwiceWithResources($first, $second)
     {
-        if (PHP_VERSION_ID >= 50600) {
+        if (\PHP_VERSION_ID >= 50600) {
             $this->markTestSkipped('PHP >= 5.6 allows to open php://input several times.');
         }
 
@@ -1185,11 +1182,10 @@ class RequestTest extends TestCase
 
         $request->headers->set('X_FORWARDED_PROTO', 'https');
 
-        Request::setTrustedProxies(array('1.1.1.1'));
+        Request::setTrustedProxies(array('1.1.1.1'), Request::HEADER_X_FORWARDED_ALL);
         $this->assertFalse($request->isSecure());
         $request->server->set('REMOTE_ADDR', '1.1.1.1');
         $this->assertTrue($request->isSecure());
-        Request::setTrustedProxies(array());
 
         $request->overrideGlobals();
 
@@ -1290,12 +1286,6 @@ class RequestTest extends TestCase
         $request->initialize(array(), array(), array(), array(), array(), $server);
 
         $this->assertEquals('/path%20test/info', $request->getPathInfo());
-
-        $server = array();
-        $server['REQUEST_URI'] = '?a=b';
-        $request->initialize(array(), array(), array(), array(), array(), $server);
-
-        $this->assertEquals('/', $request->getPathInfo());
     }
 
     public function testGetParameterPrecedence()
@@ -1658,7 +1648,7 @@ class RequestTest extends TestCase
         }
 
         if ($trustedProxies) {
-            Request::setTrustedProxies($trustedProxies);
+            Request::setTrustedProxies($trustedProxies, Request::HEADER_X_FORWARDED_ALL);
         }
 
         $request->initialize(array(), array(), array(), array(), array(), $server);
@@ -1677,7 +1667,7 @@ class RequestTest extends TestCase
         }
 
         if ($trustedProxies) {
-            Request::setTrustedProxies($trustedProxies);
+            Request::setTrustedProxies($trustedProxies, Request::HEADER_FORWARDED);
         }
 
         $request->initialize(array(), array(), array(), array(), array(), $server);
@@ -1693,10 +1683,6 @@ class RequestTest extends TestCase
         $request->headers->set('X_FORWARDED_HOST', 'foo.example.com:1234, real.example.com:8080');
         $request->headers->set('X_FORWARDED_PROTO', 'https');
         $request->headers->set('X_FORWARDED_PORT', 443);
-        $request->headers->set('X_MY_FOR', '3.3.3.3, 4.4.4.4');
-        $request->headers->set('X_MY_HOST', 'my.example.com');
-        $request->headers->set('X_MY_PROTO', 'http');
-        $request->headers->set('X_MY_PORT', 81);
 
         // no trusted proxies
         $this->assertEquals('3.3.3.3', $request->getClientIp());
@@ -1705,40 +1691,60 @@ class RequestTest extends TestCase
         $this->assertFalse($request->isSecure());
 
         // disabling proxy trusting
-        Request::setTrustedProxies(array());
+        Request::setTrustedProxies(array(), Request::HEADER_X_FORWARDED_ALL);
         $this->assertEquals('3.3.3.3', $request->getClientIp());
         $this->assertEquals('example.com', $request->getHost());
         $this->assertEquals(80, $request->getPort());
         $this->assertFalse($request->isSecure());
 
         // request is forwarded by a non-trusted proxy
-        Request::setTrustedProxies(array('2.2.2.2'));
+        Request::setTrustedProxies(array('2.2.2.2'), Request::HEADER_X_FORWARDED_ALL);
         $this->assertEquals('3.3.3.3', $request->getClientIp());
         $this->assertEquals('example.com', $request->getHost());
         $this->assertEquals(80, $request->getPort());
         $this->assertFalse($request->isSecure());
 
         // trusted proxy via setTrustedProxies()
-        Request::setTrustedProxies(array('3.3.3.3', '2.2.2.2'));
+        Request::setTrustedProxies(array('3.3.3.3', '2.2.2.2'), Request::HEADER_X_FORWARDED_ALL);
         $this->assertEquals('1.1.1.1', $request->getClientIp());
         $this->assertEquals('foo.example.com', $request->getHost());
         $this->assertEquals(443, $request->getPort());
         $this->assertTrue($request->isSecure());
 
         // trusted proxy via setTrustedProxies()
-        Request::setTrustedProxies(array('3.3.3.4', '2.2.2.2'));
+        Request::setTrustedProxies(array('3.3.3.4', '2.2.2.2'), Request::HEADER_X_FORWARDED_ALL);
         $this->assertEquals('3.3.3.3', $request->getClientIp());
         $this->assertEquals('example.com', $request->getHost());
         $this->assertEquals(80, $request->getPort());
         $this->assertFalse($request->isSecure());
 
         // check various X_FORWARDED_PROTO header values
-        Request::setTrustedProxies(array('3.3.3.3', '2.2.2.2'));
+        Request::setTrustedProxies(array('3.3.3.3', '2.2.2.2'), Request::HEADER_X_FORWARDED_ALL);
         $request->headers->set('X_FORWARDED_PROTO', 'ssl');
         $this->assertTrue($request->isSecure());
 
         $request->headers->set('X_FORWARDED_PROTO', 'https, http');
         $this->assertTrue($request->isSecure());
+    }
+
+    /**
+     * @group legacy
+     * @expectedDeprecation The "Symfony\Component\HttpFoundation\Request::setTrustedHeaderName()" method is deprecated since version 3.3 and will be removed in 4.0. Use the $trustedHeaderSet argument of the Request::setTrustedProxies() method instead.
+     */
+    public function testLegacyTrustedProxies()
+    {
+        $request = Request::create('http://example.com/');
+        $request->server->set('REMOTE_ADDR', '3.3.3.3');
+        $request->headers->set('X_FORWARDED_FOR', '1.1.1.1, 2.2.2.2');
+        $request->headers->set('X_FORWARDED_HOST', 'foo.example.com, real.example.com:8080');
+        $request->headers->set('X_FORWARDED_PROTO', 'https');
+        $request->headers->set('X_FORWARDED_PORT', 443);
+        $request->headers->set('X_MY_FOR', '3.3.3.3, 4.4.4.4');
+        $request->headers->set('X_MY_HOST', 'my.example.com');
+        $request->headers->set('X_MY_PROTO', 'http');
+        $request->headers->set('X_MY_PORT', 81);
+
+        Request::setTrustedProxies(array('3.3.3.3', '2.2.2.2'), Request::HEADER_X_FORWARDED_ALL);
 
         // custom header names
         Request::setTrustedHeaderName(Request::HEADER_CLIENT_IP, 'X_MY_FOR');
@@ -1760,8 +1766,8 @@ class RequestTest extends TestCase
         $this->assertEquals(80, $request->getPort());
         $this->assertFalse($request->isSecure());
 
-        // reset
-        Request::setTrustedProxies(array());
+        //reset
+        Request::setTrustedHeaderName(Request::HEADER_FORWARDED, 'FORWARDED');
         Request::setTrustedHeaderName(Request::HEADER_CLIENT_IP, 'X_FORWARDED_FOR');
         Request::setTrustedHeaderName(Request::HEADER_CLIENT_HOST, 'X_FORWARDED_HOST');
         Request::setTrustedHeaderName(Request::HEADER_CLIENT_PORT, 'X_FORWARDED_PORT');
@@ -1781,35 +1787,35 @@ class RequestTest extends TestCase
         $this->assertFalse($request->isSecure());
 
         // disabling proxy trusting
-        Request::setTrustedProxies(array());
+        Request::setTrustedProxies(array(), Request::HEADER_FORWARDED);
         $this->assertEquals('3.3.3.3', $request->getClientIp());
         $this->assertEquals('example.com', $request->getHost());
         $this->assertEquals(80, $request->getPort());
         $this->assertFalse($request->isSecure());
 
         // request is forwarded by a non-trusted proxy
-        Request::setTrustedProxies(array('2.2.2.2'));
+        Request::setTrustedProxies(array('2.2.2.2'), Request::HEADER_FORWARDED);
         $this->assertEquals('3.3.3.3', $request->getClientIp());
         $this->assertEquals('example.com', $request->getHost());
         $this->assertEquals(80, $request->getPort());
         $this->assertFalse($request->isSecure());
 
         // trusted proxy via setTrustedProxies()
-        Request::setTrustedProxies(array('3.3.3.3', '2.2.2.2'));
+        Request::setTrustedProxies(array('3.3.3.3', '2.2.2.2'), Request::HEADER_FORWARDED);
         $this->assertEquals('1.1.1.1', $request->getClientIp());
         $this->assertEquals('foo.example.com', $request->getHost());
         $this->assertEquals(8080, $request->getPort());
         $this->assertTrue($request->isSecure());
 
         // trusted proxy via setTrustedProxies()
-        Request::setTrustedProxies(array('3.3.3.4', '2.2.2.2'));
+        Request::setTrustedProxies(array('3.3.3.4', '2.2.2.2'), Request::HEADER_FORWARDED);
         $this->assertEquals('3.3.3.3', $request->getClientIp());
         $this->assertEquals('example.com', $request->getHost());
         $this->assertEquals(80, $request->getPort());
         $this->assertFalse($request->isSecure());
 
         // check various X_FORWARDED_PROTO header values
-        Request::setTrustedProxies(array('3.3.3.3', '2.2.2.2'));
+        Request::setTrustedProxies(array('3.3.3.3', '2.2.2.2'), Request::HEADER_FORWARDED);
         $request->headers->set('FORWARDED', 'proto=ssl');
         $this->assertTrue($request->isSecure());
 
@@ -1818,6 +1824,7 @@ class RequestTest extends TestCase
     }
 
     /**
+     * @group legacy
      * @expectedException \InvalidArgumentException
      */
     public function testSetTrustedProxiesInvalidHeaderName()
@@ -1827,6 +1834,7 @@ class RequestTest extends TestCase
     }
 
     /**
+     * @group legacy
      * @expectedException \InvalidArgumentException
      */
     public function testGetTrustedProxiesInvalidHeaderName()
@@ -1941,8 +1949,8 @@ class RequestTest extends TestCase
         try {
             $request->getHost();
             $this->fail('Request::getHost() should throw an exception when host is not trusted.');
-        } catch (\UnexpectedValueException $e) {
-            $this->assertEquals('Untrusted Host "evil.com"', $e->getMessage());
+        } catch (SuspiciousOperationException $e) {
+            $this->assertEquals('Untrusted Host "evil.com".', $e->getMessage());
         }
 
         // trusted hosts
@@ -2006,10 +2014,10 @@ class RequestTest extends TestCase
             }
         } else {
             if (method_exists($this, 'expectException')) {
-                $this->expectException('UnexpectedValueException');
+                $this->expectException(SuspiciousOperationException::class);
                 $this->expectExceptionMessage('Invalid Host');
             } else {
-                $this->setExpectedException('UnexpectedValueException', 'Invalid Host');
+                $this->setExpectedException(SuspiciousOperationException::class, 'Invalid Host');
             }
 
             $request->getHost();
@@ -2126,59 +2134,59 @@ class RequestTest extends TestCase
         );
     }
 
-    public function nonstandardRequestsData()
-    {
-        return array(
-            array('',  '', '/', 'http://host:8080/', ''),
-            array('/', '', '/', 'http://host:8080/', ''),
-
-            array('hello/app.php/x',  '', '/x', 'http://host:8080/hello/app.php/x', '/hello', '/hello/app.php'),
-            array('/hello/app.php/x', '', '/x', 'http://host:8080/hello/app.php/x', '/hello', '/hello/app.php'),
-
-            array('',      'a=b', '/', 'http://host:8080/?a=b'),
-            array('?a=b',  'a=b', '/', 'http://host:8080/?a=b'),
-            array('/?a=b', 'a=b', '/', 'http://host:8080/?a=b'),
-
-            array('x',      'a=b', '/x', 'http://host:8080/x?a=b'),
-            array('x?a=b',  'a=b', '/x', 'http://host:8080/x?a=b'),
-            array('/x?a=b', 'a=b', '/x', 'http://host:8080/x?a=b'),
-
-            array('hello/x',  '', '/x', 'http://host:8080/hello/x', '/hello'),
-            array('/hello/x', '', '/x', 'http://host:8080/hello/x', '/hello'),
-
-            array('hello/app.php/x',      'a=b', '/x', 'http://host:8080/hello/app.php/x?a=b', '/hello', '/hello/app.php'),
-            array('hello/app.php/x?a=b',  'a=b', '/x', 'http://host:8080/hello/app.php/x?a=b', '/hello', '/hello/app.php'),
-            array('/hello/app.php/x?a=b', 'a=b', '/x', 'http://host:8080/hello/app.php/x?a=b', '/hello', '/hello/app.php'),
-        );
-    }
-
     /**
-     * @dataProvider nonstandardRequestsData
+     * @group legacy
      */
-    public function testNonstandardRequests($requestUri, $queryString, $expectedPathInfo, $expectedUri, $expectedBasePath = '', $expectedBaseUrl = null)
+    public function testGetTrustedHeaderName()
     {
-        if (null === $expectedBaseUrl) {
-            $expectedBaseUrl = $expectedBasePath;
-        }
+        Request::setTrustedProxies(array('8.8.8.8'), Request::HEADER_X_FORWARDED_ALL);
 
-        $server = array(
-            'HTTP_HOST' => 'host:8080',
-            'SERVER_PORT' => '8080',
-            'QUERY_STRING' => $queryString,
-            'PHP_SELF' => '/hello/app.php',
-            'SCRIPT_FILENAME' => '/some/path/app.php',
-            'REQUEST_URI' => $requestUri,
-        );
+        $this->assertNull(Request::getTrustedHeaderName(Request::HEADER_FORWARDED));
+        $this->assertSame('X_FORWARDED_FOR', Request::getTrustedHeaderName(Request::HEADER_CLIENT_IP));
+        $this->assertSame('X_FORWARDED_HOST', Request::getTrustedHeaderName(Request::HEADER_CLIENT_HOST));
+        $this->assertSame('X_FORWARDED_PORT', Request::getTrustedHeaderName(Request::HEADER_CLIENT_PORT));
+        $this->assertSame('X_FORWARDED_PROTO', Request::getTrustedHeaderName(Request::HEADER_CLIENT_PROTO));
 
-        $request = new Request(array(), array(), array(), array(), array(), $server);
+        Request::setTrustedProxies(array('8.8.8.8'), Request::HEADER_FORWARDED);
 
-        $this->assertEquals($expectedPathInfo, $request->getPathInfo());
-        $this->assertEquals($expectedUri, $request->getUri());
-        $this->assertEquals($queryString, $request->getQueryString());
-        $this->assertEquals(8080, $request->getPort());
-        $this->assertEquals('host:8080', $request->getHttpHost());
-        $this->assertEquals($expectedBaseUrl, $request->getBaseUrl());
-        $this->assertEquals($expectedBasePath, $request->getBasePath());
+        $this->assertSame('FORWARDED', Request::getTrustedHeaderName(Request::HEADER_FORWARDED));
+        $this->assertNull(Request::getTrustedHeaderName(Request::HEADER_CLIENT_IP));
+        $this->assertNull(Request::getTrustedHeaderName(Request::HEADER_CLIENT_HOST));
+        $this->assertNull(Request::getTrustedHeaderName(Request::HEADER_CLIENT_PORT));
+        $this->assertNull(Request::getTrustedHeaderName(Request::HEADER_CLIENT_PROTO));
+
+        Request::setTrustedHeaderName(Request::HEADER_FORWARDED, 'A');
+        Request::setTrustedHeaderName(Request::HEADER_CLIENT_IP, 'B');
+        Request::setTrustedHeaderName(Request::HEADER_CLIENT_HOST, 'C');
+        Request::setTrustedHeaderName(Request::HEADER_CLIENT_PORT, 'D');
+        Request::setTrustedHeaderName(Request::HEADER_CLIENT_PROTO, 'E');
+
+        Request::setTrustedProxies(array('8.8.8.8'), Request::HEADER_FORWARDED);
+
+        $this->assertSame('A', Request::getTrustedHeaderName(Request::HEADER_FORWARDED));
+        $this->assertNull(Request::getTrustedHeaderName(Request::HEADER_CLIENT_IP));
+        $this->assertNull(Request::getTrustedHeaderName(Request::HEADER_CLIENT_HOST));
+        $this->assertNull(Request::getTrustedHeaderName(Request::HEADER_CLIENT_PORT));
+        $this->assertNull(Request::getTrustedHeaderName(Request::HEADER_CLIENT_PROTO));
+
+        Request::setTrustedProxies(array('8.8.8.8'), Request::HEADER_X_FORWARDED_ALL);
+
+        $this->assertNull(Request::getTrustedHeaderName(Request::HEADER_FORWARDED));
+        $this->assertSame('B', Request::getTrustedHeaderName(Request::HEADER_CLIENT_IP));
+        $this->assertSame('C', Request::getTrustedHeaderName(Request::HEADER_CLIENT_HOST));
+        $this->assertSame('D', Request::getTrustedHeaderName(Request::HEADER_CLIENT_PORT));
+        $this->assertSame('E', Request::getTrustedHeaderName(Request::HEADER_CLIENT_PROTO));
+
+        Request::setTrustedProxies(array('8.8.8.8'), Request::HEADER_FORWARDED);
+
+        $this->assertSame('A', Request::getTrustedHeaderName(Request::HEADER_FORWARDED));
+
+        //reset
+        Request::setTrustedHeaderName(Request::HEADER_FORWARDED, 'FORWARDED');
+        Request::setTrustedHeaderName(Request::HEADER_CLIENT_IP, 'X_FORWARDED_FOR');
+        Request::setTrustedHeaderName(Request::HEADER_CLIENT_HOST, 'X_FORWARDED_HOST');
+        Request::setTrustedHeaderName(Request::HEADER_CLIENT_PORT, 'X_FORWARDED_PORT');
+        Request::setTrustedHeaderName(Request::HEADER_CLIENT_PROTO, 'X_FORWARDED_PROTO');
     }
 }
 

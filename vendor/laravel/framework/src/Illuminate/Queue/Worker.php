@@ -131,7 +131,7 @@ class Worker
      */
     protected function registerTimeoutHandler($job, WorkerOptions $options)
     {
-        if ($options->timeout > 0 && $this->supportsAsyncSignals()) {
+        if ($this->supportsAsyncSignals()) {
             // We will register a signal handler for the alarm signal so that we can kill this
             // process if it is running too long because it has frozen. This uses the async
             // signals supported in recent versions of PHP to accomplish it conveniently.
@@ -139,7 +139,9 @@ class Worker
                 $this->kill(1);
             });
 
-            pcntl_alarm($this->timeoutForJob($job, $options) + $options->sleep);
+            $timeout = $this->timeoutForJob($job, $options);
+
+            pcntl_alarm($timeout > 0 ? $timeout + $options->sleep : 0);
         }
     }
 
@@ -245,7 +247,9 @@ class Worker
 
             $this->stopWorkerIfLostConnection($e);
         } catch (Throwable $e) {
-            $this->exceptions->report(new FatalThrowableError($e));
+            $this->exceptions->report($e = new FatalThrowableError($e));
+
+            $this->stopWorkerIfLostConnection($e);
         }
     }
 
@@ -266,7 +270,9 @@ class Worker
 
             $this->stopWorkerIfLostConnection($e);
         } catch (Throwable $e) {
-            $this->exceptions->report(new FatalThrowableError($e));
+            $this->exceptions->report($e = new FatalThrowableError($e));
+
+            $this->stopWorkerIfLostConnection($e);
         }
     }
 

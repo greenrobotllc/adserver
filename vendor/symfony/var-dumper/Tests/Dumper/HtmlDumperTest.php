@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\VarDumper\Tests;
+namespace Symfony\Component\VarDumper\Tests\Dumper;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
@@ -22,7 +22,7 @@ class HtmlDumperTest extends TestCase
 {
     public function testGet()
     {
-        require __DIR__.'/Fixtures/dumb-var.php';
+        require __DIR__.'/../Fixtures/dumb-var.php';
 
         $dumper = new HtmlDumper('php://output');
         $dumper->setDumpHeader('<foo></foo>');
@@ -76,9 +76,9 @@ class HtmlDumperTest extends TestCase
     +"<span class=sf-dump-public title="Runtime added dynamic property">bar</span>": "<span class=sf-dump-str title="3 characters">bar</span>"
   </samp>}
   "<span class=sf-dump-key>closure</span>" => <span class=sf-dump-note>Closure</span> {{$r}<samp>
-    <span class=sf-dump-meta>class</span>: "<span class=sf-dump-str title="Symfony\Component\VarDumper\Tests\HtmlDumperTest
-48 characters"><span class=sf-dump-ellipsis>Symfony\Component\VarDumper\Tests</span>\HtmlDumperTest</span>"
-    <span class=sf-dump-meta>this</span>: <abbr title="Symfony\Component\VarDumper\Tests\HtmlDumperTest" class=sf-dump-note>HtmlDumperTest</abbr> {{$r} &%s;}
+    <span class=sf-dump-meta>class</span>: "<span class=sf-dump-str title="Symfony\Component\VarDumper\Tests\Dumper\HtmlDumperTest
+55 characters"><span class="sf-dump-ellipsis sf-dump-ellipsis-class">Symfony\Component\VarDumper\Tests\Dumper</span><span class=sf-dump-ellipsis>\</span>HtmlDumperTest</span>"
+    <span class=sf-dump-meta>this</span>: <abbr title="Symfony\Component\VarDumper\Tests\Dumper\HtmlDumperTest" class=sf-dump-note>HtmlDumperTest</abbr> {{$r} &%s;}
     <span class=sf-dump-meta>parameters</span>: {<samp>
       <span class=sf-dump-meta>\$a</span>: {}
       <span class=sf-dump-meta>&amp;\$b</span>: {<samp>
@@ -87,7 +87,7 @@ class HtmlDumperTest extends TestCase
       </samp>}
     </samp>}
     <span class=sf-dump-meta>file</span>: "<span class=sf-dump-str title="{$var['file']}
-%d characters"><span class=sf-dump-ellipsis>%sTests</span>%eFixtures%edumb-var.php</span>"
+%d characters"><span class="sf-dump-ellipsis sf-dump-ellipsis-path">%s%eVarDumper</span><span class=sf-dump-ellipsis>%e</span>Tests%eFixtures%edumb-var.php</span>"
     <span class=sf-dump-meta>line</span>: "<span class=sf-dump-str title="%d characters">{$var['line']} to {$var['line']}</span>"
   </samp>}
   "<span class=sf-dump-key>line</span>" => <span class=sf-dump-num>{$var['line']}</span>
