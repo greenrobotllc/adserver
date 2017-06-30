@@ -3559,6 +3559,7 @@ return array(
     'Illuminate\\Database\\Eloquent\\Relations\\BelongsTo' => $vendorDir . '/laravel/framework/src/Illuminate/Database/Eloquent/Relations/BelongsTo.php',
     'Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany' => $vendorDir . '/laravel/framework/src/Illuminate/Database/Eloquent/Relations/BelongsToMany.php',
     'Illuminate\\Database\\Eloquent\\Relations\\Concerns\\InteractsWithPivotTable' => $vendorDir . '/laravel/framework/src/Illuminate/Database/Eloquent/Relations/Concerns/InteractsWithPivotTable.php',
+    'Illuminate\\Database\\Eloquent\\Relations\\Concerns\\SupportsDefaultModels' => $vendorDir . '/laravel/framework/src/Illuminate/Database/Eloquent/Relations/Concerns/SupportsDefaultModels.php',
     'Illuminate\\Database\\Eloquent\\Relations\\HasMany' => $vendorDir . '/laravel/framework/src/Illuminate/Database/Eloquent/Relations/HasMany.php',
     'Illuminate\\Database\\Eloquent\\Relations\\HasManyThrough' => $vendorDir . '/laravel/framework/src/Illuminate/Database/Eloquent/Relations/HasManyThrough.php',
     'Illuminate\\Database\\Eloquent\\Relations\\HasOne' => $vendorDir . '/laravel/framework/src/Illuminate/Database/Eloquent/Relations/HasOne.php',
