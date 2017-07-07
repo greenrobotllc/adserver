@@ -4971,7 +4971,6 @@ class ComposerStaticInitfe40c132eb2f1fa55ec5804af8f1cfb5
         'PHP_Token_YIELD' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_YIELD_FROM' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'Parsedown' => __DIR__ . '/..' . '/erusev/parsedown/Parsedown.php',
-        'ParsedownTest' => __DIR__ . '/..' . '/erusev/parsedown/test/ParsedownTest.php',
         'PhpSpec\\CodeAnalysis\\AccessInspectorInterface' => __DIR__ . '/..' . '/phpspec/phpspec/src/PhpSpec/CodeAnalysis/AccessInspectorInterface.php',
         'PhpSpec\\CodeAnalysis\\DisallowedScalarTypehintException' => __DIR__ . '/..' . '/phpspec/phpspec/src/PhpSpec/CodeAnalysis/DisallowedScalarTypehintException.php',
         'PhpSpec\\CodeAnalysis\\MagicAwareAccessInspector' => __DIR__ . '/..' . '/phpspec/phpspec/src/PhpSpec/CodeAnalysis/MagicAwareAccessInspector.php',

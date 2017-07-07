@@ -4670,7 +4670,6 @@ return array(
     'PHP_Token_YIELD' => $vendorDir . '/phpunit/php-token-stream/src/Token.php',
     'PHP_Token_YIELD_FROM' => $vendorDir . '/phpunit/php-token-stream/src/Token.php',
     'Parsedown' => $vendorDir . '/erusev/parsedown/Parsedown.php',
-    'ParsedownTest' => $vendorDir . '/erusev/parsedown/test/ParsedownTest.php',
     'PhpSpec\\CodeAnalysis\\AccessInspectorInterface' => $vendorDir . '/phpspec/phpspec/src/PhpSpec/CodeAnalysis/AccessInspectorInterface.php',
     'PhpSpec\\CodeAnalysis\\DisallowedScalarTypehintException' => $vendorDir . '/phpspec/phpspec/src/PhpSpec/CodeAnalysis/DisallowedScalarTypehintException.php',
     'PhpSpec\\CodeAnalysis\\MagicAwareAccessInspector' => $vendorDir . '/phpspec/phpspec/src/PhpSpec/CodeAnalysis/MagicAwareAccessInspector.php',
