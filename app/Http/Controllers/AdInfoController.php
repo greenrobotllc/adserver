@@ -252,6 +252,9 @@ class AdInfoController extends Controller
 			$site_id=$row[3];
 			$site_name=$row[4];
 			$platform=$row[5];
+			$impressions=$row[6];
+			$clicks=$row[7];
+			$revenue=$row[8];
 
 			$libertyZone = LibertyZone::firstOrCreate(['name' => $widget_name, 'unit_id'=>$widget_id, 'app' => $site_name, 'platform' => $platform]);
 				$output .="0";
@@ -267,8 +270,10 @@ class AdInfoController extends Controller
 					$unit_rpm = $revenue/$impressions;
 					$unit_rpm=$unit_rpm*1000;
 				}
+				$output .="unit rpm is $unit_rpm";
 				$output .="1";
-				$ad = LibertyZoneReports::firstOrCreate( ['adunit_id' => $widget_id, 'revenue'=>$revenue, 'rpm' => $unit_rpm, 'adunit_name' => $widget_name, 'date' => $report_date, 'platform'=> $platform, 'app'=>$site_name ] );
+				
+				$ad = LibertyZoneReports::updateOrCreate( ['adunit_id' => $widget_id, 'date' => $report_date], ['revenue'=>$revenue, 'rpm' => $unit_rpm, 'adunit_name' => $widget_name, 'platform'=> $platform, 'app'=>$site_name ] );
 
 				$output .="2";
 		
