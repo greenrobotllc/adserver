@@ -14,6 +14,7 @@ use App\Adsense;
 use App\CustomAdd;
 use App\LSM;
 use App\MoPub;
+use App\Liberty;
 use App\DailyViews;
 use Exception;
 
@@ -34,6 +35,11 @@ class DisplayAddController extends Controller
                     break;
                 case 'mopub':
                     $code= MoPub::where('id',$data->add_id)->first()->adcode;
+                case 'liberty':
+                    //$code= Liberty::where('id',$data->add_id)->first()->adcode;
+                    $ad_unit_id=Liberty::where('id', $data->add_id)->first()->ad_unit_id;
+                    $code="<iframe width=\"728px\" height=\"90px\"  frameBorder=\"0\" src=\"http://dev.adnetwork.greenrobot.com/ads/randomad?wid=$ad_unit_id\"></iframe>";
+                    //dd($ad_unit_id);
                     break;
                 case 'lsm':
                     $query = LSM::where('id',$data->add_id)->first();
@@ -130,6 +136,9 @@ class DisplayAddController extends Controller
                 break;
             case 'mopub':
                 $code = MoPub::where('id',$id)->first();
+                break;
+            case 'liberty':
+                $code = Liberty::where('id',$id)->first();
                 break;
             default:
                 $code = CustomAdd::where('id',$id)->first();

@@ -48,6 +48,7 @@ class AdminController extends Controller
 		$lsm_rpm = DB::table('ads')->where('id', 2)->first();
 		$adsense_rpm = DB::table('ads')->where('id',1)->first();
 		$mopub_rpm = DB::table('ads')->where('id', 3)->first();
+		$liberty_rpm = DB::table('ads')->where('id', 4)->first();
 		$lsm_email = $lsm_password = "";
 		//Get Configrations
 		$configs = \App\AdProviderConfig::where('type','=','lsm')->where('user_id','=',\Auth::user()->id)->value('config');
@@ -77,18 +78,34 @@ class AdminController extends Controller
 			$mopub_api_key = $config_array['api_key'];
 			$mopub_report_id = $config_array['report_id'];
 		}
+
+
+		$liberty_id="Liberty ID";
+		$liberty_key="Liberty Key";
+	
+
+		$configs = \App\AdProviderConfig::where('type','=','liberty')->where('user_id','=',\Auth::user()->id)->value('config');
+		if ($configs)
+		{
+			$config_array = unserialize($configs);
+			$liberty_id = $config_array['liberty_id'];
+			$liberty_key = $config_array['liberty_key'];
+		}
 		
 		return \View::make('home',[
 			'ad_slot_id'=>$my_slot_id,
 			'adsense_pub'=>$adsense_pub,
 			'mopub_api_key'=>$mopub_api_key,
 			'mopub_report_id'=>$mopub_report_id,
+			'liberty_id'=>$liberty_id,
+			'liberty_key'=>$liberty_key,
 			'lsm_pass'=>$lsm_password,
 			'lsm_email'=>$lsm_email,
 			'lsm_rpm'=>$lsm_rpm, 
 			'adsense_rpm'=>$adsense_rpm,
 			'custom_add' => $custom_add,
 			'mopub_rpm' => $mopub_rpm,
+			'liberty_rpm' => $liberty_rpm,
 			// 'timezone_set' => $timezone_set,
 			'page'=>'home']);
 	}
@@ -126,6 +143,17 @@ class AdminController extends Controller
 		$arr = array('api_key' => \Input::get('mopub_api_key'), 'report_id'=>\Input::get('mopub_report_id'));
 		$input = serialize($arr);
 		$data = \App\AdProviderConfig::firstOrNew(array('type'=>'mopub','user_id'=>\Auth::id()));
+		$data->config = $input;
+		$data->save();
+		return \Redirect::to('admin');
+	}
+
+
+	public function saveLiberty()
+	{
+		$arr = array('liberty_id' => \Input::get('liberty_id'), 'liberty_key'=>\Input::get('liberty_key'));
+		$input = serialize($arr);
+		$data = \App\AdProviderConfig::firstOrNew(array('type'=>'liberty','user_id'=>\Auth::id()));
 		$data->config = $input;
 		$data->save();
 		return \Redirect::to('admin');

@@ -42,6 +42,7 @@ Route::group(['middleware' => 'timezone_check'], function () {
 	Route::post('saveadsense','AdminController@saveAdsense');
 	Route::post('savelsm','AdminController@saveLSM');
 	Route::post('savemopub','AdminController@saveMopub');
+	Route::post('saveliberty','AdminController@saveLiberty');
 	Route::post('saveadsensecode','AdminController@updateAdsenseAdCode');
 	Route::post('savelsmcode','AdminController@updateLsmAdCode');
 
@@ -70,6 +71,10 @@ Route::group(['middleware' => 'timezone_check'], function () {
 	Route::post('lsmeditview','LSMController@show');
 	Route::put('lsm','LSMController@edit');
 	Route::get('lsmview/{id}','LSMController@renderadd');
+
+	//liberty
+	Route::resource('liberty','LibertyController');
+	Route::post('libertyeditview','LibertyController@show');
 
 
 	//Display Add

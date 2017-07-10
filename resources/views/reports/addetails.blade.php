@@ -52,6 +52,17 @@
             </tr>
         @endforeach
 
+        @foreach($liberty_ads as $ad)
+            <tr>
+              <td>{{$ad->getliberty->id}}</td>
+              <td>{{$ad->getliberty->name}}</td>
+              <td>Liberty</td>
+              <td>{{$ad->weight*100}}%</td>
+              <td>${{$ad->rpm}}</td>
+              <td>{{$ad->getadzone->name}}</td>
+            </tr>
+        @endforeach
+
         @foreach($other_ads as $ad)
             <tr>
               <td>{{$ad->getother->id}}</td>

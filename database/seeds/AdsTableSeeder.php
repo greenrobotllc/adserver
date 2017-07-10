@@ -35,5 +35,15 @@ class AdsTableSeeder extends Seeder
         'created_at' => date("Y-m-d H:i:s"),
         'updated_at' => date("Y-m-d H:i:s")
       ]);
+      DB::table('ads')->insert([
+        'user_id' => 1,
+        'ad_provider_id' => 4,
+        'name' => 'liberty 1',
+        'active' => 1,
+        'created_at' => date("Y-m-d H:i:s"),
+        'updated_at' => date("Y-m-d H:i:s")
+      ]);
+    
+
     }
 }
