@@ -25,7 +25,7 @@ I recommend using Linux or Mac OS X. I have not tried this under Windows. For pr
 4. php composer.phar install
 5. Install Laravel
 6. Create database
-7. Edit config/database.php with your database credentials.
+7. Move .env.example to .env and fill in your database credentials.
 8. Run php artisan migrate
 9. Run php artisan db:seed
 10. You should setup a new subdomain for this adserver, and point it to the public folder.
