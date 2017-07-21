@@ -312,6 +312,7 @@ class ComposerStaticInitfe40c132eb2f1fa55ec5804af8f1cfb5
         'AdSlotsTableSeeder' => __DIR__ . '/../..' . '/database/seeds/AdSlotsTableSeeder.php',
         'AdZoneSeeder' => __DIR__ . '/../..' . '/database/seeds/AdZoneSeeder.php',
         'AddAdsenseZoneToAdsenses' => __DIR__ . '/../..' . '/database/migrations/2017_02_27_185703_add_adsense_zone_to_adsenses.php',
+        'AddKeyToLibertyZoneReports' => __DIR__ . '/../..' . '/database/migrations/2017_07_09_221554_add_key_to_liberty_zone_reports.php',
         'AddPlatformToAdZones' => __DIR__ . '/../..' . '/database/migrations/2016_11_20_234633_add_platform_to_ad_zones.php',
         'AddViewsToAdsense' => __DIR__ . '/../..' . '/database/migrations/2016_03_02_120018_addViewsToAdsense.php',
         'AddViewsToCustomAd' => __DIR__ . '/../..' . '/database/migrations/2016_03_02_115635_addViewsToCustomAd.php',
