@@ -62,6 +62,13 @@
                 <!-- <small class="label pull-right bg-yellow">99+</small> -->
               </a>
             </li>
+
+            <li {{ (strcmp($page,'liberty')==0)? 'class=active':''}}>
+              <a href="{{URL::to('liberty')}}">
+                <i class="fa fa-code"></i> <span>Liberty Network Code</span>
+                <!-- <small class="label pull-right bg-yellow">99+</small> -->
+              </a>
+            </li>
 <!--             <li {{ (strcmp($page,'lsm-ad-compare')==0)? 'class=active':''}}>
               <a href="{{URL::to('lsm-ad-compare')}}">
                 <i class="fa fa-balance-scale"></i> <span>LSM Ad Compare</span>

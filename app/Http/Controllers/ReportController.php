@@ -100,6 +100,24 @@ class ReportController extends Controller
         }
 
 
+        $liberty_ads = AdZoneMapping::where('type','liberty')->get();
+        //print_r("mopub ads: " . $mopub_ads . "\n");
+
+        foreach($liberty_ads as $key=>$ad) {
+
+            //$adzone_id=$ad->adzone;
+            $adzone_id=$ad->add_id;
+            //print_r("adzone_id: " . $adzone_id . "\n");
+            $zone_report_id = DB::table('liberties')->where('id', $adzone_id)->value('liberty_zone');
+            //print_r("zone report id: " . $zone_report_id);
+            $liberty_id = DB::table('liberty_zones')->where('id', $zone_report_id)->value('unit_id');
+            //print_r("mopub_id:" . $mopub_id);
+            $rpm=DB::table('liberty_zone_reports')->where('adunit_id', $liberty_id)->value('rpm');
+            $liberty_ads[$key]->rpm=$rpm;
+            //print_r($rpm);
+        }
+
+
 
 		//print_r($adsense_ads);
         $lsm_ads = AdZoneMapping::where('type','lsm')->get();
@@ -167,6 +185,7 @@ class ReportController extends Controller
             'adsense_ads'=>$adsense_ads,
             'lsm_ads'=>$lsm_ads,
             'mopub_ads'=>$mopub_ads,
+            'liberty_ads'=>$liberty_ads,
             'other_ads'=>$other_ads,
             'lsm_rpm_week'=>$lsm_rpm_week,
             'adsense_rpm_week'=>$adsense_rpm_week,

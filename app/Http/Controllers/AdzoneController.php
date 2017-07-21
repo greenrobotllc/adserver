@@ -14,6 +14,7 @@ use App\Adsense;
 use App\Ad;
 use App\LSM;
 use App\MoPub;
+use App\Liberty;
 use Exception;
 use Response;
 use Input;
@@ -169,7 +170,7 @@ class AdzoneController extends Controller
         //try{
             //get all zones in the database
             $data = AdZone::all();
-            //print_r("Data: ");
+            //dd($data);
             //print_r($data);
             //return;
 
@@ -179,30 +180,48 @@ class AdzoneController extends Controller
                         //initialize required variables usuallay counter variables
             $rpm_index = $total = $ipx = $total_cms = 0;
             $rpm_c = array();
+           // dd($data);
             foreach ($data as $key => $value) {
                 //get all adds in each zone
                 $ad_id[$key] = AdZoneMapping::where('adzone','=',$value->id)->get();
-                
+                //dd($ad_id);
                 foreach ($ad_id[$key] as $key1 => $value1) {
                     switch ($value1->type) {
-						case 'mopub':
-							$rpm[$key][$rpm_index] = MoPub::where('id','=',$value1->add_id)->first();
-							$adzone_id=$rpm[$key][$rpm_index]->mopub_zone;
-							
-							$mopub_id = DB::table('mopub_zones')->where('id', $adzone_id)->value('unit_id');
-							//print_r("adsense_id = $adsense_id");
-							
-							
-							//print_r($adsense_id);
-							$myRpm=DB::table('mopub_zone_reports')->where('adunit_id', $mopub_id)->value('rpm');
-							//print_r("rpm is");
+                        case 'mopub':
+                            $rpm[$key][$rpm_index] = MoPub::where('id','=',$value1->add_id)->first();
+                            $adzone_id=$rpm[$key][$rpm_index]->mopub_zone;
+                            
+                            $mopub_id = DB::table('mopub_zones')->where('id', $adzone_id)->value('unit_id');
+                            //print_r("adsense_id = $adsense_id");
+                            
+                            
+                            //print_r($adsense_id);
+                            $myRpm=DB::table('mopub_zone_reports')->where('adunit_id', $mopub_id)->value('rpm');
+                            //print_r("rpm is");
                             //print_r((float)$myRpm);
-							$rpm[$key][$rpm_index]->rpm=(float)$myRpm;
+                            $rpm[$key][$rpm_index]->rpm=(float)$myRpm;
             
-							
-							$total += $rpm[$key][$rpm_index]->rpm;
-							break;
-							
+                            
+                            $total += $rpm[$key][$rpm_index]->rpm;
+                            break;
+                        case 'liberty':
+                            $rpm[$key][$rpm_index] = Liberty::where('id','=',$value1->add_id)->first();
+                            $adzone_id=$rpm[$key][$rpm_index]->liberty_zone;
+                            
+                            $liberty_id = DB::table('liberty_zones')->where('id', $adzone_id)->value('unit_id');
+                            //print_r("adsense_id = $adsense_id");
+                            
+                            
+                            //print_r($adsense_id);
+                            $myRpm=DB::table('liberty_zone_reports')->where('adunit_id', $liberty_id)->value('rpm');
+                            //print_r("rpm is");
+                            //print_r((float)$myRpm);
+                            $rpm[$key][$rpm_index]->rpm=(float)$myRpm;
+            
+                            
+                            $total += $rpm[$key][$rpm_index]->rpm;
+                            break;
+
                         case 'adsense':
                            $rpm[$key][$rpm_index] = Adsense::where('id','=',$value1->add_id)->first();
                             //$rpm[$key][$rpm_index]->rpm = Ad::where('name','adsense 1')->first()->last_rpm;
@@ -257,7 +276,11 @@ class AdzoneController extends Controller
                 // $average = $total;
                 // error_log("Average: ".count($ad_id[$key]));
                 // if (!$ad_id[$key]):
-                 // $logging .= "<br />Key: ".$key;
+                  $logging .= "<br />Key: ".$key;
+                // if($key != 0) {
+                //     dd($rpm[$key]);
+                // }
+                if(isset($rpm) && isset($rpm[$key])) {
                 foreach ($rpm[$key] as $value2) {
                     $total_cms += $value2->rpm + 0.001;// + $average;
                     $rpm_c[$ipx++] = $value2->rpm + 0.001;// + $average;
@@ -275,7 +298,7 @@ class AdzoneController extends Controller
                     // error_log("Total: ".$total_cms." key:".$key3);
                     $ad_id[$key][$key3]->save();
                 }
-
+                }
                 //Reset all the variables
                 $rpm_index = $total = $ipx = $total_cms = 0;
                 $rpm_c = array();

@@ -16,8 +16,10 @@ use DateTime;
 use DateInterval;
 use App\AdsenseZone;
 use App\MoPubZone;
+use App\LibertyZone;
 use App\ZoneReports;
 use App\MoPubZoneReports;
+use App\LibertyZoneReports;
 
 class AdInfoController extends Controller
 {
@@ -36,6 +38,11 @@ class AdInfoController extends Controller
 		date_default_timezone_set($timezone);
 		\Config::set('app.timezone', $timezone);
 
+		$liberty_config = \App\AdProviderConfig::where('type','=','liberty')->value('config');
+		$liberty_arr = unserialize($liberty_config);
+	    $liberty_output =AdInfoController::liberty_update($liberty_arr['liberty_id'], $liberty_arr['liberty_key']);
+		// return $liberty_output;
+		
 	    $mopub_output =AdInfoController::mopub_update();
 	 	//return $mopub_output;
 	//
@@ -64,9 +71,11 @@ class AdInfoController extends Controller
 
 		//$ads_output = AdInfoController::adslots_update();
 		$ads_map_update = new AdzoneController(false);
-		$ads_output = $ads_map_update->WeightageCalculator();
+		
+		 $ads_output = $ads_map_update->WeightageCalculator();
+		//return $ads_output;
 
-		return $lsm_output.$adsense_output.$mopub_output.$ads_output;
+		return $lsm_output.$adsense_output.$mopub_output.$liberty_output.$ads_output;
 	
 	
 	}
@@ -190,6 +199,92 @@ class AdInfoController extends Controller
 		$access_token_data_setter = AdProviderConfig::where('type','adsense_access_token')->where('user_id',\Auth::id())->delete();
 	}
 
+	private function liberty_update($id, $key) {
+		$income = 0;
+		$output = "<p>.:: Processing Liberty Ads ::. <br />";
+
+		if (!$id && !$key)
+		{
+			$output .= "!! PLEASE ADD YOUR LIBERTY ACCOUNT DETAILS !! <br /><hr>";
+			return $output;
+		}
+		
+		$date = new DateTime();
+		// $date->add(DateInterval::createFromDateString('yesterday'));
+		// $yesterday = $date->format('Y-m-j');
+		$date->add(DateInterval::createFromDateString('today'));
+		$today = $date->format('Y-m-j');
+	
+		//$mopub_config = \App\AdProviderConfig::where('type','=','mopub')->value('config');
+		//$arr = unserialize($mopub_config);
+		
+		//$a=print_r($arr, true);
+		// //$output .= "<pre>" . print_r($arr, true) . "</pre>";
+		// $api_key=$arr['api_key'];
+		// $report_id=$arr['report_id'];
+		// if(!$api_key || !$report_id) {
+		// 	return "MoPub not setup; disabling it.<br />";
+		// }
+		//die();
+		//$url="https://app.mopub.com/reports/custom/api/download_report?report_key=$report_id&api_key=$api_key&date=" . $yesterday;
+		//$output .= "<pre>" . print_r("url: $url", true) . "</pre>";
+		//return $output;
+		$url = "https://dev.adnetwork.greenrobot.com/api/publisher_reports?user_id=$id&publisher_api_key=$key&date=$today";
+		//die();
+		//dd($url);
+		$str = file_get_contents($url);
+		$csv = Reader::createFromString($str);
+			
+		//get the first row, usually the CSV header
+		$headers = $csv->fetchOne();
+	
+		//dd($headers);
+		$res = $csv->setOffset(1)->fetchAll();
+		//$output .= "<pre>" . print_r($headers, true) . "</pre>";
+		$total_revenue=0;
+		$total_impressions=0;
+		$total_attempts=0;
+		//dd($res);
+		foreach($res as $row) {
+			$report_date=$row[0];
+			$widget_id=$row[1];
+			$widget_name=$row[2];
+			$site_id=$row[3];
+			$site_name=$row[4];
+			$platform=$row[5];
+			$impressions=$row[6];
+			$clicks=$row[7];
+			$revenue=$row[8];
+
+			$libertyZone = LibertyZone::firstOrCreate(['name' => $widget_name, 'unit_id'=>$widget_id, 'app' => $site_name, 'platform' => $platform]);
+				$output .="0";
+
+				$impressions = $row[6];
+				$revenue = $row[8];
+		
+
+				if($impressions == 0) {
+					$unit_rpm=0;
+				}
+				else {
+					$unit_rpm = $revenue/$impressions;
+					$unit_rpm=$unit_rpm*1000;
+				}
+				$output .="unit rpm is $unit_rpm";
+				$output .="1";
+				
+				$ad = LibertyZoneReports::updateOrCreate( ['adunit_id' => $widget_id, 'date' => $report_date], ['revenue'=>$revenue, 'rpm' => $unit_rpm, 'adunit_name' => $widget_name, 'platform'=> $platform, 'app'=>$site_name ] );
+
+				$output .="2";
+		
+			
+
+			//print_r($res);
+		}
+		return $output;
+	//http://dev.adnetwork.greenrobot.com/api/publisher_reports?user_id=1&publisher_api_key=eef06a72770dc8852188fae7ff4cfcdc&date=2017-07-08
+
+	}
 
 	private function lsm_update($user, $pass) 
 	{

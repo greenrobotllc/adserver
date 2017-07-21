@@ -26,6 +26,11 @@ class AdZoneMapping extends Model
             return $this->hasOne('App\MoPub', 'id', 'add_id');
         }
 
+        public function getliberty()
+        {
+            return $this->hasOne('App\Liberty', 'id', 'add_id');
+        }
+
         public function getother()
         {
         	return $this->hasOne('App\CustomAdd', 'id', 'add_id');
