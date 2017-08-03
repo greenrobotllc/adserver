@@ -67,4 +67,4 @@ Follow GreenRobot Adserver on Twitter: https://twitter.com/GRAdserver
 
 
 ## TODO
-I would like to add Facebook Audience network to this adserver. I have decided to not work with AerServ any longer.
+I would like to add Facebook Audience network to this adserver.
