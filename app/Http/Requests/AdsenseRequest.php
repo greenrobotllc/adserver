@@ -26,7 +26,7 @@ class AdsenseRequest extends Request
         return [
             'name'=>'min:3|max:50|required',
             'adzone'=>'required',
-            'adcode'=>'min:10|required'
+            // 'adcode'=>'min:10|required'
         ];
     }
 }

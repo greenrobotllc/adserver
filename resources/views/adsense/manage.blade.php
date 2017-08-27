@@ -86,7 +86,7 @@
 					
 					
                     <div class="form-group">
-                      <label for="adcode" class="col-sm-2 control-label">Ad Code</label>
+                      <label for="adcode" class="col-sm-2 control-label">AdSense Code (leave blank for AdMob)</label>
                       <div class="col-sm-10">
                         <textarea class="form-control" style="height:230px;" name="adcode" minlength="10" placeholder="<script async src='//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js'></script>
 <!-- AD -->
@@ -96,8 +96,11 @@
      data-ad-slot='XXXXXXXXXX'></ins>
 <script>
 (adsbygoogle = window.adsbygoogle || []).push({});
-</script>" required></textarea>
+</script>"></textarea>
+
                       </div>
+
+
                     </div>
                     <div class="form-group">
                       <div class="col-sm-offset-2 col-sm-10">
