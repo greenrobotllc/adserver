@@ -67,4 +67,5 @@ Follow GreenRobot Adserver on Twitter: https://twitter.com/GRAdserver
 
 
 ## TODO
-I would like to add Facebook Audience network to this adserver.
+-Document iOS & Android sdk integration
+-I would like to add Facebook Audience network to this adserver.
