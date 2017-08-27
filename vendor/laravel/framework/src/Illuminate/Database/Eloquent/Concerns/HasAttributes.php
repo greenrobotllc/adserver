@@ -679,9 +679,9 @@ trait HasAttributes
             return $value;
         }
 
-         // If the value is already a DateTime instance, we will just skip the rest of
-         // these checks since they will be a waste of time, and hinder performance
-         // when checking the field. We will just return the DateTime right away.
+        // If the value is already a DateTime instance, we will just skip the rest of
+        // these checks since they will be a waste of time, and hinder performance
+        // when checking the field. We will just return the DateTime right away.
         if ($value instanceof DateTimeInterface) {
             return new Carbon(
                 $value->format('Y-m-d H:i:s.u'), $value->getTimezone()
@@ -765,7 +765,9 @@ trait HasAttributes
     {
         $defaults = [static::CREATED_AT, static::UPDATED_AT];
 
-        return $this->usesTimestamps() ? array_merge($this->dates, $defaults) : $this->dates;
+        return $this->usesTimestamps()
+                    ? array_unique(array_merge($this->dates, $defaults))
+                    : $this->dates;
     }
 
     /**
