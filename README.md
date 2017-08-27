@@ -34,6 +34,26 @@ I recommend using Linux or Mac OS X. I have not tried this under Windows. For pr
 13. Setup something like the following in cron (your path to artisan may vary): * * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1
 14. If you are using less than PHP 7, after running the adserver for awhile, you may run into the problem with `zend_mm_heap corrupted` in your PHP log file, and no adserver pages load properly. This problem is currently unsolved. See below for more info.
 
+## Developer Notes
+Note for developers: I have set debug to false in config/app.php so this is ready to go for production installs. If you wish to debug, set this value to true. Setting it to true may cause your database password to be exposed if a connection error occurs.
+
+## Contact / Security Bugs
+You can use Github issues for regular bugs and feature requests. For security issues or if you have any questions you don't want to discuss publicly you can email me: andy@greenrobot.com
+
+## Facebook Discussion Group
+Join the discussion on Facebook about GreenRobot Adserver: https://www.facebook.com/groups/greenrobotadserver/
+
+## Twitter Updates
+Follow GreenRobot Adserver on Twitter: https://twitter.com/GRAdserver
+
+
+## TODO
+-Document iOS & Android sdk integration
+
+-I would like to add Facebook Audience network to this adserver.
+
+
+
 ## `zend_mm_heap corrupted` error
 After awhile, I was getting the error: `zend_mm_heap corrupted` in my php error log and the page was blank. I tried a variety of things, I will go through them all here. I edited my `php.ini` to include:
 
@@ -52,20 +72,3 @@ Even then after awhile, I was still getting the eror. I hired getmyadmin.com to 
 I then noticed the problem again. I updated to the latest version of PHP and Centos and Laravel. The problem was still there sporadically. I opened my first PHP bug about this issue: https://bugs.php.net/bug.php?id=73598. This was thanks to this very helpful Stackoverflow answer: http://stackoverflow.com/questions/2247977/what-does-zend-mm-heap-corrupted-mean/36350601#36350601
 
 Update: 2/23/2017. I have updated to PHP 7.1.1 on a new server and have not experienced this error since upgrading. I think PHP 7 is required in order to run this adserver without the zend corruption.
-
-## Developer Notes
-Note for developers: I have set debug to false in config/app.php so this is ready to go for production installs. If you wish to debug, set this value to true. Setting it to true may cause your database password to be exposed if a connection error occurs.
-
-## Contact / Security Bugs
-You can use Github issues for regular bugs and feature requests. For security issues or if you have any questions you don't want to discuss publicly you can email me: andy@greenrobot.com
-
-## Facebook Discussion Group
-Join the discussion on Facebook about GreenRobot Adserver: https://www.facebook.com/groups/greenrobotadserver/
-
-## Twitter Updates
-Follow GreenRobot Adserver on Twitter: https://twitter.com/GRAdserver
-
-
-## TODO
--Document iOS & Android sdk integration
--I would like to add Facebook Audience network to this adserver.
