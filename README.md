@@ -52,6 +52,11 @@ Follow GreenRobot Adserver on Twitter: https://twitter.com/GRAdserver
 
 -I would like to add Facebook Audience network to this adserver.
 
+## Contributing
+
+We take openness and inclusivity very seriously. To that end we have adopted the following code of conduct.
+
+[Contributor Code of Conduct](CONTRIBUTING.md)
 
 
 ## `zend_mm_heap corrupted` error
