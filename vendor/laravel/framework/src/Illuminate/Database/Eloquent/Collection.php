@@ -43,7 +43,7 @@ class Collection extends BaseCollection implements QueueableCollection
      */
     public function load($relations)
     {
-        if (count($this->items) > 0) {
+        if ($this->isNotEmpty()) {
             if (is_string($relations)) {
                 $relations = func_get_args();
             }
@@ -159,7 +159,8 @@ class Collection extends BaseCollection implements QueueableCollection
             ->getDictionary();
 
         return $this->map(function ($model) use ($freshModels) {
-            return $model->exists ? $freshModels[$model->getKey()] : null;
+            return $model->exists && isset($freshModels[$model->getKey()])
+                    ? $freshModels[$model->getKey()] : null;
         });
     }
 
@@ -368,10 +369,11 @@ class Collection extends BaseCollection implements QueueableCollection
      * Get the type of the entities being queued.
      *
      * @return string|null
+     * @throws \LogicException
      */
     public function getQueueableClass()
     {
-        if ($this->count() === 0) {
+        if ($this->isEmpty()) {
             return;
         }
 
@@ -394,5 +396,28 @@ class Collection extends BaseCollection implements QueueableCollection
     public function getQueueableIds()
     {
         return $this->modelKeys();
+    }
+
+    /**
+     * Get the connection of the entities being queued.
+     *
+     * @return string|null
+     * @throws \LogicException
+     */
+    public function getQueueableConnection()
+    {
+        if ($this->isEmpty()) {
+            return;
+        }
+
+        $connection = $this->first()->getConnectionName();
+
+        $this->each(function ($model) use ($connection) {
+            if ($model->getConnectionName() !== $connection) {
+                throw new LogicException('Queueing collections with multiple model connections is not supported.');
+            }
+        });
+
+        return $connection;
     }
 }

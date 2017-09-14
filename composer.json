@@ -6,7 +6,7 @@
     "type": "project",
     "require": {
         "php": ">=5.5.9",
-        "laravel/framework": "5.4.*",
+        "laravel/framework": "5.5.*",
 		"google/apiclient": "1.0.*@beta",
         "doctrine/dbal": "v2.5.4",
         "rachidlaasri/laravel-installer": "1.4.1",
