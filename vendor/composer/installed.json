@@ -1631,81 +1631,6 @@
         ]
     },
     {
-        "name": "torann/geoip",
-        "version": "1.0.4",
-        "version_normalized": "1.0.4.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Torann/laravel-geoip.git",
-            "reference": "da0808c16de3cebeb165d7f8b6617ab6cbebab87"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/Torann/laravel-geoip/zipball/da0808c16de3cebeb165d7f8b6617ab6cbebab87",
-            "reference": "da0808c16de3cebeb165d7f8b6617ab6cbebab87",
-            "shasum": ""
-        },
-        "require": {
-            "illuminate/console": "~5.0",
-            "illuminate/support": "~5.0",
-            "php": ">=5.5.9"
-        },
-        "require-dev": {
-            "geoip2/geoip2": "~2.1",
-            "mockery/mockery": "^0.9.4",
-            "phpunit/phpunit": "^4.8"
-        },
-        "suggest": {
-            "geoip2/geoip2": "Required to use the MaxMind database or web service with GeoIP (~2.1).",
-            "monolog/monolog": "Allows for storing location not found errors to the log"
-        },
-        "time": "2017-06-21T22:55:12+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.0-dev"
-            },
-            "laravel": {
-                "providers": [
-                    "Torann\\GeoIP\\GeoIPServiceProvider"
-                ],
-                "aliases": {
-                    "GeoIP": "Torann\\GeoIP\\Facades\\GeoIP"
-                }
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "files": [
-                "src/helpers.php"
-            ],
-            "psr-4": {
-                "Torann\\GeoIP\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD 2-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Daniel Stainback",
-                "email": "torann@gmail.com"
-            }
-        ],
-        "description": "Support for multiple GeoIP services.",
-        "keywords": [
-            "IP API",
-            "geoip",
-            "geolocation",
-            "infoDB",
-            "laravel",
-            "laravel 5",
-            "location",
-            "maxmind"
-        ]
-    },
-    {
         "name": "phpunit/phpunit",
         "version": "4.8.36",
         "version_normalized": "4.8.36.0",
@@ -2308,90 +2233,6 @@
             "polyfill",
             "portable",
             "shim"
-        ]
-    },
-    {
-        "name": "ramsey/uuid",
-        "version": "3.7.0",
-        "version_normalized": "3.7.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/ramsey/uuid.git",
-            "reference": "0ef23d1b10cf1bc576e9d865a7e9c47982c5715e"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/ramsey/uuid/zipball/0ef23d1b10cf1bc576e9d865a7e9c47982c5715e",
-            "reference": "0ef23d1b10cf1bc576e9d865a7e9c47982c5715e",
-            "shasum": ""
-        },
-        "require": {
-            "paragonie/random_compat": "^1.0|^2.0",
-            "php": "^5.4 || ^7.0"
-        },
-        "replace": {
-            "rhumsaa/uuid": "self.version"
-        },
-        "require-dev": {
-            "apigen/apigen": "^4.1",
-            "codeception/aspect-mock": "^1.0 | ^2.0",
-            "doctrine/annotations": "~1.2.0",
-            "goaop/framework": "1.0.0-alpha.2 | ^1.0 | ^2.1",
-            "ircmaxell/random-lib": "^1.1",
-            "jakub-onderka/php-parallel-lint": "^0.9.0",
-            "mockery/mockery": "^0.9.4",
-            "moontoast/math": "^1.1",
-            "php-mock/php-mock-phpunit": "^0.3|^1.1",
-            "phpunit/phpunit": "^4.7|>=5.0 <5.4",
-            "satooshi/php-coveralls": "^0.6.1",
-            "squizlabs/php_codesniffer": "^2.3"
-        },
-        "suggest": {
-            "ext-libsodium": "Provides the PECL libsodium extension for use with the SodiumRandomGenerator",
-            "ext-uuid": "Provides the PECL UUID extension for use with the PeclUuidTimeGenerator and PeclUuidRandomGenerator",
-            "ircmaxell/random-lib": "Provides RandomLib for use with the RandomLibAdapter",
-            "moontoast/math": "Provides support for converting UUID to 128-bit integer (in string form).",
-            "ramsey/uuid-console": "A console application for generating UUIDs with ramsey/uuid",
-            "ramsey/uuid-doctrine": "Allows the use of Ramsey\\Uuid\\Uuid as Doctrine field type."
-        },
-        "time": "2017-08-04T13:39:04+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "3.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Ramsey\\Uuid\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Marijn Huizendveld",
-                "email": "marijn.huizendveld@gmail.com"
-            },
-            {
-                "name": "Thibaud Fabre",
-                "email": "thibaud@aztech.io"
-            },
-            {
-                "name": "Ben Ramsey",
-                "email": "ben@benramsey.com",
-                "homepage": "https://benramsey.com"
-            }
-        ],
-        "description": "Formerly rhumsaa/uuid. A PHP 5.4+ library for generating RFC 4122 version 1, 3, 4, and 5 universally unique identifiers (UUID).",
-        "homepage": "https://github.com/ramsey/uuid",
-        "keywords": [
-            "guid",
-            "identifier",
-            "uuid"
         ]
     },
     {
@@ -4008,18 +3849,102 @@
         ]
     },
     {
-        "name": "laravel/framework",
-        "version": "v5.5.4",
-        "version_normalized": "5.5.4.0",
+        "name": "ramsey/uuid",
+        "version": "3.7.1",
+        "version_normalized": "3.7.1.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/laravel/framework.git",
-            "reference": "d3e0493bead126cf7fb9a005c64e6b58a9190e51"
+            "url": "https://github.com/ramsey/uuid.git",
+            "reference": "45cffe822057a09e05f7bd09ec5fb88eeecd2334"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/laravel/framework/zipball/d3e0493bead126cf7fb9a005c64e6b58a9190e51",
-            "reference": "d3e0493bead126cf7fb9a005c64e6b58a9190e51",
+            "url": "https://api.github.com/repos/ramsey/uuid/zipball/45cffe822057a09e05f7bd09ec5fb88eeecd2334",
+            "reference": "45cffe822057a09e05f7bd09ec5fb88eeecd2334",
+            "shasum": ""
+        },
+        "require": {
+            "paragonie/random_compat": "^1.0|^2.0",
+            "php": "^5.4 || ^7.0"
+        },
+        "replace": {
+            "rhumsaa/uuid": "self.version"
+        },
+        "require-dev": {
+            "apigen/apigen": "^4.1",
+            "codeception/aspect-mock": "^1.0 | ^2.0",
+            "doctrine/annotations": "~1.2.0",
+            "goaop/framework": "1.0.0-alpha.2 | ^1.0 | ^2.1",
+            "ircmaxell/random-lib": "^1.1",
+            "jakub-onderka/php-parallel-lint": "^0.9.0",
+            "mockery/mockery": "^0.9.4",
+            "moontoast/math": "^1.1",
+            "php-mock/php-mock-phpunit": "^0.3|^1.1",
+            "phpunit/phpunit": "^4.7|>=5.0 <5.4",
+            "satooshi/php-coveralls": "^0.6.1",
+            "squizlabs/php_codesniffer": "^2.3"
+        },
+        "suggest": {
+            "ext-libsodium": "Provides the PECL libsodium extension for use with the SodiumRandomGenerator",
+            "ext-uuid": "Provides the PECL UUID extension for use with the PeclUuidTimeGenerator and PeclUuidRandomGenerator",
+            "ircmaxell/random-lib": "Provides RandomLib for use with the RandomLibAdapter",
+            "moontoast/math": "Provides support for converting UUID to 128-bit integer (in string form).",
+            "ramsey/uuid-console": "A console application for generating UUIDs with ramsey/uuid",
+            "ramsey/uuid-doctrine": "Allows the use of Ramsey\\Uuid\\Uuid as Doctrine field type."
+        },
+        "time": "2017-09-22T20:46:04+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "3.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Ramsey\\Uuid\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Marijn Huizendveld",
+                "email": "marijn.huizendveld@gmail.com"
+            },
+            {
+                "name": "Thibaud Fabre",
+                "email": "thibaud@aztech.io"
+            },
+            {
+                "name": "Ben Ramsey",
+                "email": "ben@benramsey.com",
+                "homepage": "https://benramsey.com"
+            }
+        ],
+        "description": "Formerly rhumsaa/uuid. A PHP 5.4+ library for generating RFC 4122 version 1, 3, 4, and 5 universally unique identifiers (UUID).",
+        "homepage": "https://github.com/ramsey/uuid",
+        "keywords": [
+            "guid",
+            "identifier",
+            "uuid"
+        ]
+    },
+    {
+        "name": "laravel/framework",
+        "version": "v5.5.13",
+        "version_normalized": "5.5.13.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/laravel/framework.git",
+            "reference": "bfbe20d32ee9f98c89df852847827407a5127be4"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/laravel/framework/zipball/bfbe20d32ee9f98c89df852847827407a5127be4",
+            "reference": "bfbe20d32ee9f98c89df852847827407a5127be4",
             "shasum": ""
         },
         "require": {
@@ -4107,7 +4032,7 @@
             "symfony/dom-crawler": "Required to use most of the crawler integration testing tools (~3.3).",
             "symfony/psr-http-message-bridge": "Required to psr7 bridging features (~1.0)."
         },
-        "time": "2017-09-13T13:36:29+00:00",
+        "time": "2017-09-24T19:09:38+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -4139,6 +4064,81 @@
         "keywords": [
             "framework",
             "laravel"
+        ]
+    },
+    {
+        "name": "torann/geoip",
+        "version": "1.0.5",
+        "version_normalized": "1.0.5.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Torann/laravel-geoip.git",
+            "reference": "b5d77ed475a3a4266ae91242686ce017d8430db9"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Torann/laravel-geoip/zipball/b5d77ed475a3a4266ae91242686ce017d8430db9",
+            "reference": "b5d77ed475a3a4266ae91242686ce017d8430db9",
+            "shasum": ""
+        },
+        "require": {
+            "illuminate/console": "~5.0",
+            "illuminate/support": "~5.0",
+            "php": ">=5.5.9"
+        },
+        "require-dev": {
+            "geoip2/geoip2": "~2.1",
+            "mockery/mockery": "^0.9.4",
+            "phpunit/phpunit": "^4.8"
+        },
+        "suggest": {
+            "geoip2/geoip2": "Required to use the MaxMind database or web service with GeoIP (~2.1).",
+            "monolog/monolog": "Allows for storing location not found errors to the log"
+        },
+        "time": "2017-09-19T23:43:25+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0-dev"
+            },
+            "laravel": {
+                "providers": [
+                    "Torann\\GeoIP\\GeoIPServiceProvider"
+                ],
+                "aliases": {
+                    "GeoIP": "Torann\\GeoIP\\Facades\\GeoIP"
+                }
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "src/helpers.php"
+            ],
+            "psr-4": {
+                "Torann\\GeoIP\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD 2-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Daniel Stainback",
+                "email": "torann@gmail.com"
+            }
+        ],
+        "description": "Support for multiple GeoIP services.",
+        "keywords": [
+            "IP API",
+            "geoip",
+            "geolocation",
+            "infoDB",
+            "laravel",
+            "laravel 5",
+            "location",
+            "maxmind"
         ]
     }
 ]
