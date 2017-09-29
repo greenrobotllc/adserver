@@ -38,7 +38,7 @@ class DisplayAddController extends Controller
                 case 'liberty':
                     //$code= Liberty::where('id',$data->add_id)->first()->adcode;
                     $ad_unit_id=Liberty::where('id', $data->add_id)->first()->ad_unit_id;
-                    $code="<iframe width=\"728px\" height=\"90px\"  frameBorder=\"0\" src=\"https://dev.adnetwork.greenrobot.com/ads/randomad?wid=$ad_unit_id\"></iframe>";
+                    $code="<iframe width=\"728px\" height=\"90px\" scrolling=\"no\"  frameBorder=\"0\" src=\"https://dev.adnetwork.greenrobot.com/ads/randomad?wid=$ad_unit_id\"></iframe>";
                     //dd($ad_unit_id);
                     break;
                 case 'lsm':
