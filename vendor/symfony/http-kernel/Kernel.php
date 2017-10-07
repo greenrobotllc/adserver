@@ -61,19 +61,17 @@ abstract class Kernel implements KernelInterface, TerminableInterface
 
     private $projectDir;
 
-    const VERSION = '3.3.9';
-    const VERSION_ID = 30309;
+    const VERSION = '3.3.10';
+    const VERSION_ID = 30310;
     const MAJOR_VERSION = 3;
     const MINOR_VERSION = 3;
-    const RELEASE_VERSION = 9;
+    const RELEASE_VERSION = 10;
     const EXTRA_VERSION = '';
 
     const END_OF_MAINTENANCE = '01/2018';
     const END_OF_LIFE = '07/2018';
 
     /**
-     * Constructor.
-     *
      * @param string $environment The environment
      * @param bool   $debug       Whether to enable debugging or not
      */
@@ -814,7 +812,7 @@ abstract class Kernel implements KernelInterface, TerminableInterface
                 do {
                     $token = $tokens[++$i];
                     $output .= isset($token[1]) && 'b"' !== $token ? $token[1] : $token;
-                } while ($token[0] !== T_END_HEREDOC);
+                } while (T_END_HEREDOC !== $token[0]);
                 $rawChunk = '';
             } elseif (T_WHITESPACE === $token[0]) {
                 if ($ignoreSpace) {

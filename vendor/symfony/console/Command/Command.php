@@ -46,8 +46,6 @@ class Command
     private $helperSet;
 
     /**
-     * Constructor.
-     *
      * @param string|null $name The name of the command; passing null means it must be set in configure()
      *
      * @throws LogicException When the command name is empty
@@ -475,7 +473,7 @@ class Command
     }
 
     /**
-     * @return bool Whether the command should be publicly shown or not.
+     * @return bool whether the command should be publicly shown or not
      */
     public function isHidden()
     {

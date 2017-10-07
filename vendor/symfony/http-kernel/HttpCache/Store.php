@@ -29,8 +29,6 @@ class Store implements StoreInterface
     private $locks;
 
     /**
-     * Constructor.
-     *
      * @param string $root The path to the cache directory
      *
      * @throws \RuntimeException
@@ -210,7 +208,7 @@ class Store implements StoreInterface
                 $entry[1]['vary'] = array('');
             }
 
-            if ($vary != $entry[1]['vary'][0] || !$this->requestsMatch($vary, $entry[0], $storedEnv)) {
+            if ($entry[1]['vary'][0] != $vary || !$this->requestsMatch($vary, $entry[0], $storedEnv)) {
                 $entries[] = $entry;
             }
         }

@@ -139,7 +139,7 @@ class StaticPrefixCollection
      */
     private function accepts($prefix)
     {
-        return '' === $this->prefix || strpos($prefix, $this->prefix) === 0;
+        return '' === $this->prefix || 0 === strpos($prefix, $this->prefix);
     }
 
     /**
@@ -225,7 +225,7 @@ class StaticPrefixCollection
      *
      * @param string $prefix
      *
-     * @throws \LogicException When a prefix does not belong in a group.
+     * @throws \LogicException when a prefix does not belong in a group
      */
     private function guardAgainstAddingNotAcceptedRoutes($prefix)
     {

@@ -111,7 +111,7 @@ class Swift_Plugins_DecoratorPlugin implements Swift_Events_SendListener, Swift_
                             $count = 1;
                         }
                     }
-                } else {
+                } elseif (is_string($body)) {
                     $bodyReplaced = str_replace($search, $replace, $body, $count);
                 }
 
@@ -159,7 +159,7 @@ class Swift_Plugins_DecoratorPlugin implements Swift_Events_SendListener, Swift_
             return $this->replacements->getReplacementsFor($address);
         }
 
-        return isset($this->replacements[$address]) ? $this->replacements[$address] : null;
+        return $this->replacements[$address] ?? null;
     }
 
     /**

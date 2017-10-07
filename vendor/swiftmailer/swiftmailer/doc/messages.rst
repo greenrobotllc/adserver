@@ -481,8 +481,13 @@ Mailer will throw a ``Swift_RfcComplianceException``.
 
 If you add recipients automatically based on a data source that may contain
 invalid email addresses, you can prevent possible exceptions by validating the
-addresses using ``Swift_Validate::email($email)`` and only adding addresses
-that validate. Another way would be to wrap your ``setTo()``, ``setCc()`` and
+addresses using::
+        use Egulias\EmailValidator\EmailValidator;
+        use Egulias\EmailValidator\Validation\RFCValidation;
+
+        $validator = new EmailValidator();
+        $validator->isValid("example@example.com", new RFCValidation()); //true
+and only adding addresses that validate. Another way would be to wrap your ``setTo()``, ``setCc()`` and
 ``setBcc()`` calls in a try-catch block and handle the
 ``Swift_RfcComplianceException`` in the catch block.
 
@@ -846,7 +851,7 @@ To set the character set of your Message:
     Swift_Preferences::getInstance()->setCharset('iso-8859-2');
 
     // Approach 2: Call the setCharset() method of the message
-    $message = new Swift_Message()
+    $message = (new Swift_Message())
       ->setCharset('iso-8859-2');
 
     // Approach 3: Specify the charset when setting the body

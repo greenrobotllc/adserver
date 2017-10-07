@@ -1,6 +1,12 @@
 Changelog
 =========
 
+6.0.2 (2017-09-30)
+------------------
+
+ * fixed DecoratorPlugin
+ * removed usage of getmypid()
+
 6.0.1 (2017-05-20)
 ------------------
 
@@ -20,6 +26,7 @@ Changelog
  * methods operating on Date header now use DateTimeImmutable object instead of Unix timestamp;
    Swift_Mime_Headers_DateHeader::getTimestamp()/setTimestamp() renamed to getDateTime()/setDateTime()
  * bumped minimum version to PHP 7.0
+ * removed Swift_Validate and replaced by egulias/email-validator
 
 5.4.9 (2017-XX-XX)
 ------------------

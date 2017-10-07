@@ -34,7 +34,7 @@ class Data implements \ArrayAccess, \Countable, \IteratorAggregate
     }
 
     /**
-     * @return string The type of the value.
+     * @return string the type of the value
      */
     public function getType()
     {
@@ -61,9 +61,9 @@ class Data implements \ArrayAccess, \Countable, \IteratorAggregate
     }
 
     /**
-     * @param bool $recursive Whether values should be resolved recursively or not.
+     * @param bool $recursive whether values should be resolved recursively or not
      *
-     * @return scalar|array|null|Data[] A native representation of the original value.
+     * @return scalar|array|null|Data[] a native representation of the original value
      */
     public function getValue($recursive = false)
     {
@@ -247,6 +247,7 @@ class Data implements \ArrayAccess, \Countable, \IteratorAggregate
                 $keys[] = Caster::PREFIX_PROTECTED.$key;
                 $keys[] = Caster::PREFIX_VIRTUAL.$key;
                 $keys[] = "\0$item->class\0$key";
+                // no break
             case Stub::TYPE_ARRAY:
             case Stub::TYPE_RESOURCE:
                 break;
@@ -349,7 +350,7 @@ class Data implements \ArrayAccess, \Countable, \IteratorAggregate
                     $item = clone $item;
                     $item->type = $item->class;
                     $item->class = $item->value;
-                    // No break;
+                    // no break
                 case Stub::TYPE_OBJECT:
                 case Stub::TYPE_RESOURCE:
                     $withChildren = $children && $cursor->depth !== $this->maxDepth && $this->maxItemsPerDepth;

@@ -38,7 +38,7 @@ Here is the simplest way to send emails with Swift Mailer::
     $mailer = new Swift_Mailer($transport);
 
     // Create a message
-    $message = new Swift_Message('Wonderful Subject')
+    $message = (new Swift_Message('Wonderful Subject'))
       ->setFrom(['john@doe.com' => 'John Doe'])
       ->setTo(['receiver@domain.org', 'other@domain.org' => 'A name'])
       ->setBody('Here is the message itself')
@@ -55,7 +55,7 @@ You can also use Sendmail as a transport::
 Getting Help
 ------------
 
+For general support, use `Stack Overflow <https://stackoverflow.com>`_.
+
 For bug reports and feature requests, create a new ticket in `GitHub
 <https://github.com/swiftmailer/swiftmailer/issues>`_.
-
-For general support, use Stack Overflow.
