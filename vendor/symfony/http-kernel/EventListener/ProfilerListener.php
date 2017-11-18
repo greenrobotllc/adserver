@@ -40,8 +40,8 @@ class ProfilerListener implements EventSubscriberInterface
      * @param Profiler                     $profiler           A Profiler instance
      * @param RequestStack                 $requestStack       A RequestStack instance
      * @param RequestMatcherInterface|null $matcher            A RequestMatcher instance
-     * @param bool                         $onlyException      true if the profiler only collects data when an exception occurs, false otherwise
-     * @param bool                         $onlyMasterRequests true if the profiler only collects data when the request is a master request, false otherwise
+     * @param bool                         $onlyException      True if the profiler only collects data when an exception occurs, false otherwise
+     * @param bool                         $onlyMasterRequests True if the profiler only collects data when the request is a master request, false otherwise
      */
     public function __construct(Profiler $profiler, RequestStack $requestStack, RequestMatcherInterface $matcher = null, $onlyException = false, $onlyMasterRequests = false)
     {
@@ -56,8 +56,6 @@ class ProfilerListener implements EventSubscriberInterface
 
     /**
      * Handles the onKernelException event.
-     *
-     * @param GetResponseForExceptionEvent $event A GetResponseForExceptionEvent instance
      */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
@@ -70,8 +68,6 @@ class ProfilerListener implements EventSubscriberInterface
 
     /**
      * Handles the onKernelResponse event.
-     *
-     * @param FilterResponseEvent $event A FilterResponseEvent instance
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
