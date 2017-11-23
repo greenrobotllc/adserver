@@ -80,6 +80,9 @@ class AdInfoController extends Controller
 	
 	}
 	private function mopub_update() {
+		$output = "Skipping MoPub...<br />"; //my MoPub account was suspended.
+		return $output;
+
 		$output = "Processing MoPub...<br />";
 
 		$date = new DateTime();
@@ -229,7 +232,14 @@ class AdInfoController extends Controller
 		//$url="https://app.mopub.com/reports/custom/api/download_report?report_key=$report_id&api_key=$api_key&date=" . $yesterday;
 		//$output .= "<pre>" . print_r("url: $url", true) . "</pre>";
 		//return $output;
+		$today=urlencode($today);
+		$id=urlencode($id);
+		$key=urlencode($key);
+
+		//some problem with dns
 		$url = "https://dev.adnetwork.greenrobot.com/api/publisher_reports?user_id=$id&publisher_api_key=$key&date=$today";
+
+		//$url = "https://45.79.75.133/api/publisher_reports?user_id=$id&publisher_api_key=$key&date=$today";
 		//die();
 		//dd($url);
 		$str = file_get_contents($url);
