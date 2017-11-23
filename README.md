@@ -55,4 +55,4 @@ Follow GreenRobot Adserver on Twitter: https://twitter.com/GRAdserver
 
 We take openness and inclusivity very seriously. To that end we have adopted the following code of conduct.
 
-[Contributor Code of Conduct](CONTRIBUTING.md)
+[Contributor Code of Conduct](CODE_OF_CONDUCT.md)
