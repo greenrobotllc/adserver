@@ -18,7 +18,7 @@ For Android: https://github.com/greenrobotllc/adserver-android-sdk
 I recommend using Linux or Mac OS X. I have not tried this under Windows. For production/linux, I have it deployed to a Centos server on Linode and it's running currently. For development I use Mac OS X with Laravel Homestead development environment.
 
 ## Steps to install:
-0. You must use PHP 7.x or greater.
+0. You must use PHP 7.1 or greater.
 1. Git clone the adserver code from Github
 2. Edit database/seeds/UserTableSeeder.php with your preferred email and password.
 3. Install PHP Composer
