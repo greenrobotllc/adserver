@@ -529,7 +529,7 @@ trait ValidatesAttributes
         });
 
         if (in_array('ignore_case', $parameters)) {
-            return empty(preg_grep('/'.preg_quote($value, '/').'/iu', $data));
+            return empty(preg_grep('/^'.preg_quote($value, '/').'$/iu', $data));
         }
 
         return ! in_array($value, array_values($data));
@@ -982,8 +982,8 @@ trait ValidatesAttributes
         }
 
         return ($value instanceof UploadedFile)
-           ? strtolower($value->getClientOriginalExtension()) === 'php'
-           : strtolower($value->getExtension()) === 'php';
+           ? trim(strtolower($value->getClientOriginalExtension())) === 'php'
+           : trim(strtolower($value->getExtension())) === 'php';
     }
 
     /**

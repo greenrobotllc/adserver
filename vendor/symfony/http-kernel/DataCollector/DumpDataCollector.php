@@ -164,6 +164,18 @@ class DumpDataCollector extends DataCollector implements DataDumperInterface
         }
     }
 
+    public function reset()
+    {
+        if ($this->stopwatch) {
+            $this->stopwatch->reset();
+        }
+        $this->data = array();
+        $this->dataCount = 0;
+        $this->isCollected = false;
+        $this->clonesCount = 0;
+        $this->clonesIndex = 0;
+    }
+
     public function serialize()
     {
         if ($this->clonesCount !== $this->clonesIndex) {
