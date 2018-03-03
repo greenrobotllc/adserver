@@ -35,7 +35,7 @@ class ErrorHandlerTest extends TestCase
 
             $newHandler = new ErrorHandler();
 
-            $this->assertSame($newHandler, ErrorHandler::register($newHandler, false));
+            $this->assertSame($handler, ErrorHandler::register($newHandler, false));
             $h = set_error_handler('var_dump');
             restore_error_handler();
             $this->assertSame(array($handler, 'handleError'), $h);
@@ -299,6 +299,9 @@ class ErrorHandlerTest extends TestCase
         @$handler->handleError(E_USER_DEPRECATED, 'Foo deprecation', __FILE__, __LINE__, array());
     }
 
+    /**
+     * @group no-hhvm
+     */
     public function testHandleException()
     {
         try {
@@ -423,6 +426,9 @@ class ErrorHandlerTest extends TestCase
         $handler->setLoggers(array(E_DEPRECATED => array($mockLogger, LogLevel::WARNING)));
     }
 
+    /**
+     * @group no-hhvm
+     */
     public function testSettingLoggerWhenExceptionIsBuffered()
     {
         $bootLogger = new BufferingLogger();
@@ -442,6 +448,9 @@ class ErrorHandlerTest extends TestCase
         $handler->handleException($exception);
     }
 
+    /**
+     * @group no-hhvm
+     */
     public function testHandleFatalError()
     {
         try {
@@ -500,6 +509,9 @@ class ErrorHandlerTest extends TestCase
         $this->assertStringStartsWith("Attempted to load class \"Foo\" from the global namespace.\nDid you forget a \"use\" statement", $args[0]->getMessage());
     }
 
+    /**
+     * @group no-hhvm
+     */
     public function testHandleFatalErrorOnHHVM()
     {
         try {

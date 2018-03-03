@@ -75,7 +75,7 @@ class PhpMatcherDumperTest extends TestCase
                         ->setMethods(array('redirect'))
                         ->setConstructorArgs(array(new RequestContext()))
                         ->getMock();
-        
+
         $matcher->expects($this->once())->method('redirect')->with('/foo%3Abar/', 'foo')->willReturn(array());
 
         $matcher->match('/foo%3Abar');
@@ -354,7 +354,7 @@ class PhpMatcherDumperTest extends TestCase
             array('GET', 'HEAD')
         ));
         $headMatchCasesCollection->add('post_and_head', new Route(
-            '/post_and_get',
+            '/post_and_head',
             array(),
             array(),
             array(),
