@@ -13,8 +13,6 @@ namespace Carbon;
 
 use DateInterval;
 use InvalidArgumentException;
-use Symfony\Component\Translation\Loader\ArrayLoader;
-use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
@@ -119,27 +117,31 @@ class CarbonInterval extends DateInterval
      */
     public function __construct($years = 1, $months = null, $weeks = null, $days = null, $hours = null, $minutes = null, $seconds = null)
     {
-        $spec = static::PERIOD_PREFIX;
+        $spec = $years;
 
-        $spec .= $years > 0 ? $years.static::PERIOD_YEARS : '';
-        $spec .= $months > 0 ? $months.static::PERIOD_MONTHS : '';
+        if (!is_string($spec) || floatval($years) || preg_match('/^[0-9.]/', $years)) {
+            $spec = static::PERIOD_PREFIX;
 
-        $specDays = 0;
-        $specDays += $weeks > 0 ? $weeks * Carbon::DAYS_PER_WEEK : 0;
-        $specDays += $days > 0 ? $days : 0;
+            $spec .= $years > 0 ? $years.static::PERIOD_YEARS : '';
+            $spec .= $months > 0 ? $months.static::PERIOD_MONTHS : '';
 
-        $spec .= $specDays > 0 ? $specDays.static::PERIOD_DAYS : '';
+            $specDays = 0;
+            $specDays += $weeks > 0 ? $weeks * Carbon::DAYS_PER_WEEK : 0;
+            $specDays += $days > 0 ? $days : 0;
 
-        if ($hours > 0 || $minutes > 0 || $seconds > 0) {
-            $spec .= static::PERIOD_TIME_PREFIX;
-            $spec .= $hours > 0 ? $hours.static::PERIOD_HOURS : '';
-            $spec .= $minutes > 0 ? $minutes.static::PERIOD_MINUTES : '';
-            $spec .= $seconds > 0 ? $seconds.static::PERIOD_SECONDS : '';
-        }
+            $spec .= $specDays > 0 ? $specDays.static::PERIOD_DAYS : '';
 
-        if ($spec === static::PERIOD_PREFIX) {
-            // Allow the zero interval.
-            $spec .= '0'.static::PERIOD_YEARS;
+            if ($hours > 0 || $minutes > 0 || $seconds > 0) {
+                $spec .= static::PERIOD_TIME_PREFIX;
+                $spec .= $hours > 0 ? $hours.static::PERIOD_HOURS : '';
+                $spec .= $minutes > 0 ? $minutes.static::PERIOD_MINUTES : '';
+                $spec .= $seconds > 0 ? $seconds.static::PERIOD_SECONDS : '';
+            }
+
+            if ($spec === static::PERIOD_PREFIX) {
+                // Allow the zero interval.
+                $spec .= '0'.static::PERIOD_YEARS;
+            }
         }
 
         parent::__construct($spec);
@@ -214,6 +216,117 @@ class CarbonInterval extends DateInterval
     }
 
     /**
+     * Creates a CarbonInterval from string
+     *
+     * Format:
+     *
+     * Suffix | Unit    | Example | DateInterval expression
+     * -------|---------|---------|------------------------
+     * y      | years   |   1y    | P1Y
+     * mo     | months  |   3mo   | P3M
+     * w      | weeks   |   2w    | P2W
+     * d      | days    |  28d    | P28D
+     * h      | hours   |   4h    | PT4H
+     * m      | minutes |  12m    | PT12M
+     * s      | seconds |  59s    | PT59S
+     *
+     * e. g. `1w 3d 4h 32m 23s` is converted to 10 days 4 hours 32 minutes and 23 seconds.
+     *
+     * Special cases:
+     *  - An empty string will return a zero interval
+     *  - Fractions are allowed for weeks, days, hours and minutes and will be converted
+     *    and rounded to the next smaller value (caution: 0.5w = 4d)
+     *
+     * @param string $intervalDefinition
+     *
+     * @return static
+     */
+    public static function fromString($intervalDefinition)
+    {
+        if (empty($intervalDefinition)) {
+            return new static(0);
+        }
+
+        $years = 0;
+        $months = 0;
+        $weeks = 0;
+        $days = 0;
+        $hours = 0;
+        $minutes = 0;
+        $seconds = 0;
+
+        $pattern = '/(\d+(?:\.\d+)?)\h*([^\d\h]*)/i';
+        preg_match_all($pattern, $intervalDefinition, $parts, PREG_SET_ORDER);
+        while ($match = array_shift($parts)) {
+            list($part, $value, $unit) = $match;
+            $intValue = intval($value);
+            $fraction = floatval($value) - $intValue;
+            switch (strtolower($unit)) {
+                case 'year':
+                case 'years':
+                case 'y':
+                    $years += $intValue;
+                    break;
+
+                case 'month':
+                case 'months':
+                case 'mo':
+                    $months += $intValue;
+                    break;
+
+                case 'week':
+                case 'weeks':
+                case 'w':
+                    $weeks += $intValue;
+                    if ($fraction != 0) {
+                        $parts[] = array(null, $fraction * Carbon::DAYS_PER_WEEK, 'd');
+                    }
+                    break;
+
+                case 'day':
+                case 'days':
+                case 'd':
+                    $days += $intValue;
+                    if ($fraction != 0) {
+                        $parts[] = array(null, $fraction * Carbon::HOURS_PER_DAY, 'h');
+                    }
+                    break;
+
+                case 'hour':
+                case 'hours':
+                case 'h':
+                    $hours += $intValue;
+                    if ($fraction != 0) {
+                        $parts[] = array(null, $fraction * Carbon::MINUTES_PER_HOUR, 'm');
+                    }
+                    break;
+
+                case 'minute':
+                case 'minutes':
+                case 'm':
+                    $minutes += $intValue;
+                    if ($fraction != 0) {
+                        $seconds += round($fraction * Carbon::SECONDS_PER_MINUTE);
+                    }
+                    break;
+
+                case 'second':
+                case 'seconds':
+                case 's':
+                    $seconds += $intValue;
+                    break;
+
+                default:
+                    throw new InvalidArgumentException(
+                        sprintf('Invalid part %s in definition %s', $part, $intervalDefinition)
+                    );
+            }
+        }
+
+        return new static($years, $months, $weeks, $days, $hours, $minutes, $seconds);
+    }
+
+    /**
      * Create a CarbonInterval instance from a DateInterval one.  Can not instance
      * DateInterval objects created from DateTime::diff() as you can't externally
      * set the $days field.
@@ -249,10 +362,7 @@ class CarbonInterval extends DateInterval
     protected static function translator()
     {
         if (static::$translator === null) {
-            $translator = new Translator('en');
-            $translator->addLoader('array', new ArrayLoader());
-            static::$translator = $translator;
-            static::setLocale('en');
+            static::$translator = Translator::get();
         }
 
         return static::$translator;
@@ -295,13 +405,7 @@ class CarbonInterval extends DateInterval
      */
     public static function setLocale($locale)
     {
-        $translator = static::translator();
-        $translator->setLocale($locale);
-
-        if ($translator instanceof Translator) {
-            // Ensure the locale has been loaded.
-            $translator->addResource('array', require __DIR__.'/Lang/'.$locale.'.php', $locale);
-        }
+        return static::translator()->setLocale($locale) !== false;
     }
 
     ///////////////////////////////////////////////////////////////////
