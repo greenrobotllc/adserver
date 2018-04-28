@@ -7,11 +7,11 @@ For iOS: https://github.com/greenrobotllc/adserver-ios-sdk
 
 For Android: https://github.com/greenrobotllc/adserver-android-sdk
 
-![Screenshot 1](https://github.com/greenrobotllc/adserver/blob/master/sampleimages/image1.png)
-![Screenshot 2](https://github.com/greenrobotllc/adserver/blob/master/sampleimages/image2.png)
-![Screenshot 3](https://github.com/greenrobotllc/adserver/blob/master/sampleimages/image3.png)
-![Screenshot 4](https://github.com/greenrobotllc/adserver/blob/master/sampleimages/image4.png)
-![Screenshot 5](https://github.com/greenrobotllc/adserver/blob/master/sampleimages/image5.png)
+![Screenshot 1](https://raw.githubusercontent.com/greenrobotllc/adserver/master/sampleimages/sampleimages/image1.png)
+![Screenshot 2](https://raw.githubusercontent.com/greenrobotllc/adserver/master/sampleimages/image2.png)
+![Screenshot 3](https://raw.githubusercontent.com/greenrobotllc/adserver/master/sampleimages/image3.png)
+![Screenshot 4](https://raw.githubusercontent.com/greenrobotllc/adserver/master/sampleimages/image4.png)
+![Screenshot 5](https://raw.githubusercontent.com/greenrobotllc/adserver/master/sampleimages/image5.png)
 
 
 ## Requirements:
@@ -19,7 +19,7 @@ I recommend using Linux or Mac OS X. I have not tried this under Windows. For pr
 
 ## Steps to install:
 0. You must use PHP 7.1 or greater.
-1. Git clone the adserver code from Github
+1. Git clone the adserver code from Github: [https://github.com/greenrobotllc/adserver]
 2. Edit database/seeds/UserTableSeeder.php with your preferred email and password.
 3. Install PHP Composer
 4. php composer.phar install
