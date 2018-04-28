@@ -3,6 +3,8 @@ Have accounts at Adsense and LifeStreetmedia for your website or Facebook app? R
 
 This adserver is for desktop sites and mobile web. Specifically, I use it on a Facebook app, which is also accessible outside of the Facebook frame once you're logged in via Facebook connect. It should also work fine on desktop or mobile web sites not using Facebook login. I also do mobile development, I will be working on some open source code to interface with this adserver for native mobile apps, including adding an additional network beyond admob, probably Facebook.
 
+###Download###
+https://github.com/greenrobot.com/adserver
 
 ### Authors and Contributors
 - GreenRobot (https://greenrobot.com)
