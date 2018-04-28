@@ -19,7 +19,7 @@ I recommend using Linux or Mac OS X. I have not tried this under Windows. For pr
 
 ## Steps to install:
 0. You must use PHP 7.1 or greater.
-1. Git clone the adserver code from Github: (https://github.com/greenrobotllc/adserver)
+1. Git clone the adserver code from Github: https://github.com/greenrobotllc/adserver](https://github.com/greenrobotllc/adserver
 2. Edit database/seeds/UserTableSeeder.php with your preferred email and password.
 3. Install PHP Composer
 4. php composer.phar install
@@ -40,7 +40,7 @@ Note for developers: I have set debug to false in config/app.php so this is read
 You can use Github issues for regular bugs and feature requests. For security issues or if you have any questions you don't want to discuss publicly you can email me: andy@greenrobot.com
 
 ## Facebook Discussion Group
-Join the discussion on Facebook about GreenRobot Adserver: (https://www.facebook.com/groups/greenrobotadserver/)
+Join the discussion on Facebook about GreenRobot Adserver: https://www.facebook.com/groups/greenrobotadserver/
 
 ## Twitter Updates
 Follow GreenRobot Adserver on Twitter: (https://twitter.com/GRAdserver)
