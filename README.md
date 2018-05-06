@@ -7,7 +7,7 @@ For iOS: https://github.com/greenrobotllc/adserver-ios-sdk
 
 For Android: https://github.com/greenrobotllc/adserver-android-sdk
 
-![Screenshot 1](https://raw.githubusercontent.com/greenrobotllc/adserver/master/sampleimages/sampleimages/image1.png)
+![Screenshot 1](https://raw.githubusercontent.com/greenrobotllc/adserver/master/sampleimages/image1.png)
 ![Screenshot 2](https://raw.githubusercontent.com/greenrobotllc/adserver/master/sampleimages/image2.png)
 ![Screenshot 3](https://raw.githubusercontent.com/greenrobotllc/adserver/master/sampleimages/image3.png)
 ![Screenshot 4](https://raw.githubusercontent.com/greenrobotllc/adserver/master/sampleimages/image4.png)
