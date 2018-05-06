@@ -76,7 +76,7 @@ class UrlMatcher implements UrlMatcherInterface, RequestMatcherInterface
             return $ret;
         }
 
-        if (0 === count($this->routes) && '/' === $pathinfo) {
+        if ('/' === $pathinfo && !$this->allow) {
             throw new NoConfigurationException();
         }
 

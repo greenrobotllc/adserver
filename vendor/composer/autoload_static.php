@@ -103,7 +103,6 @@ class ComposerStaticInitfe40c132eb2f1fa55ec5804af8f1cfb5
         array (
             'Cron\\' => 5,
             'Composer\\CaBundle\\' => 18,
-            'Carbon\\' => 7,
         ),
         'A' => 
         array (
@@ -282,14 +281,14 @@ class ComposerStaticInitfe40c132eb2f1fa55ec5804af8f1cfb5
         array (
             0 => __DIR__ . '/..' . '/composer/ca-bundle/src',
         ),
-        'Carbon\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon',
-        ),
         'App\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',
         ),
+    );
+
+    public static $fallbackDirsPsr4 = array (
+        0 => __DIR__ . '/..' . '/nesbot/carbon/src',
     );
 
     public static $prefixesPsr0 = array (
@@ -3256,6 +3255,7 @@ class ComposerStaticInitfe40c132eb2f1fa55ec5804af8f1cfb5
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitfe40c132eb2f1fa55ec5804af8f1cfb5::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitfe40c132eb2f1fa55ec5804af8f1cfb5::$prefixDirsPsr4;
+            $loader->fallbackDirsPsr4 = ComposerStaticInitfe40c132eb2f1fa55ec5804af8f1cfb5::$fallbackDirsPsr4;
             $loader->prefixesPsr0 = ComposerStaticInitfe40c132eb2f1fa55ec5804af8f1cfb5::$prefixesPsr0;
             $loader->classMap = ComposerStaticInitfe40c132eb2f1fa55ec5804af8f1cfb5::$classMap;
 
