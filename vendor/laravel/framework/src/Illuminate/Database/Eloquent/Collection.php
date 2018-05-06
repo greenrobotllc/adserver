@@ -5,6 +5,7 @@ namespace Illuminate\Database\Eloquent;
 use LogicException;
 use Illuminate\Support\Arr;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Contracts\Queue\QueueableCollection;
 use Illuminate\Support\Collection as BaseCollection;
 
@@ -57,6 +58,30 @@ class Collection extends BaseCollection implements QueueableCollection
 
             $this->items = $query->eagerLoadRelations($this->items);
         }
+
+        return $this;
+    }
+
+    /**
+     * Load a set of relationships onto the mixed relationship collection.
+     *
+     * @param  string  $relation
+     * @param  array  $relations
+     * @return $this
+     */
+    public function loadMorph($relation, $relations)
+    {
+        $this->pluck($relation)
+            ->groupBy(function ($model) {
+                return get_class($model);
+            })
+            ->filter(function ($models, $className) use ($relations) {
+                return Arr::has($relations, $className);
+            })
+            ->each(function ($models, $className) use ($relations) {
+                $className::with($relations[$className])
+                    ->eagerLoadRelations($models->all());
+            });
 
         return $this;
     }
@@ -412,7 +437,23 @@ class Collection extends BaseCollection implements QueueableCollection
      */
     public function getQueueableIds()
     {
-        return $this->modelKeys();
+        if ($this->isEmpty()) {
+            return [];
+        }
+
+        return $this->first() instanceof Pivot
+                    ? $this->map->getQueueableId()->all()
+                    : $this->modelKeys();
+    }
+
+    /**
+     * Get the relationships of the entities being queued.
+     *
+     * @return array
+     */
+    public function getQueueableRelations()
+    {
+        return $this->isNotEmpty() ? $this->first()->getQueueableRelations() : [];
     }
 
     /**

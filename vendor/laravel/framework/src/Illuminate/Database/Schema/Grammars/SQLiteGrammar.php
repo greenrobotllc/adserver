@@ -84,7 +84,7 @@ class SQLiteGrammar extends Grammar
 
             // If this foreign key specifies the action to be taken on update we will add
             // that to the statement here. We'll append it to this SQL and then return
-            // the SQL so we can keep adding any other foreign consraints onto this.
+            // the SQL so we can keep adding any other foreign constraints onto this.
             if (! is_null($foreign->onUpdate)) {
                 $sql .= " on update {$foreign->onUpdate}";
             }
@@ -502,14 +502,18 @@ class SQLiteGrammar extends Grammar
     }
 
     /**
-     * Create the column definition for an enum type.
+     * Create the column definition for an enumeration type.
      *
      * @param  \Illuminate\Support\Fluent  $column
      * @return string
      */
     protected function typeEnum(Fluent $column)
     {
-        return 'varchar';
+        return sprintf(
+            'varchar check ("%s" in (%s))',
+            $column->name,
+            $this->quoteString($column->allowed)
+        );
     }
 
     /**

@@ -84,7 +84,7 @@ class CarbonInterval extends DateInterval
 
     /**
      * Before PHP 5.4.20/5.5.4 instead of FALSE days will be set to -99999 when the interval instance
-     * was created by DateTime::diff().
+     * was created by DateTime:diff().
      */
     const PHP_DAYS_FALSE = -99999;
 
@@ -333,12 +333,19 @@ class CarbonInterval extends DateInterval
      *
      * @param DateInterval $di
      *
+     * @throws \InvalidArgumentException
+     *
      * @return static
      */
     public static function instance(DateInterval $di)
     {
-        $instance = new static(static::getDateIntervalSpec($di));
+        if (static::wasCreatedFromDiff($di)) {
+            throw new InvalidArgumentException('Can not instance a DateInterval object created from DateTime::diff().');
+        }
+
+        $instance = new static($di->y, $di->m, 0, $di->d, $di->h, $di->i, $di->s);
         $instance->invert = $di->invert;
+        $instance->days = $di->days;
 
         return $instance;
     }
@@ -622,48 +629,22 @@ class CarbonInterval extends DateInterval
     }
 
     /**
-     * Multiply current instance given number of times
-     *
-     * @param float $factor
-     *
-     * @return $this
-     */
-    public function times($factor)
-    {
-        if ($factor < 0) {
-            $this->invert = $this->invert ? 0 : 1;
-            $factor = -$factor;
-        }
-
-        $this->years = round($this->years * $factor);
-        $this->months = round($this->months * $factor);
-        $this->dayz = round($this->dayz * $factor);
-        $this->hours = round($this->hours * $factor);
-        $this->minutes = round($this->minutes * $factor);
-        $this->seconds = round($this->seconds * $factor);
-
-        return $this;
-    }
-
-    /**
-     * Get the interval_spec string of a date interval
-     *
-     * @param DateInterval $interval
+     * Get the interval_spec string
      *
      * @return string
      */
-    public static function getDateIntervalSpec(DateInterval $interval)
+    public function spec()
     {
         $date = array_filter(array(
-            static::PERIOD_YEARS => $interval->y,
-            static::PERIOD_MONTHS => $interval->m,
-            static::PERIOD_DAYS => $interval->d,
+            static::PERIOD_YEARS => $this->y,
+            static::PERIOD_MONTHS => $this->m,
+            static::PERIOD_DAYS => $this->d,
         ));
 
         $time = array_filter(array(
-            static::PERIOD_HOURS => $interval->h,
-            static::PERIOD_MINUTES => $interval->i,
-            static::PERIOD_SECONDS => $interval->s,
+            static::PERIOD_HOURS => $this->h,
+            static::PERIOD_MINUTES => $this->i,
+            static::PERIOD_SECONDS => $this->s,
         ));
 
         $specString = static::PERIOD_PREFIX;
@@ -683,39 +664,6 @@ class CarbonInterval extends DateInterval
     }
 
     /**
-     * Get the interval_spec string
-     *
-     * @return string
-     */
-    public function spec()
-    {
-        return static::getDateIntervalSpec($this);
-    }
-
-    /**
-     * Comparing 2 date intervals
-     *
-     * @param DateInterval $a
-     * @param DateInterval $b
-     *
-     * @return int
-     */
-    public static function compareDateIntervals(DateInterval $a, DateInterval $b)
-    {
-        $current = Carbon::now();
-        $passed = $current->copy()->add($b);
-        $current->add($a);
-
-        if ($current < $passed) {
-            return -1;
-        } elseif ($current > $passed) {
-            return 1;
-        }
-
-        return 0;
-    }
-
-    /**
      * Comparing with passed interval
      *
      * @param DateInterval $interval
@@ -724,6 +672,16 @@ class CarbonInterval extends DateInterval
      */
     public function compare(DateInterval $interval)
     {
-        return static::compareDateIntervals($this, $interval);
+        $current = Carbon::now();
+        $passed = $current->copy()->add($interval);
+        $current->add($this);
+
+        if ($current < $passed) {
+            return -1;
+        } elseif ($current > $passed) {
+            return 1;
+        }
+
+        return 0;
     }
 }
