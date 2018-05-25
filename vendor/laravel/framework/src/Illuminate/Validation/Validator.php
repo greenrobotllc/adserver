@@ -167,7 +167,7 @@ class Validator implements ValidatorContract
     protected $dependentRules = [
         'RequiredWith', 'RequiredWithAll', 'RequiredWithout', 'RequiredWithoutAll',
         'RequiredIf', 'RequiredUnless', 'Confirmed', 'Same', 'Different', 'Unique',
-        'Before', 'After', 'BeforeOrEqual', 'AfterOrEqual',
+        'Before', 'After', 'BeforeOrEqual', 'AfterOrEqual', 'Gt', 'Lt', 'Gte', 'Lte',
     ];
 
     /**
@@ -175,7 +175,7 @@ class Validator implements ValidatorContract
      *
      * @var array
      */
-    protected $sizeRules = ['Size', 'Between', 'Min', 'Max'];
+    protected $sizeRules = ['Size', 'Between', 'Min', 'Max', 'Gt', 'Lt', 'Gte', 'Lte'];
 
     /**
      * The numeric related validation rules.

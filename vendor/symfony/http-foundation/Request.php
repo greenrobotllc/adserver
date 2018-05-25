@@ -597,7 +597,7 @@ class Request
     public static function setTrustedHosts(array $hostPatterns)
     {
         self::$trustedHostPatterns = array_map(function ($hostPattern) {
-            return sprintf('#%s#i', $hostPattern);
+            return sprintf('{%s}i', $hostPattern);
         }, $hostPatterns);
         // we need to reset trusted hosts on trusted host patterns change
         self::$trustedHosts = array();
@@ -1246,7 +1246,7 @@ class Request
      *
      * @param string $format The format
      *
-     * @return string The associated mime type (null if not found)
+     * @return string|null The associated mime type (null if not found)
      */
     public function getMimeType($format)
     {

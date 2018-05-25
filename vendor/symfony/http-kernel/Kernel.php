@@ -63,11 +63,11 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
     private $requestStackSize = 0;
     private $resetServices = false;
 
-    const VERSION = '4.0.9';
-    const VERSION_ID = 40009;
+    const VERSION = '4.0.11';
+    const VERSION_ID = 40011;
     const MAJOR_VERSION = 4;
     const MINOR_VERSION = 0;
-    const RELEASE_VERSION = 9;
+    const RELEASE_VERSION = 11;
     const EXTRA_VERSION = '';
 
     const END_OF_MAINTENANCE = '07/2018';
@@ -457,7 +457,7 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
             $errorLevel = error_reporting(\E_ALL ^ \E_WARNING);
             $fresh = $oldContainer = false;
             try {
-                if (\is_object($this->container = include $cache->getPath())) {
+                if (file_exists($cache->getPath()) && \is_object($this->container = include $cache->getPath())) {
                     $this->container->set('kernel', $this);
                     $oldContainer = $this->container;
                     $fresh = true;
@@ -520,7 +520,7 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
             }
         }
 
-        if (null === $oldContainer) {
+        if (null === $oldContainer && file_exists($cache->getPath())) {
             $errorLevel = error_reporting(\E_ALL ^ \E_WARNING);
             try {
                 $oldContainer = include $cache->getPath();
