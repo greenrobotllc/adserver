@@ -3,8 +3,6 @@ This adserver rotates banner ads between AdSense/AdMob, LifeStreetmedia, and oth
 
 This adserver is for desktop sites and mobile web, as well as native mobile apps.  Specifically, I use it on a Facebook app, which is also accessible outside of the Facebook frame once you're logged in via Facebook connect.  It should also work fine on desktop or mobile web sites not using Facebook login.  For mobile apps, I have made some code available to work with the adserver. I am still working on this, including adding documentation.
 
-Clone from Github: https://github.com/greenrobotllc/adserver
-
 For iOS: https://github.com/greenrobotllc/adserver-ios-sdk
 
 For Android: https://github.com/greenrobotllc/adserver-android-sdk
@@ -21,7 +19,7 @@ I recommend using Linux or Mac OS X. I have not tried this under Windows. For pr
 
 ## Steps to install:
 0. You must use PHP 7.1 or greater.
-1. Git clone the adserver code from Github: [https://github.com/greenrobotllc/adserver]
+1. Git clone the adserver code from Github: https://github.com/greenrobotllc/adserver
 2. Edit database/seeds/UserTableSeeder.php with your preferred email and password.
 3. Install PHP Composer
 4. php composer.phar install
