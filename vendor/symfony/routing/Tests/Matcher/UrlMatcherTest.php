@@ -343,12 +343,87 @@ class UrlMatcherTest extends TestCase
     /**
      * @expectedException \Symfony\Component\Routing\Exception\ResourceNotFoundException
      */
+    public function testMissingTrailingSlash()
+    {
+        $coll = new RouteCollection();
+        $coll->add('foo', new Route('/foo/'));
+
+        $matcher = $this->getUrlMatcher($coll);
+        $matcher->match('/foo');
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Routing\Exception\ResourceNotFoundException
+     */
+    public function testExtraTrailingSlash()
+    {
+        $coll = new RouteCollection();
+        $coll->add('foo', new Route('/foo'));
+
+        $matcher = $this->getUrlMatcher($coll);
+        $matcher->match('/foo/');
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Routing\Exception\ResourceNotFoundException
+     */
+    public function testMissingTrailingSlashForNonSafeMethod()
+    {
+        $coll = new RouteCollection();
+        $coll->add('foo', new Route('/foo/'));
+
+        $context = new RequestContext();
+        $context->setMethod('POST');
+        $matcher = $this->getUrlMatcher($coll, $context);
+        $matcher->match('/foo');
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Routing\Exception\ResourceNotFoundException
+     */
+    public function testExtraTrailingSlashForNonSafeMethod()
+    {
+        $coll = new RouteCollection();
+        $coll->add('foo', new Route('/foo'));
+
+        $context = new RequestContext();
+        $context->setMethod('POST');
+        $matcher = $this->getUrlMatcher($coll, $context);
+        $matcher->match('/foo/');
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Routing\Exception\ResourceNotFoundException
+     */
     public function testSchemeRequirement()
     {
         $coll = new RouteCollection();
         $coll->add('foo', new Route('/foo', array(), array(), array(), '', array('https')));
         $matcher = $this->getUrlMatcher($coll);
         $matcher->match('/foo');
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Routing\Exception\ResourceNotFoundException
+     */
+    public function testSchemeRequirementForNonSafeMethod()
+    {
+        $coll = new RouteCollection();
+        $coll->add('foo', new Route('/foo', array(), array(), array(), '', array('https')));
+
+        $context = new RequestContext();
+        $context->setMethod('POST');
+        $matcher = $this->getUrlMatcher($coll, $context);
+        $matcher->match('/foo');
+    }
+
+    public function testSamePathWithDifferentScheme()
+    {
+        $coll = new RouteCollection();
+        $coll->add('https_route', new Route('/', array(), array(), array(), '', array('https')));
+        $coll->add('http_route', new Route('/', array(), array(), array(), '', array('http')));
+        $matcher = $this->getUrlMatcher($coll);
+        $this->assertEquals(array('_route' => 'http_route'), $matcher->match('/'));
     }
 
     /**
@@ -500,6 +575,50 @@ class UrlMatcherTest extends TestCase
 
         $matcher = $this->getUrlMatcher($coll);
         $matcher->match('/');
+    }
+
+    public function testSiblingRoutes()
+    {
+        $coll = new RouteCollection();
+        $coll->add('a', (new Route('/a{a}'))->setMethods('POST'));
+        $coll->add('b', (new Route('/a{a}'))->setMethods('PUT'));
+        $coll->add('c', new Route('/a{a}'));
+        $coll->add('d', (new Route('/b{a}'))->setCondition('false'));
+        $coll->add('e', (new Route('/{b}{a}'))->setCondition('false'));
+        $coll->add('f', (new Route('/{b}{a}'))->setRequirements(array('b' => 'b')));
+
+        $matcher = $this->getUrlMatcher($coll);
+        $this->assertEquals(array('_route' => 'c', 'a' => 'a'), $matcher->match('/aa'));
+        $this->assertEquals(array('_route' => 'f', 'b' => 'b', 'a' => 'a'), $matcher->match('/ba'));
+    }
+
+    public function testUnicodeRoute()
+    {
+        $coll = new RouteCollection();
+        $coll->add('a', new Route('/{a}', array(), array('a' => '.'), array('utf8' => false)));
+        $coll->add('b', new Route('/{a}', array(), array('a' => '.'), array('utf8' => true)));
+
+        $matcher = $this->getUrlMatcher($coll);
+        $this->assertEquals(array('_route' => 'b', 'a' => 'é'), $matcher->match('/é'));
+    }
+
+    public function testRequirementWithCapturingGroup()
+    {
+        $coll = new RouteCollection();
+        $coll->add('a', new Route('/{a}/{b}', array(), array('a' => '(a|b)')));
+
+        $matcher = $this->getUrlMatcher($coll);
+        $this->assertEquals(array('_route' => 'a', 'a' => 'a', 'b' => 'b'), $matcher->match('/a/b'));
+    }
+
+    public function testDotAllWithCatchAll()
+    {
+        $coll = new RouteCollection();
+        $coll->add('a', new Route('/{id}.html', array(), array('id' => '.+')));
+        $coll->add('b', new Route('/{all}', array(), array('all' => '.+')));
+
+        $matcher = $this->getUrlMatcher($coll);
+        $this->assertEquals(array('_route' => 'a', 'id' => 'foo/bar'), $matcher->match('/foo/bar.html'));
     }
 
     protected function getUrlMatcher(RouteCollection $routes, RequestContext $context = null)
