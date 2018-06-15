@@ -1017,17 +1017,17 @@
     },
     {
         "name": "laravel/framework",
-        "version": "v5.6.24",
-        "version_normalized": "5.6.24.0",
+        "version": "v5.6.25",
+        "version_normalized": "5.6.25.0",
         "source": {
             "type": "git",
             "url": "https://github.com/laravel/framework.git",
-            "reference": "56290edeb0d8051826d40b4cbd8ed3c30348b2b5"
+            "reference": "a15efe4fbcd6b38ea76edc5c8939ffde4f4c7b7f"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/laravel/framework/zipball/56290edeb0d8051826d40b4cbd8ed3c30348b2b5",
-            "reference": "56290edeb0d8051826d40b4cbd8ed3c30348b2b5",
+            "url": "https://api.github.com/repos/laravel/framework/zipball/a15efe4fbcd6b38ea76edc5c8939ffde4f4c7b7f",
+            "reference": "a15efe4fbcd6b38ea76edc5c8939ffde4f4c7b7f",
             "shasum": ""
         },
         "require": {
@@ -1122,7 +1122,7 @@
             "symfony/dom-crawler": "Required to use most of the crawler integration testing tools (~4.0).",
             "symfony/psr-http-message-bridge": "Required to psr7 bridging features (~1.0)."
         },
-        "time": "2018-06-04T14:51:03+00:00",
+        "time": "2018-06-12T14:39:24+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1611,17 +1611,17 @@
     },
     {
         "name": "paragonie/random_compat",
-        "version": "v2.0.14",
-        "version_normalized": "2.0.14.0",
+        "version": "v2.0.15",
+        "version_normalized": "2.0.15.0",
         "source": {
             "type": "git",
             "url": "https://github.com/paragonie/random_compat.git",
-            "reference": "f6ce7dd93628088e1017fb5dd73b0b9fec7df9e5"
+            "reference": "10bcb46e8f3d365170f6de9d05245aa066b81f09"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/paragonie/random_compat/zipball/f6ce7dd93628088e1017fb5dd73b0b9fec7df9e5",
-            "reference": "f6ce7dd93628088e1017fb5dd73b0b9fec7df9e5",
+            "url": "https://api.github.com/repos/paragonie/random_compat/zipball/10bcb46e8f3d365170f6de9d05245aa066b81f09",
+            "reference": "10bcb46e8f3d365170f6de9d05245aa066b81f09",
             "shasum": ""
         },
         "require": {
@@ -1633,7 +1633,7 @@
         "suggest": {
             "ext-libsodium": "Provides a modern crypto API that can be used to generate random bytes."
         },
-        "time": "2018-06-06T17:40:22+00:00",
+        "time": "2018-06-08T15:26:40+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
