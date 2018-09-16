@@ -15,9 +15,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Routing\RequestContext;
 
 class UrlMatcherTest extends TestCase
 {
@@ -668,6 +668,16 @@ class UrlMatcherTest extends TestCase
 
         $matcher = $this->getUrlMatcher($coll);
         $this->assertEquals('c', $matcher->match('/admin/api/package.json')['_route']);
+    }
+
+    public function testHostWithDot()
+    {
+        $coll = new RouteCollection();
+        $coll->add('a', new Route('/foo', array(), array(), array(), 'foo.example.com'));
+        $coll->add('b', new Route('/bar/{baz}'));
+
+        $matcher = $this->getUrlMatcher($coll);
+        $this->assertEquals('b', $matcher->match('/bar/abc.123')['_route']);
     }
 
     protected function getUrlMatcher(RouteCollection $routes, RequestContext $context = null)

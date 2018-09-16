@@ -11,9 +11,9 @@
 
 namespace Symfony\Component\Routing\Tests\Matcher;
 
+use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Routing\RequestContext;
 
 class RedirectableUrlMatcherTest extends UrlMatcherTest
 {
@@ -91,6 +91,20 @@ class RedirectableUrlMatcherTest extends UrlMatcherTest
             ->will($this->returnValue(array('redirect' => 'value')))
         ;
         $this->assertEquals(array('_route' => 'foo', 'bar' => 'baz', 'redirect' => 'value'), $matcher->match('/foo/baz'));
+    }
+
+    public function testSchemeRedirectForRoot()
+    {
+        $coll = new RouteCollection();
+        $coll->add('foo', new Route('/', array(), array(), array(), '', array('https')));
+
+        $matcher = $this->getUrlMatcher($coll);
+        $matcher
+            ->expects($this->once())
+            ->method('redirect')
+            ->with('/', 'foo', 'https')
+            ->will($this->returnValue(array('redirect' => 'value')));
+        $this->assertEquals(array('_route' => 'foo', 'redirect' => 'value'), $matcher->match('/'));
     }
 
     public function testSlashRedirectWithParams()

@@ -372,11 +372,12 @@ if (! function_exists('decrypt')) {
      * Decrypt the given value.
      *
      * @param  string  $value
+     * @param  bool   $unserialize
      * @return mixed
      */
-    function decrypt($value)
+    function decrypt($value, $unserialize = true)
     {
-        return app('encrypter')->decrypt($value);
+        return app('encrypter')->decrypt($value, $unserialize);
     }
 }
 
@@ -452,11 +453,12 @@ if (! function_exists('encrypt')) {
      * Encrypt the given value.
      *
      * @param  mixed  $value
+     * @param  bool   $serialize
      * @return string
      */
-    function encrypt($value)
+    function encrypt($value, $serialize = true)
     {
-        return app('encrypter')->encrypt($value);
+        return app('encrypter')->encrypt($value, $serialize);
     }
 }
 
@@ -779,10 +781,10 @@ if (! function_exists('response')) {
     /**
      * Return a new response from the application.
      *
-     * @param  string|array  $content
+     * @param  \Illuminate\View\View|string|array|null  $content
      * @param  int     $status
      * @param  array   $headers
-     * @return \Symfony\Component\HttpFoundation\Response|\Illuminate\Contracts\Routing\ResponseFactory
+     * @return \Illuminate\Http\Response|\Illuminate\Contracts\Routing\ResponseFactory
      */
     function response($content = '', $status = 200, array $headers = [])
     {

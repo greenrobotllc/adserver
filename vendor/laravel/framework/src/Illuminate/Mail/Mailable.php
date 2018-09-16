@@ -157,7 +157,7 @@ class Mailable implements MailableContract, Renderable
      */
     public function queue(Queue $queue)
     {
-        if (property_exists($this, 'delay')) {
+        if (isset($this->delay)) {
             return $this->later($this->delay, $queue);
         }
 
@@ -212,7 +212,7 @@ class Mailable implements MailableContract, Renderable
         if (isset($this->html)) {
             return array_filter([
                 'html' => new HtmlString($this->html),
-                'text' => isset($this->textView) ? $this->textView : null,
+                'text' => $this->textView ?? null,
             ]);
         }
 
