@@ -63,11 +63,11 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
     private $requestStackSize = 0;
     private $resetServices = false;
 
-    const VERSION = '4.1.4';
-    const VERSION_ID = 40104;
+    const VERSION = '4.1.7';
+    const VERSION_ID = 40107;
     const MAJOR_VERSION = 4;
     const MINOR_VERSION = 1;
-    const RELEASE_VERSION = 4;
+    const RELEASE_VERSION = 7;
     const EXTRA_VERSION = '';
 
     const END_OF_MAINTENANCE = '01/2019';
@@ -90,7 +90,7 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
     }
 
     /**
-     * Boots the current kernel.
+     * {@inheritdoc}
      */
     public function boot()
     {
@@ -250,11 +250,7 @@ abstract class Kernel implements KernelInterface, RebootableInterface, Terminabl
 
         if ($isResource && file_exists($file = $dir.'/'.$bundle->getName().$overridePath)) {
             if (null !== $resourceBundle) {
-                throw new \RuntimeException(sprintf('"%s" resource is hidden by a resource from the "%s" derived bundle. Create a "%s" file to override the bundle resource.',
-                    $file,
-                    $resourceBundle,
-                    $dir.'/'.$bundle->getName().$overridePath
-                ));
+                throw new \RuntimeException(sprintf('"%s" resource is hidden by a resource from the "%s" derived bundle. Create a "%s" file to override the bundle resource.', $file, $resourceBundle, $dir.'/'.$bundle->getName().$overridePath));
             }
 
             $files[] = $file;

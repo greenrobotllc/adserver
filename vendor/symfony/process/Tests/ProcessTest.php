@@ -1436,7 +1436,7 @@ class ProcessTest extends TestCase
         $p = new Process(array(self::$phpBin, '-r', 'echo $argv[1];', $arg));
         $p->run();
 
-        $this->assertSame($arg, $p->getOutput());
+        $this->assertSame((string) $arg, $p->getOutput());
     }
 
     public function testRawCommandLine()
@@ -1466,6 +1466,9 @@ EOTXT;
         yield array("a!b\tc");
         yield array('a\\\\"\\"');
         yield array('éÉèÈàÀöä');
+        yield array(null);
+        yield array(1);
+        yield array(1.1);
     }
 
     public function testEnvArgument()
@@ -1481,9 +1484,9 @@ EOTXT;
 
     /**
      * @param string      $commandline
-     * @param null|string $cwd
-     * @param null|array  $env
-     * @param null|string $input
+     * @param string|null $cwd
+     * @param array|null  $env
+     * @param string|null $input
      * @param int         $timeout
      * @param array       $options
      *

@@ -651,7 +651,7 @@ class Process implements \IteratorAggregate
     /**
      * Returns the exit code returned by the process.
      *
-     * @return null|int The exit status code, null if the Process is not terminated
+     * @return int|null The exit status code, null if the Process is not terminated
      */
     public function getExitCode()
     {
@@ -666,7 +666,7 @@ class Process implements \IteratorAggregate
      * This method relies on the Unix exit code status standardization
      * and might not be relevant for other operating systems.
      *
-     * @return null|string A string representation for the exit status code, null if the Process is not terminated
+     * @return string|null A string representation for the exit status code, null if the Process is not terminated
      *
      * @see http://tldp.org/LDP/abs/html/exitcodes.html
      * @see http://en.wikipedia.org/wiki/Unix_signal
@@ -1392,8 +1392,8 @@ class Process implements \IteratorAggregate
         $this->exitcode = null;
         $this->fallbackStatus = array();
         $this->processInformation = null;
-        $this->stdout = fopen('php://temp/maxmemory:'.(1024 * 1024), 'wb+');
-        $this->stderr = fopen('php://temp/maxmemory:'.(1024 * 1024), 'wb+');
+        $this->stdout = fopen('php://temp/maxmemory:'.(1024 * 1024), 'w+b');
+        $this->stderr = fopen('php://temp/maxmemory:'.(1024 * 1024), 'w+b');
         $this->process = null;
         $this->latestSignal = null;
         $this->status = self::STATUS_READY;
@@ -1530,13 +1530,13 @@ class Process implements \IteratorAggregate
     /**
      * Escapes a string to be used as a shell argument.
      */
-    private function escapeArgument(string $argument): string
+    private function escapeArgument(?string $argument): string
     {
+        if ('' === $argument || null === $argument) {
+            return '""';
+        }
         if ('\\' !== \DIRECTORY_SEPARATOR) {
             return "'".str_replace("'", "'\\''", $argument)."'";
-        }
-        if ('' === $argument = (string) $argument) {
-            return '""';
         }
         if (false !== strpos($argument, "\0")) {
             $argument = str_replace("\0", '?', $argument);

@@ -129,7 +129,7 @@ class Crawler implements \Countable, \IteratorAggregate
      * HTTP 1.1 specification.
      *
      * @param string      $content A string to parse as HTML/XML
-     * @param null|string $type    The content type of the string
+     * @param string|null $type    The content type of the string
      */
     public function addContent($content, $type = null)
     {
@@ -626,7 +626,7 @@ class Crawler implements \Countable, \IteratorAggregate
      *
      * Example:
      *
-     * $crawler->filter('h1 a')->extract(array('_text', 'href'));
+     *     $crawler->filter('h1 a')->extract(array('_text', 'href'));
      *
      * @param array $attributes An array of attributes
      *
@@ -889,7 +889,7 @@ class Crawler implements \Countable, \IteratorAggregate
      * Escaped characters are: quotes (") and apostrophe (').
      *
      *  Examples:
-     *  <code>
+     *
      *     echo Crawler::xpathLiteral('foo " bar');
      *     //prints 'foo " bar'
      *
@@ -898,7 +898,7 @@ class Crawler implements \Countable, \IteratorAggregate
      *
      *     echo Crawler::xpathLiteral('a\'b"c');
      *     //prints concat('a', "'", 'b"c')
-     *  </code>
+     *
      *
      * @param string $s String to be escaped
      *
