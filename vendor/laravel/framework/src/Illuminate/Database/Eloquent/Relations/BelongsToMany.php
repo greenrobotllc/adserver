@@ -360,7 +360,7 @@ class BelongsToMany extends Relation
      *
      * In addition, new pivot records will receive this value.
      *
-     * @param  string  $column
+     * @param  string|array  $column
      * @param  mixed  $value
      * @return $this
      */
@@ -514,7 +514,7 @@ class BelongsToMany extends Relation
             return $result;
         }
 
-        throw (new ModelNotFoundException)->setModel(get_class($this->related));
+        throw (new ModelNotFoundException)->setModel(get_class($this->related), $id);
     }
 
     /**
@@ -674,6 +674,24 @@ class BelongsToMany extends Relation
     }
 
     /**
+     * Execute a callback over each item while chunking.
+     *
+     * @param  callable  $callback
+     * @param  int  $count
+     * @return bool
+     */
+    public function each(callable $callback, $count = 1000)
+    {
+        return $this->chunk($count, function ($results) use ($callback) {
+            foreach ($results as $key => $value) {
+                if ($callback($value, $key) === false) {
+                    return false;
+                }
+            }
+        });
+    }
+
+    /**
      * Hydrate the pivot table relationship on the models.
      *
      * @param  array  $models
@@ -770,7 +788,7 @@ class BelongsToMany extends Relation
         // the related model's timestamps, to make sure these all reflect the changes
         // to the parent models. This will help us keep any caching synced up here.
         if (count($ids = $this->allRelatedIds()) > 0) {
-            $this->getRelated()->newQuery()->whereIn($key, $ids)->update($columns);
+            $this->getRelated()->newModelQuery()->whereIn($key, $ids)->update($columns);
         }
     }
 

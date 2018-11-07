@@ -488,7 +488,7 @@ trait ValidatesAttributes
      */
     public function validateDimensions($attribute, $value, $parameters)
     {
-        if ($this->isValidFileInstance($value) && $value->getClientMimeType() == 'image/svg+xml') {
+        if ($this->isValidFileInstance($value) && $value->getClientMimeType() === 'image/svg+xml') {
             return true;
         }
 
@@ -498,7 +498,7 @@ trait ValidatesAttributes
 
         $this->requireParameterCount(1, $parameters, 'dimensions');
 
-        list($width, $height) = $sizeDetails;
+        [$width, $height] = $sizeDetails;
 
         $parameters = $this->parseNamedParameters($parameters);
 
@@ -542,7 +542,7 @@ trait ValidatesAttributes
             return false;
         }
 
-        list($numerator, $denominator) = array_replace(
+        [$numerator, $denominator] = array_replace(
             [1, 1], array_filter(sscanf($parameters['ratio'], '%f/%d'))
         );
 
@@ -604,14 +604,14 @@ trait ValidatesAttributes
     {
         $this->requireParameterCount(1, $parameters, 'exists');
 
-        list($connection, $table) = $this->parseTable($parameters[0]);
+        [$connection, $table] = $this->parseTable($parameters[0]);
 
         // The second parameter position holds the name of the column that should be
         // verified as existing. If this parameter is not specified we will guess
         // that the columns being "verified" shares the given attribute's name.
         $column = $this->getQueryColumn($parameters, $attribute);
 
-        $expected = (is_array($value)) ? count($value) : 1;
+        $expected = is_array($value) ? count(array_unique($value)) : 1;
 
         return $this->getExistCount(
             $connection, $table, $column, $value, $parameters
@@ -659,17 +659,17 @@ trait ValidatesAttributes
     {
         $this->requireParameterCount(1, $parameters, 'unique');
 
-        list($connection, $table) = $this->parseTable($parameters[0]);
+        [$connection, $table] = $this->parseTable($parameters[0]);
 
         // The second parameter position holds the name of the column that needs to
         // be verified as unique. If this parameter isn't specified we will just
         // assume that this column to be verified shares the attribute's name.
         $column = $this->getQueryColumn($parameters, $attribute);
 
-        list($idColumn, $id) = [null, null];
+        [$idColumn, $id] = [null, null];
 
         if (isset($parameters[2])) {
-            list($idColumn, $id) = $this->getUniqueIds($parameters);
+            [$idColumn, $id] = $this->getUniqueIds($parameters);
         }
 
         // The presence verifier is responsible for counting rows within this store
@@ -713,7 +713,7 @@ trait ValidatesAttributes
             $id = $this->getValue($matches[1]);
         }
 
-        if (strtolower($id) == 'null') {
+        if (strtolower($id) === 'null') {
             $id = null;
         }
 
@@ -955,7 +955,7 @@ trait ValidatesAttributes
                 }
             }
 
-            return count(array_diff($value, $parameters)) == 0;
+            return count(array_diff($value, $parameters)) === 0;
         }
 
         return ! is_array($value) && in_array((string) $value, $parameters);
@@ -1544,6 +1544,22 @@ trait ValidatesAttributes
     }
 
     /**
+     * Validate that an attribute is a valid UUID.
+     *
+     * @param  string  $attribute
+     * @param  mixed  $value
+     * @return bool
+     */
+    public function validateUuid($attribute, $value)
+    {
+        if (! is_string($value)) {
+            return false;
+        }
+
+        return preg_match('/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iD', $value) > 0;
+    }
+
+    /**
      * Get the size of an attribute.
      *
      * @param  string  $attribute
@@ -1591,6 +1607,8 @@ trait ValidatesAttributes
      * @param  mixed  $second
      * @param  string  $operator
      * @return bool
+     *
+     * @throws \InvalidArgumentException
      */
     protected function compare($first, $second, $operator)
     {
@@ -1619,7 +1637,7 @@ trait ValidatesAttributes
     protected function parseNamedParameters($parameters)
     {
         return array_reduce($parameters, function ($result, $item) {
-            list($key, $value) = array_pad(explode('=', $item, 2), 2, null);
+            [$key, $value] = array_pad(explode('=', $item, 2), 2, null);
 
             $result[$key] = $value;
 

@@ -109,7 +109,7 @@ class Command extends SymfonyCommand
         // the command we'll set the arguments and the options on this command.
         $this->setDescription($this->description);
 
-        $this->setHidden($this->hidden);
+        $this->setHidden($this->isHidden());
 
         if (! isset($this->signature)) {
             $this->specifyParameters();
@@ -123,7 +123,7 @@ class Command extends SymfonyCommand
      */
     protected function configureUsingFluentDefinition()
     {
-        list($name, $arguments, $options) = Parser::parse($this->signature);
+        [$name, $arguments, $options] = Parser::parse($this->signature);
 
         parent::__construct($this->name = $name);
 
@@ -162,8 +162,12 @@ class Command extends SymfonyCommand
      */
     public function run(InputInterface $input, OutputInterface $output)
     {
+        $this->output = $this->laravel->make(
+            OutputStyle::class, ['input' => $input, 'output' => $output]
+        );
+
         return parent::run(
-            $this->input = $input, $this->output = new OutputStyle($input, $output)
+            $this->input = $input, $this->output
         );
     }
 
@@ -562,7 +566,7 @@ class Command extends SymfonyCommand
     /**
      * Get the output implementation.
      *
-     * @return \Symfony\Component\Console\Output\OutputInterface
+     * @return \Illuminate\Console\OutputStyle
      */
     public function getOutput()
     {

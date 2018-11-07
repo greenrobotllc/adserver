@@ -29,7 +29,7 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
      *
      * @var string
      */
-    const VERSION = '5.6.39';
+    const VERSION = '5.7.12';
 
     /**
      * The base path for the Laravel installation.
@@ -494,7 +494,7 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
      */
     public function isLocal()
     {
-        return $this['env'] == 'local';
+        return $this['env'] === 'local';
     }
 
     /**
@@ -552,11 +552,10 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
      * Register a service provider with the application.
      *
      * @param  \Illuminate\Support\ServiceProvider|string  $provider
-     * @param  array  $options
      * @param  bool   $force
      * @return \Illuminate\Support\ServiceProvider
      */
-    public function register($provider, $options = [], $force = false)
+    public function register($provider, $force = false)
     {
         if (($registered = $this->getProvider($provider)) && ! $force) {
             return $registered;

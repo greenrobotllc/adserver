@@ -144,6 +144,21 @@ class SQLiteGrammar extends Grammar
     }
 
     /**
+     * Compile a "JSON length" statement into SQL.
+     *
+     * @param  string  $column
+     * @param  string  $operator
+     * @param  string  $value
+     * @return string
+     */
+    protected function compileJsonLength($column, $operator, $value)
+    {
+        [$field, $path] = $this->wrapJsonFieldAndPath($column);
+
+        return 'json_array_length('.$field.$path.') '.$operator.' '.$value;
+    }
+
+    /**
      * Compile an insert statement into SQL.
      *
      * @param  \Illuminate\Database\Query\Builder  $query
@@ -288,8 +303,6 @@ class SQLiteGrammar extends Grammar
 
         $path = count($parts) > 1 ? ', '.$this->wrapJsonPath($parts[1]) : '';
 
-        $selector = 'json_extract('.$field.$path.')';
-
-        return $selector;
+        return 'json_extract('.$field.$path.')';
     }
 }
