@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 
+
+App::bind('Project', 'Project');
+
 Route::get('/', function () {
   return view('welcome');
 });
