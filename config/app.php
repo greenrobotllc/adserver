@@ -147,7 +147,6 @@ return [
 
 
         // Custom Providers
-        RachidLaasri\LaravelInstaller\Providers\LaravelInstallerServiceProvider::class,
 
 	    \Torann\GeoIP\GeoIPServiceProvider::class,
     ],
