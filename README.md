@@ -15,7 +15,7 @@ For Android: https://github.com/greenrobotllc/adserver-android-sdk
 
 
 ## Requirements:
-I recommend using Linux or Mac OS X. I have not tried this under Windows. For production/linux, I have it deployed to a Centos server on Linode and it's running currently. For development I use Mac OS X with Laravel Homestead development environment.
+I recommend using Linux or Mac OS X. I have not tried this under Windows. For production/linux, I have it deployed to a Centos server on Linode and it's running currently. For development, I used Mac OS X with Laravel Homestead development environment. I later switched to Laradock.
 
 ## Steps to install:
 0. You must use PHP 7.1 or greater.
