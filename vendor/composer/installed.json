@@ -1334,17 +1334,17 @@
     },
     {
         "name": "laravel/framework",
-        "version": "v5.7.17",
-        "version_normalized": "5.7.17.0",
+        "version": "v5.7.19",
+        "version_normalized": "5.7.19.0",
         "source": {
             "type": "git",
             "url": "https://github.com/laravel/framework.git",
-            "reference": "a15898e2de5f5ae5548a09349c558ef0435d495a"
+            "reference": "5c1d1ec7e8563ea31826fd5eb3f6791acf01160c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/laravel/framework/zipball/a15898e2de5f5ae5548a09349c558ef0435d495a",
-            "reference": "a15898e2de5f5ae5548a09349c558ef0435d495a",
+            "url": "https://api.github.com/repos/laravel/framework/zipball/5c1d1ec7e8563ea31826fd5eb3f6791acf01160c",
+            "reference": "5c1d1ec7e8563ea31826fd5eb3f6791acf01160c",
             "shasum": ""
         },
         "require": {
@@ -1446,7 +1446,7 @@
             "symfony/dom-crawler": "Required to use most of the crawler integration testing tools (^4.1).",
             "symfony/psr-http-message-bridge": "Required to psr7 bridging features (^1.0)."
         },
-        "time": "2018-12-12T14:38:09+00:00",
+        "time": "2018-12-18T14:00:38+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -2123,17 +2123,17 @@
     },
     {
         "name": "nesbot/carbon",
-        "version": "1.36.1",
-        "version_normalized": "1.36.1.0",
+        "version": "1.36.2",
+        "version_normalized": "1.36.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/briannesbitt/Carbon.git",
-            "reference": "63da8cdf89d7a5efe43aabc794365f6e7b7b8983"
+            "reference": "cd324b98bc30290f233dd0e75e6ce49f7ab2a6c9"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/63da8cdf89d7a5efe43aabc794365f6e7b7b8983",
-            "reference": "63da8cdf89d7a5efe43aabc794365f6e7b7b8983",
+            "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/cd324b98bc30290f233dd0e75e6ce49f7ab2a6c9",
+            "reference": "cd324b98bc30290f233dd0e75e6ce49f7ab2a6c9",
             "shasum": ""
         },
         "require": {
@@ -2147,7 +2147,7 @@
             "friendsofphp/php-cs-fixer": "Needed for the `composer phpcs` command. Allow to automatically fix code style.",
             "phpstan/phpstan": "Needed for the `composer phpstan` command. Allow to detect potential errors."
         },
-        "time": "2018-11-22T18:23:02+00:00",
+        "time": "2018-12-28T10:07:33+00:00",
         "type": "library",
         "extra": {
             "laravel": {
@@ -2183,17 +2183,17 @@
     },
     {
         "name": "nexmo/client",
-        "version": "1.5.2",
-        "version_normalized": "1.5.2.0",
+        "version": "1.6.0",
+        "version_normalized": "1.6.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/Nexmo/nexmo-php.git",
-            "reference": "f192c84ec3cc3e2657fc754e0da1a17e39ac5542"
+            "reference": "01809cc1e17a5af275913c49bb5d444eb6cc06d4"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Nexmo/nexmo-php/zipball/f192c84ec3cc3e2657fc754e0da1a17e39ac5542",
-            "reference": "f192c84ec3cc3e2657fc754e0da1a17e39ac5542",
+            "url": "https://api.github.com/repos/Nexmo/nexmo-php/zipball/01809cc1e17a5af275913c49bb5d444eb6cc06d4",
+            "reference": "01809cc1e17a5af275913c49bb5d444eb6cc06d4",
             "shasum": ""
         },
         "require": {
@@ -2209,7 +2209,7 @@
             "phpunit/phpunit": "^5.7",
             "squizlabs/php_codesniffer": "^3.1"
         },
-        "time": "2018-11-14T14:12:22+00:00",
+        "time": "2018-12-17T10:47:50+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -2233,17 +2233,17 @@
     },
     {
         "name": "nikic/php-parser",
-        "version": "v4.1.0",
-        "version_normalized": "4.1.0.0",
+        "version": "v4.1.1",
+        "version_normalized": "4.1.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/nikic/PHP-Parser.git",
-            "reference": "d0230c5c77a7e3cfa69446febf340978540958c0"
+            "reference": "8aae5b59b83bb4d0dbf07b0a835f2680a658f610"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/d0230c5c77a7e3cfa69446febf340978540958c0",
-            "reference": "d0230c5c77a7e3cfa69446febf340978540958c0",
+            "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/8aae5b59b83bb4d0dbf07b0a835f2680a658f610",
+            "reference": "8aae5b59b83bb4d0dbf07b0a835f2680a658f610",
             "shasum": ""
         },
         "require": {
@@ -2253,7 +2253,7 @@
         "require-dev": {
             "phpunit/phpunit": "^6.5 || ^7.0"
         },
-        "time": "2018-10-10T09:24:14+00:00",
+        "time": "2018-12-26T11:32:39+00:00",
         "bin": [
             "bin/php-parse"
         ],
@@ -2286,17 +2286,17 @@
     },
     {
         "name": "opis/closure",
-        "version": "3.1.1",
-        "version_normalized": "3.1.1.0",
+        "version": "3.1.2",
+        "version_normalized": "3.1.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/opis/closure.git",
-            "reference": "d3209e46ad6c69a969b705df0738fd0dbe26ef9e"
+            "reference": "de00c69a2328d3ee5baa71fc584dc643222a574c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/opis/closure/zipball/d3209e46ad6c69a969b705df0738fd0dbe26ef9e",
-            "reference": "d3209e46ad6c69a969b705df0738fd0dbe26ef9e",
+            "url": "https://api.github.com/repos/opis/closure/zipball/de00c69a2328d3ee5baa71fc584dc643222a574c",
+            "reference": "de00c69a2328d3ee5baa71fc584dc643222a574c",
             "shasum": ""
         },
         "require": {
@@ -2304,9 +2304,9 @@
         },
         "require-dev": {
             "jeremeamia/superclosure": "^2.0",
-            "phpunit/phpunit": "^4.0"
+            "phpunit/phpunit": "^4.0|^5.0|^6.0|^7.0"
         },
-        "time": "2018-10-02T13:36:53+00:00",
+        "time": "2018-12-16T21:48:23+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -5429,27 +5429,28 @@
     },
     {
         "name": "webmozart/assert",
-        "version": "1.3.0",
-        "version_normalized": "1.3.0.0",
+        "version": "1.4.0",
+        "version_normalized": "1.4.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/webmozart/assert.git",
-            "reference": "0df1908962e7a3071564e857d86874dad1ef204a"
+            "reference": "83e253c8e0be5b0257b881e1827274667c5c17a9"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/webmozart/assert/zipball/0df1908962e7a3071564e857d86874dad1ef204a",
-            "reference": "0df1908962e7a3071564e857d86874dad1ef204a",
+            "url": "https://api.github.com/repos/webmozart/assert/zipball/83e253c8e0be5b0257b881e1827274667c5c17a9",
+            "reference": "83e253c8e0be5b0257b881e1827274667c5c17a9",
             "shasum": ""
         },
         "require": {
-            "php": "^5.3.3 || ^7.0"
+            "php": "^5.3.3 || ^7.0",
+            "symfony/polyfill-ctype": "^1.8"
         },
         "require-dev": {
             "phpunit/phpunit": "^4.6",
             "sebastian/version": "^1.0.1"
         },
-        "time": "2018-01-29T19:49:41+00:00",
+        "time": "2018-12-25T11:19:39+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
