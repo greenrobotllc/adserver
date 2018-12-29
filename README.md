@@ -19,17 +19,68 @@ I recommend using Linux or Mac OS X. I have not tried this under Windows. For pr
 
 ## Steps to install:
 0. You must use PHP 7.1 or greater.
+Make a new folder to put the code:
+
+mkdir adserver
+
 1. Git clone the adserver code from Github: https://github.com/greenrobotllc/adserver
-2. Edit database/seeds/UserTableSeeder.php with your preferred email and password.
-3. Install PHP Composer
-4. php composer.phar install
-5. Create database
-6. Move .env.example to .env and fill in your database credentials.
-7. Run php artisan migrate
-8. Run php artisan db:seed
-9. You should setup a new subdomain for this adserver, and point it to the public folder.
-10. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
-11. What is the route I am suppose to provide for the Adsense Oauth Callback when setting up the google_clients_secrets.json? The route would be the address of your webserver. You should setup a domain or subdomain for it to work. For example: https://yoursubdomain.greenrobot.com/refresh
+
+Command: 
+
+cd adserver; git clone https://github.com/greenrobotllc/adserver .
+
+2. Run php composer to install the components:
+
+php composer.phar install --no-scripts
+
+mkdir bootstrap/cache
+
+php composer.phar install
+
+Change your username and password from the default
+3. Edit database/seeds/UsersTableSeeder.php with your preferred email and password.
+
+4. In the project folder, move .env.example to .env and fill in your database credentials:
+cp .env.example .env
+
+-Create the adserver database. I used Sequel Pro on Mac OS X.
+
+-Migrate the database. Run:
+
+php artisan migrate
+php artisan db:seed
+
+
+-Reset the cached config files:
+php artisan key:generate
+php artisan config:cache
+php artisan config:clear
+
+
+Laradock deployment:
+-If you want to deploy the adserver with laradock, run the following to install the git submodule:
+Command:
+git submodule update --init --recursive
+
+Enter the laradock folder and rename env-example to .env.
+Command:
+cd laradock; cp env-example .env
+
+Run your containers:
+docker-compose down
+docker-compose up -d nginx mysql
+
+Open up http://localhost in your web browser
+
+
+More instructions available at https://laradock.io/
+
+
+Finally:
+-Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
+
+FAQ:
+What is the route I am suppose to provide for the Adsense Oauth Callback when setting up the google_clients_secrets.json? The route would be the address of your webserver. You should setup a domain or subdomain for it to work. For example: https://yoursubdomain.greenrobot.com/refresh
 12. Setup something like the following in cron (your path to artisan may vary): * * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1
 
 
