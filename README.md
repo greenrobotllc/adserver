@@ -26,37 +26,37 @@ Make a new folder to put the code:
 `cd adserver; git clone https://github.com/greenrobotllc/adserver .`
 
 2. Run php composer to install the components:  
-`php composer.phar install --no-scripts`
-`mkdir bootstrap/cache`
-`php composer.phar install`
+`php composer.phar install --no-scripts`  
+`mkdir bootstrap/cache`  
+`php composer.phar install`  
 
 3. Change your username and password from the default: Edit `database/seeds/UsersTableSeeder.php` with your email and password. I would like if someone were to make this part easier.
 
 4. In the project folder, move .env.example to .env and fill in your database credentials:  
-`cp .env.example .env`
+`cp .env.example .env`  
 
 5. Create the adserver database. I used Sequel Pro on Mac OS X.
 
 -Migrate the database. Run:  
-`php artisan migrate`
-`php artisan db:seed`
+`php artisan migrate`  
+`php artisan db:seed`  
 
 
 -Reset the cached config files:  
-`php artisan key:generate`
-`php artisan config:cache`
-`php artisan config:clear`
+`php artisan key:generate`  
+`php artisan config:cache`  
+`php artisan config:clear`  
 
 Laradock deployment:  
 -If you want to deploy the adserver with laradock, run the following to install the git submodule:  
-`git submodule update --init --recursive`
+`git submodule update --init --recursive`  
 
 Enter the laradock folder and rename env-example to .env.  
-`cd laradock; cp env-example .env`
+`cd laradock; cp env-example .env`  
 
 Run your containers:  
-`docker-compose down`
-`docker-compose up -d nginx mysql`
+`docker-compose down`  
+`docker-compose up -d nginx mysql`  
 
 Open up http://localhost in your web browser
 
