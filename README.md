@@ -19,18 +19,18 @@ I recommend using Linux or Mac OS X. I have not tried this under Windows. For pr
 
 ## Steps to install:
 0. You must use PHP 7.1 or greater.
-Make a new folder to put the code:
+Make a new folder to put the code:  
 `mkdir adserver`
 
 1. Git clone the adserver code from Github: https://github.com/greenrobotllc/adserver:  
-`cd adserver; git clone https://github.com/greenrobotllc/adserver`.
+`cd adserver; git clone https://github.com/greenrobotllc/adserver .`
 
 2. Run php composer to install the components:  
 `php composer.phar install --no-scripts`
 `mkdir bootstrap/cache`
 `php composer.phar install`
 
-3. Change your username and password from the default: Edit database/seeds/UsersTableSeeder.php with your email and password. I would like if someone were to make this part easier.
+3. Change your username and password from the default: Edit `database/seeds/UsersTableSeeder.php` with your email and password. I would like if someone were to make this part easier.
 
 4. In the project folder, move .env.example to .env and fill in your database credentials:  
 `cp .env.example .env`
@@ -48,8 +48,7 @@ Make a new folder to put the code:
 `php artisan config:clear`
 
 Laradock deployment:  
--If you want to deploy the adserver with laradock, run the following to install the git submodule:
-Command:
+-If you want to deploy the adserver with laradock, run the following to install the git submodule:  
 `git submodule update --init --recursive`
 
 Enter the laradock folder and rename env-example to .env.  
