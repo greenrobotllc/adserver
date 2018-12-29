@@ -21,54 +21,51 @@ I recommend using Linux or Mac OS X. I have not tried this under Windows. For pr
 0. You must use PHP 7.1 or greater.
 Make a new folder to put the code:
 
-mkdir adserver
+`mkdir adserver`
 
-1. Git clone the adserver code from Github: https://github.com/greenrobotllc/adserver
+1. Git clone the adserver code from Github: https://github.com/greenrobotllc/adserver:
 
-Command: 
-
-cd adserver; git clone https://github.com/greenrobotllc/adserver .
+`cd adserver; git clone https://github.com/greenrobotllc/adserver`.
 
 2. Run php composer to install the components:
 
-php composer.phar install --no-scripts
+`php composer.phar install --no-scripts`
 
-mkdir bootstrap/cache
+`mkdir bootstrap/cache`
 
-php composer.phar install
+`php composer.phar install`
 
 Change your username and password from the default
 3. Edit database/seeds/UsersTableSeeder.php with your preferred email and password.
 
 4. In the project folder, move .env.example to .env and fill in your database credentials:
-cp .env.example .env
+`cp .env.example .env`
 
 -Create the adserver database. I used Sequel Pro on Mac OS X.
 
 -Migrate the database. Run:
 
-php artisan migrate
-php artisan db:seed
+`php artisan migrate`
+`php artisan db:seed`
 
 
 -Reset the cached config files:
-php artisan key:generate
-php artisan config:cache
-php artisan config:clear
+`php artisan key:generate`
+`php artisan config:cache`
+`php artisan config:clear`
 
 
 Laradock deployment:
 -If you want to deploy the adserver with laradock, run the following to install the git submodule:
 Command:
-git submodule update --init --recursive
+`git submodule update --init --recursive`
 
 Enter the laradock folder and rename env-example to .env.
-Command:
-cd laradock; cp env-example .env
+`cd laradock; cp env-example .env`
 
 Run your containers:
-docker-compose down
-docker-compose up -d nginx mysql
+`docker-compose down`
+`docker-compose up -d nginx mysql`
 
 Open up http://localhost in your web browser
 
@@ -76,12 +73,16 @@ Open up http://localhost in your web browser
 More instructions available at https://laradock.io/
 
 
+-Setup something like the following in cron (your path to artisan may vary): 
+`* * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1`
+
+
 Finally:
 -Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
 
+
 FAQ:
 What is the route I am suppose to provide for the Adsense Oauth Callback when setting up the google_clients_secrets.json? The route would be the address of your webserver. You should setup a domain or subdomain for it to work. For example: https://yoursubdomain.greenrobot.com/refresh
-12. Setup something like the following in cron (your path to artisan may vary): * * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1
 
 
 ## Developer Notes
