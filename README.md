@@ -37,39 +37,37 @@ Make a new folder to put the code:
 
 5. Create the adserver database. I used Sequel Pro on Mac OS X.
 
--Migrate the database. Run:  
+6. Migrate the database. Run:  
 `php artisan migrate`  
 `php artisan db:seed`  
 
 
--Reset the cached config files:  
+7. Reset the cached config files:  
 `php artisan key:generate`  
 `php artisan config:cache`  
 `php artisan config:clear`  
 
-Laradock deployment:  
--If you want to deploy the adserver with laradock, run the following to install the git submodule:  
+8. Laradock deployment:  
+9. If you want to deploy the adserver with laradock, run the following to install the git submodule:  
 `git submodule update --init --recursive`  
 
-Enter the laradock folder and rename env-example to .env.  
+10. Enter the laradock folder and rename env-example to .env.  
 `cd laradock; cp env-example .env`  
 
-Run your containers:  
+11. Run your containers:  
 `docker-compose down`  
 `docker-compose up -d nginx mysql`  
 
-Open up http://localhost in your web browser
+12. Open up http://localhost in your web browser
+
+--More instructions available at https://laradock.io/
 
 
-More instructions available at https://laradock.io/
-
-
--Setup something like the following in cron (your path to artisan may vary):  
+13. Setup something like the following in cron (your path to artisan may vary):  
 `* * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1`
 
 
-Finally:  
--Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
+14. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
 
 
 FAQ:
