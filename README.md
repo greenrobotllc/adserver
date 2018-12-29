@@ -28,15 +28,15 @@ Make a new folder to put the code:
 2. Change your username and password from the default:  
 Edit `database/seeds/UsersTableSeeder.php` with your email and password. I would like if someone were to make this part easier.
 
-3. Run php composer to install the components:  
+3. In the project folder, move .env.example to .env and fill in your database credentials:  
+`cp .env.example .env`  
+
+4. Create the adserver database. I used Sequel Pro on Mac OS X.
+
+5. Run php composer to install the components:  
 `php composer.phar install --no-scripts`  
 `mkdir bootstrap/cache`  
 `php composer.phar install`  
-
-4. In the project folder, move .env.example to .env and fill in your database credentials:  
-`cp .env.example .env`  
-
-5. Create the adserver database. I used Sequel Pro on Mac OS X.
 
 6. Migrate the database. Run:  
 `php artisan migrate`  
