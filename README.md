@@ -55,20 +55,22 @@ Edit `database/seeds/UsersTableSeeder.php` with your email and password. I would
 10. Enter the laradock folder and rename env-example to .env.  
 `cd laradock; cp env-example .env`  
 
-11. Run your containers:  
+11. Change your database credentials in the laradock .env to match that of the adserver .env file.
+
+12. Run your containers:  
 `docker-compose down`  
 `docker-compose up -d nginx mysql`  
 
-12. Open up http://localhost in your web browser
+13. Open up http://localhost in your web browser
 
 --More instructions available at https://laradock.io/
 
 
-13. Setup something like the following in cron (your path to artisan may vary):  
+14. Setup something like the following in cron (your path to artisan may vary):  
 `* * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1`
 
 
-14. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
+15. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
 
 
 FAQ:
