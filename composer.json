@@ -6,7 +6,7 @@
     "type": "project",
     "require": {
         "php": ">=7.1.0",
-        "laravel/framework": "5.7.*",
+        "laravel/framework": "5.8.*",
 		"laravel/tinker": "^1.0",
 		"google/apiclient": "1.0.*@beta",
         "doctrine/dbal": "v2.5.4",
