@@ -77,7 +77,7 @@ Edit `database/seeds/UsersTableSeeder.php` with your email and password. I would
 15. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
 
 
-FAQ:
+## FAQ:
 What is the route I am suppose to provide for the Adsense Oauth Callback when setting up the google_clients_secrets.json? The route would be the address of your webserver. You should setup a domain or subdomain for it to work. For example: https://yoursubdomain.greenrobot.com/refresh
 
 
