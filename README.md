@@ -22,64 +22,11 @@ For installing to Centos Linux using Docker, please check out these install inst
 [INSTALL ON CENTOS 7](https://github.com/greenrobotllc/adserver/blob/master/INSTALL_CENTOS_7.md)
 
 ## Steps to install for development on Mac OS X:
-0. You must use PHP 7.1 or greater.
-Make a new folder to put the code:  
-`mkdir adserver`
-
-1. Git clone the adserver code from Github: https://github.com/greenrobotllc/adserver:  
-`cd adserver; git clone https://github.com/greenrobotllc/adserver .`
-
-2. Change your username and password from the default:  
-Edit `database/seeds/UsersTableSeeder.php` with your email and password. I would like if someone were to make this part easier.
-
-3. In the project folder, move .env.example to .env and fill in your database credentials:  
-`cp .env.example .env`  
-
-4. Create the adserver database. I used Sequel Pro on Mac OS X.
-
-5. Run php composer to install the components:  
-`php composer.phar install --no-scripts`  
-`mkdir bootstrap/cache`  
-`php composer.phar install`  
-
-6. Migrate the database. Run:  
-`php artisan migrate`  
-`php artisan db:seed`  
-
-
-7. Reset the cached config files:  
-`php artisan key:generate`  
-`php artisan config:cache`  
-`php artisan config:clear`  
-
-8. Laradock deployment:  
-9. If you want to deploy the adserver with laradock, run the following to install the git submodule:  
-`git submodule update --init --recursive`  
-
-10. Enter the laradock folder and rename env-example to .env.  
-`cd laradock; cp env-example .env`  
-
-11. Change your database credentials in the laradock .env to match that of the adserver .env file.
-
-12. Run your containers:  
-`docker-compose down`  
-`docker-compose up -d nginx mysql`  
-
-13. Open up http://localhost in your web browser
-
---More instructions available at https://laradock.io/
-
-
-14. Setup something like the following in cron (your path to artisan may vary):  
-`* * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1`
-
-
-15. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
-
+For installing to Mac OS X using Docker, please check out these install instructions:
+[INSTALL ON MAC_OS_X](https://github.com/greenrobotllc/adserver/blob/master/INSTALL_MAC_OSX.md)
 
 ## FAQ:
 What is the route I am suppose to provide for the Adsense Oauth Callback when setting up the google_clients_secrets.json? The route would be the address of your webserver. You should setup a domain or subdomain for it to work. For example: https://yoursubdomain.greenrobot.com/refresh
-
 
 ## Developer Notes
 Note for developers: I have set debug to false in config/app.php so this is ready to go for production installs. If you wish to debug, set this value to true. Setting it to true may cause your database password to be exposed if a connection error occurs.
