@@ -47,7 +47,23 @@ Edit `database/seeds/UsersTableSeeder.php` with your email and password. I would
 3. In the project folder, move .env.example to .env and fill in your database credentials:  
 `cp .env.example .env`  
 
-4. Create the adserver database and user. I used Sequel Pro on Mac OS X.
+4. Laradock setup. If you want to deploy the adserver with laradock, run the following to install the git submodule:  
+`git submodule update --init --recursive`  
+
+5. Enter the laradock folder and rename env-example to .env.  
+`cd laradock; cp env-example .env`  
+
+6. Change your database credentials in the laradock .env to match that of the adserver .env file.
+--More instructions available at https://laradock.io/
+
+7. Run your containers:  
+`docker-compose down`  
+`docker-compose up -d nginx mysql`  
+
+8. Open up http://localhost in your web browser
+
+9. Create the adserver database and user.
+
 
 Example of creating a user with access to a new database
 ```
@@ -57,41 +73,25 @@ GRANT ALL ON adserver.* TO adserver_dbuser@'192.168.16.5';
 FLUSH PRIVILEGES
 ```
 
-5. Run php composer to install the components:  
+10. Run php composer to install the components:  
 `php composer.phar install --no-scripts`  
 `mkdir bootstrap/cache`  
 `php composer.phar install`  
 
-6. Migrate the database. Run:  
+11. Migrate the database. Run:  
 `php artisan migrate`  
 `php artisan db:seed`  
 
 
-7. Reset the cached config files:  
+12. Reset the cached config files:  
 `php artisan key:generate`  
 `php artisan config:cache`  
 `php artisan config:clear`  
 
-8. Laradock deployment:  
-9. If you want to deploy the adserver with laradock, run the following to install the git submodule:  
-`git submodule update --init --recursive`  
-
-10. Enter the laradock folder and rename env-example to .env.  
-`cd laradock; cp env-example .env`  
-
-11. Change your database credentials in the laradock .env to match that of the adserver .env file.
-
-12. Run your containers:  
-`docker-compose down`  
-`docker-compose up -d nginx mysql`  
-
-13. Open up http://localhost in your web browser
-
---More instructions available at https://laradock.io/
 
 
-14. Setup something like the following in cron (your path to artisan may vary):  
+13. Setup something like the following in cron (your path to artisan may vary):  
 `* * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1`
 
 
-15. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
+14. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
