@@ -60,9 +60,7 @@ Edit `database/seeds/UsersTableSeeder.php` with your email and password. I would
 `docker-compose down`  
 `docker-compose up -d nginx mysql`  
 
-8. Open up http://localhost in your web browser
-
-9. Create the adserver database and user.
+8. Create the adserver database and user.
 
 
 Example of creating a user with access to a new database
@@ -73,25 +71,26 @@ GRANT ALL ON adserver.* TO adserver_dbuser@'192.168.16.5';
 FLUSH PRIVILEGES
 ```
 
-10. Run php composer to install the components:  
+9. Run php composer to install the components:  
 `php composer.phar install --no-scripts`  
 `mkdir bootstrap/cache`  
 `php composer.phar install`  
 
-11. Migrate the database. Run:  
+10. Migrate the database. Run:  
 `php artisan migrate`  
 `php artisan db:seed`  
 
 
-12. Reset the cached config files:  
+11. Reset the cached config files:  
 `php artisan key:generate`  
 `php artisan config:cache`  
 `php artisan config:clear`  
 
 
 
-13. Setup something like the following in cron (your path to artisan may vary):  
+12. Setup something like the following in cron (your path to artisan may vary):  
 `* * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1`
 
+13. Open up your host name in your web browser
 
 14. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
