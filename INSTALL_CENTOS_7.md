@@ -98,4 +98,6 @@ FLUSH PRIVILEGES
 Do this:
 ```chmod -R 777 storage; cd storage; chmod -R 777 logs```
 
+15. If you see an error with the bootstrap/cache folder not being writeable:
+```chmod 777 bootstrap;  cd bootstrap; chmod 777 cache```
 15. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
