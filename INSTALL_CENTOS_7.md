@@ -91,6 +91,12 @@ FLUSH PRIVILEGES
 12. Setup something like the following in cron (your path to artisan may vary):  
 `* * * * * php /var/www/html/adserver/artisan schedule:run >> /dev/null 2>&1`
 
+13. If you see the error:
+"The stream or file "/var/www/storage/logs/laravel.log" could not be opened: failed to open stream: Permission denied"
+
+Do this:
+```chmod -R 777 storage; cd storage; chmod -R 777 logs```
+
 13. Open up your host name in your web browser
 
 14. Login with your email and password and setup your Google Client secrets, Google Account Info and LifeStreetMedia account info.
