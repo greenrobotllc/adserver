@@ -77,6 +77,9 @@ FLUSH PRIVILEGES
 `php composer.phar install`  
 
 10. Migrate the database. Run:  
+`cd <your laradock folder>`
+`docker-compose exec workspace bash`
+  
 `php artisan migrate`  
 `php artisan db:seed`  
 
