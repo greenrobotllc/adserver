@@ -66,8 +66,8 @@ Edit `database/seeds/UsersTableSeeder.php` with your email and password. I would
 Example of creating a user with access to a new database
 ```
 CREATE DATABASE adserver
-CREATE USER adserver_dbuser@'192.168.16.5' IDENTIFIED BY 'password';
-GRANT ALL ON adserver.* TO adserver_dbuser@'192.168.16.5';
+CREATE USER adserver_dbuser IDENTIFIED BY 'password';
+GRANT ALL ON adserver.* TO adserver_dbuser@'%';
 FLUSH PRIVILEGES
 ```
 
@@ -79,7 +79,6 @@ FLUSH PRIVILEGES
 10. Migrate the database. Run:  
 `cd <your laradock folder>`
 `docker-compose exec workspace bash`
-  
 `php artisan migrate`  
 `php artisan db:seed`  
 
