@@ -58,7 +58,7 @@ Edit `database/seeds/UsersTableSeeder.php` with your email and password. I would
 
 7. Run your containers:  
 `docker-compose down`  
-`docker-compose up -d nginx mysql`  
+`docker-compose up -d nginx mariadb`  
 
 8. Create the adserver database and user.
 
