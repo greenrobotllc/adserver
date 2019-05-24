@@ -79,7 +79,7 @@ FLUSH PRIVILEGES
 10. Migrate the database. Run:  
 ```
 cd laradock
-docker-compose exec workspace bash`
+docker-compose exec workspace bash
 php artisan migrate
 php artisan db:seed
 ```
