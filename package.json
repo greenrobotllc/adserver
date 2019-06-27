@@ -1,13 +1,14 @@
 {
   "private": true,
   "devDependencies": {
-    "gulp": "^3.8.8"
+    "gulp": "^4.0.2"
   },
   "dependencies": {
     "acorn": "^6.1.1",
     "babel-runtime": "^5.8.38",
     "bootstrap-sass": "^3.0.0",
-    "laravel-elixir": "^3.0.0",
+    "laravel-mix": "^4.0.16",
+    "node-sass": "^4.12.0",
     "vue-hot-reload-api": "^1.3.3",
     "vueify-insert-css": "^1.0.0"
   }
