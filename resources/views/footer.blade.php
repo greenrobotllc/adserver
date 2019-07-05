@@ -1,7 +1,7 @@
   <footer class="main-footer">
         <div class="pull-right hidden-xs">
         </div>
-        <strong>Copyright &copy; 2016-2017 <a href="https://github.com/greenrobotllc/adserver">Ad Server</a>.</strong> All rights reserved.
+        <strong>Copyright &copy; 2016-<?php echo date("Y") ?> <a href="https://github.com/greenrobotllc/adserver">Ad Server</a>.</strong> All rights reserved.
       </footer>
 
 
