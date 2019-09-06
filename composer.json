@@ -5,8 +5,8 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": ">=7.1.0",
-        "laravel/framework": "5.8.*",
+        "php": ">=7.2.0",
+        "laravel/framework": "^6.0",
 		"laravel/tinker": "^1.0",
 		"google/apiclient": "1.0.*@beta",
         "doctrine/dbal": "v2.5.4",
