@@ -15,7 +15,8 @@
         "league/csv": "^8.1",
 		"fideloper/proxy": "^4.0",
         "symfony/finder": "^4.0",
-        "symfony/console": "^4.2"
+        "symfony/console": "^4.2",
+        "stancl/tenancy": "^2.2"
 			
     },
     "require-dev": {

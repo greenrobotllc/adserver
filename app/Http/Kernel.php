@@ -13,8 +13,8 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
-        \App\Http\Middleware\TimeZone::class,
+        // \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+        // \App\Http\Middleware\TimeZone::class,
 		
     ];
 
@@ -25,6 +25,7 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
+            \Stancl\Tenancy\Middleware\PreventAccessFromTenantDomains::class,
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
@@ -34,6 +35,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
+            \Stancl\Tenancy\Middleware\PreventAccessFromTenantDomains::class,
             'throttle:60,1',
             'bindings',
         ],
