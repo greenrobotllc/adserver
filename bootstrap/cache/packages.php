@@ -20,6 +20,19 @@
       0 => 'Carbon\\Laravel\\ServiceProvider',
     ),
   ),
+  'stancl/tenancy' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Stancl\\Tenancy\\TenancyServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Tenant' => 'Stancl\\Tenancy\\Facades\\TenantFacade',
+      'Tenancy' => 'Stancl\\Tenancy\\Facades\\TenancyFacade',
+      'GlobalCache' => 'Stancl\\Tenancy\\Facades\\GlobalCacheFacade',
+    ),
+  ),
   'torann/geoip' => 
   array (
     'providers' => 
