@@ -18,3 +18,5 @@ Homestead.json
 # Rocketeer PHP task runner and deployment package. https://github.com/rocketeers/rocketeer
 .rocketeer/
 config/google_client_secrets.json
+bootstrap/cache/packages.php
+bootstrap/cache/services.php
