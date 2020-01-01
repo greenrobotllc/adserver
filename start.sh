@@ -1,1 +1,1 @@
-cd laradock; docker-compose down; docker-compose up -d workspace nginx mariadb;
+cd laradock; docker-compose up -d workspace caddy mariadb;
