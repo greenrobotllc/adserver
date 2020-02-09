@@ -1,1 +1,2 @@
-cd laradock; docker-compose exec workspace bash
+#!/bin/bash
+cd laradock || exit; docker-compose exec workspace bash

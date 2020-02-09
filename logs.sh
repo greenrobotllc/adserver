@@ -1,1 +1,2 @@
-cd laradock; docker-compose logs nginx
+#!/bin/bash
+cd laradock || exit; docker-compose logs nginx

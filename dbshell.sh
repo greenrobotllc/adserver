@@ -1,1 +1,2 @@
-cd laradock; docker-compose exec mariadb mysql -uroot -proot
+#!/bin/bash
+cd laradock || exit; docker-compose exec mariadb mysql -uroot -proot

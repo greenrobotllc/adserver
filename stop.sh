@@ -1,1 +1,2 @@
-cd laradock; docker-compose down;
+#!/bin/bash
+cd laradock || exit; docker-compose down;

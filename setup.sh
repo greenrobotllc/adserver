@@ -1,3 +1,4 @@
+#!/bin/bash
 php composer.phar install --no-scripts;
 mkdir bootstrap/cache;
 php composer.phar install;
@@ -7,6 +8,6 @@ php artisan key:generate;
 php artisan config:cache;
 php artisan config:clear;
 git submodule update --init --recursive
-cd laradock; cp env-example .env
+cd laradock || exit; cp env-example .env
 docker-compose down
 docker-compose up -d nginx mysql

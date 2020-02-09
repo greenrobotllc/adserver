@@ -1,1 +1,2 @@
-cd laradock; docker-compose exec nginx bash
+#!/bin/bash
+cd laradock || exit; docker-compose exec nginx bash
