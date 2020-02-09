@@ -42,6 +42,8 @@ Follow GreenRobot Adserver on Twitter: https://twitter.com/GRAdserver
 
 
 ## TODO
+-Fix errors from phpcs
+
 -Document iOS & Android sdk integration
 
 -I would like to add Facebook Audience network to this adserver.
