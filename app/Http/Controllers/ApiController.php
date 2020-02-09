@@ -39,10 +39,8 @@ class ApiController extends Controller
         $value = \Input::get('value');
         $token = \Input::get('token');
 
-        if (\Input::has('token'))
-        {
-            if ($this->token != $token)
-            {
+        if (\Input::has('token')) {
+            if ($this->token != $token) {
                 return $this::showError();
             }
             switch (\Input::get('action')) {
@@ -50,18 +48,18 @@ class ApiController extends Controller
                 return $this::displayappkey();
                 break;
             case 'verify':
-                return $this::verify($app,$secret);
+                return $this::verify($app, $secret);
                 break;    
             case 'rpm':
                 return $this::update_rpm($slug, $value);
                 break;
             
             default:
-            return response()->json(['error' => "Invalid API Request"], 400);
+                return response()->json(['error' => "Invalid API Request"], 400);
                 break;
             }
         }
-        return ApiController::verify($app,$secret);
+        return ApiController::verify($app, $secret);
     }
 
     public function verify($app,$secret)
@@ -72,8 +70,7 @@ class ApiController extends Controller
         $responseMessage = null;
         $responseCode = null;
 
-        if (md5($data) == $app && \Hash::check($data,  $secret))
-        {
+        if (md5($data) == $app && \Hash::check($data,  $secret)) {
             session(['verified_app_key'=>md5($data)]);
             $responseMessage = ['success' => "API Credentials Verified",'token'=> $this->token];
             $responseCode = 200;
@@ -96,8 +93,8 @@ class ApiController extends Controller
     public function displayappkey()
     {
         ApiController::generateappkey();
-       $credentials = array('app_key' => $this->appkey,'app_secret'=>$this->appsecret);
-       return response()->json(['api' => $credentials], 200);
+        $credentials = array('app_key' => $this->appkey,'app_secret'=>$this->appsecret);
+        return response()->json(['api' => $credentials], 200);
     }
 
     private function setappkey($key)
@@ -113,7 +110,7 @@ class ApiController extends Controller
     {
         ApiController::generateappkey();
         $token = $this->token;
-        return \View::make('api',['page'=>'api','public'=>$this->appkey, 'secret'=>$this->appsecret, 'token'=>$token]);
+        return \View::make('api', ['page'=>'api','public'=>$this->appkey, 'secret'=>$this->appsecret, 'token'=>$token]);
     }
 
     private function update_rpm($slug, $value)
@@ -121,14 +118,13 @@ class ApiController extends Controller
         $responseCode = 200;
         $responseMessage = ['success' => "RPM VALUE UPDATED"];;
 
-        if (!is_numeric($value))
-        {
+        if (!is_numeric($value)) {
             $responseCode = 400;
             $responseMessage=['error' => "Invalid API Request"];
             return response()->json($responseMessage, $responseCode);
         }
-       try{
-            $entry = \App\CustomAdd::where('slug','=',$slug)->first();
+        try{
+            $entry = \App\CustomAdd::where('slug', '=', $slug)->first();
             $entry->rpm = $value;
 
             $entry->save();

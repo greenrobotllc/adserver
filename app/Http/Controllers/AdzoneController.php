@@ -27,19 +27,19 @@ class AdzoneController extends Controller
     public function __construct($check = true)
     {
         //if ($check):
-		$this->middleware('auth');
-	
-			 
-       // $this->middleware(function(){
+        $this->middleware('auth');
+    
+             
+        // $this->middleware(function(){
            // if (!\Auth::check())
-       //  {
-       //     if (\Request::ajax())
-       //      {
-       //          abort(403, 'Unauthorized action.');
-       //      }
-       //      // abort(403, 'Unauthorized action.');
-       //      return \Redirect::to('login');
-       //  }
+        //  {
+        //     if (\Request::ajax())
+        //      {
+        //          abort(403, 'Unauthorized action.');
+        //      }
+        //      // abort(403, 'Unauthorized action.');
+        //      return \Redirect::to('login');
+        //  }
         //});
         //endif;
     }
@@ -53,9 +53,9 @@ class AdzoneController extends Controller
         $data = AdZone::all();
         foreach ($data as $key => $value) {
             $value->ad_count = 0;
-            $value->ad_count = AdZoneMapping::where('adzone','=',$value->id)->count();
+            $value->ad_count = AdZoneMapping::where('adzone', '=', $value->id)->count();
         }
-        return \View::make('adzone.main',['page'=>'adzone','zones'=>$data]);
+        return \View::make('adzone.main', ['page'=>'adzone','zones'=>$data]);
     }
 
     /**
@@ -71,7 +71,7 @@ class AdzoneController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(AdZoneRequest $request)
@@ -83,23 +83,23 @@ class AdzoneController extends Controller
             $data->save();
         }catch(Exception $e)
         {
-            return \Redirect::to('adzone')->with('error',$e->getMessage());
+            return \Redirect::to('adzone')->with('error', $e->getMessage());
         }
-        return \Redirect::to('adzone')->with('message','Successfully Added');
+        return \Redirect::to('adzone')->with('message', 'Successfully Added');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show()
     {
         $id = Input::get('id');
-        $data = AdZone::where('id','=',$id)->first();
+        $data = AdZone::where('id', '=', $id)->first();
         if($data->platform ==0) {
-            return View::make('adzone.showcode',['id'=>$id]);
+            return View::make('adzone.showcode', ['id'=>$id]);
         }
         else {
             return secure_url('/getadmobile/'.$id);
@@ -110,15 +110,15 @@ class AdzoneController extends Controller
     public function showopt()
     {
         $id = Input::get('id');
-        $data = AdZone::where('id','=',$id)->first();
-        return View::make('adzone.showsettings',['data'=>$data]);
+        $data = AdZone::where('id', '=', $id)->first();
+        return View::make('adzone.showsettings', ['data'=>$data]);
     }
 
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -129,8 +129,8 @@ class AdzoneController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int                      $id
      * @return \Illuminate\Http\Response
      */
     public function update(AdZoneRequest $request)
@@ -139,14 +139,14 @@ class AdzoneController extends Controller
             $id = $request->id;
             $name = $request->name;
             $platform = $request->platform;
-            $zone = AdZone::where('id',$id)->first();
+            $zone = AdZone::where('id', $id)->first();
             $zone->name=$name;
             $zone->platform=$platform;
             $zone->save();
             return response("Adzone Updated", 200);
         }catch(Exception $e)
         {
-           return response("Unable to update Adzone <br>".$e->getMessage(), 500);
+            return response("Unable to update Adzone <br>".$e->getMessage(), 500);
         }
 
     }
@@ -154,7 +154,7 @@ class AdzoneController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -181,106 +181,105 @@ class AdzoneController extends Controller
             $rpm_index = $total = $ipx = $total_cms = 0;
             $rpm_c = array();
            // dd($data);
-            foreach ($data as $key => $value) {
-                //get all adds in each zone
-                $ad_id[$key] = AdZoneMapping::where('adzone','=',$value->id)->get();
-                //dd($ad_id);
-                foreach ($ad_id[$key] as $key1 => $value1) {
-                    switch ($value1->type) {
-                        case 'mopub':
-                            $rpm[$key][$rpm_index] = MoPub::where('id','=',$value1->add_id)->first();
-                            $adzone_id=$rpm[$key][$rpm_index]->mopub_zone;
+        foreach ($data as $key => $value) {
+            //get all adds in each zone
+            $ad_id[$key] = AdZoneMapping::where('adzone', '=', $value->id)->get();
+            //dd($ad_id);
+            foreach ($ad_id[$key] as $key1 => $value1) {
+                switch ($value1->type) {
+                case 'mopub':
+                    $rpm[$key][$rpm_index] = MoPub::where('id', '=', $value1->add_id)->first();
+                    $adzone_id=$rpm[$key][$rpm_index]->mopub_zone;
                             
-                            $mopub_id = DB::table('mopub_zones')->where('id', $adzone_id)->value('unit_id');
-                            //print_r("adsense_id = $adsense_id");
+                    $mopub_id = DB::table('mopub_zones')->where('id', $adzone_id)->value('unit_id');
+                    //print_r("adsense_id = $adsense_id");
                             
                             
-                            //print_r($adsense_id);
-                            $myRpm=DB::table('mopub_zone_reports')->where('adunit_id', $mopub_id)->value('rpm');
-                            //print_r("rpm is");
-                            //print_r((float)$myRpm);
-                            $rpm[$key][$rpm_index]->rpm=(float)$myRpm;
+                    //print_r($adsense_id);
+                    $myRpm=DB::table('mopub_zone_reports')->where('adunit_id', $mopub_id)->value('rpm');
+                    //print_r("rpm is");
+                    //print_r((float)$myRpm);
+                    $rpm[$key][$rpm_index]->rpm=(float)$myRpm;
             
                             
-                            $total += $rpm[$key][$rpm_index]->rpm;
-                            break;
-                        case 'liberty':
-                            $rpm[$key][$rpm_index] = Liberty::where('id','=',$value1->add_id)->first();
-                            $adzone_id=$rpm[$key][$rpm_index]->liberty_zone;
+                    $total += $rpm[$key][$rpm_index]->rpm;
+                    break;
+                case 'liberty':
+                    $rpm[$key][$rpm_index] = Liberty::where('id', '=', $value1->add_id)->first();
+                    $adzone_id=$rpm[$key][$rpm_index]->liberty_zone;
                             
-                            $liberty_id = DB::table('liberty_zones')->where('id', $adzone_id)->value('unit_id');
-                            //print_r("adsense_id = $adsense_id");
+                    $liberty_id = DB::table('liberty_zones')->where('id', $adzone_id)->value('unit_id');
+                    //print_r("adsense_id = $adsense_id");
                             
                             
-                            //print_r($adsense_id);
-                            $myRpm=DB::table('liberty_zone_reports')->where('adunit_id', $liberty_id)->value('rpm');
-                            //print_r("rpm is");
-                            //print_r((float)$myRpm);
-                            $rpm[$key][$rpm_index]->rpm=(float)$myRpm;
+                    //print_r($adsense_id);
+                    $myRpm=DB::table('liberty_zone_reports')->where('adunit_id', $liberty_id)->value('rpm');
+                    //print_r("rpm is");
+                    //print_r((float)$myRpm);
+                    $rpm[$key][$rpm_index]->rpm=(float)$myRpm;
             
                             
-                            $total += $rpm[$key][$rpm_index]->rpm;
-                            break;
+                    $total += $rpm[$key][$rpm_index]->rpm;
+                    break;
 
-                        case 'adsense':
-                           $rpm[$key][$rpm_index] = Adsense::where('id','=',$value1->add_id)->first();
-                            //$rpm[$key][$rpm_index]->rpm = Ad::where('name','adsense 1')->first()->last_rpm;
-							$adzone_id=$rpm[$key][$rpm_index]->adsense_zone;
-							//print_r("adzone_id = $adzone_id");
-							//$zone_report_id = DB::table('adsenses')->where('id', $adzone_id)->value('adsense_zone');
-							//print_r($zone_report_id);
-							//print_r("zone_report_id = $zone_report_id");
-							
-							$adsense_id = DB::table('adsense_zones')->where('id', $adzone_id)->value('adsense_id');
-							//print_r("adsense_id = $adsense_id");
-							
-							//print_r($adsense_id);
-							$myRpm=DB::table('zone_reports')->where('adunit_id', $adsense_id)->value('rpm');
-							// print_r("rpm is");
-       //                      print_r($rpm);
-							$rpm[$key][$rpm_index]->rpm=$myRpm;
-							
-							//$zone_report_id = DB::table('adsenses')->where('id', $adzone_id)->value('adsense_zone');
-							//print_r($zone_report_id);
-							//$adsense_id = DB::table('adsense_zones')->where('id', $zone_report_id)->value('adsense_id');
-							//print_r($adsense_id);
-							//$rpm=DB::table('zone_reports')->where('adunit_id', $adsense_id)->value('rpm');
+                case 'adsense':
+                    $rpm[$key][$rpm_index] = Adsense::where('id', '=', $value1->add_id)->first();
+                    //$rpm[$key][$rpm_index]->rpm = Ad::where('name','adsense 1')->first()->last_rpm;
+                    $adzone_id=$rpm[$key][$rpm_index]->adsense_zone;
+                    //print_r("adzone_id = $adzone_id");
+                    //$zone_report_id = DB::table('adsenses')->where('id', $adzone_id)->value('adsense_zone');
+                    //print_r($zone_report_id);
+                    //print_r("zone_report_id = $zone_report_id");
                             
-							
-							$total += $rpm[$key][$rpm_index]->rpm;
-                            break;
-                        case 'lsm':
-                            $rpm[$key][$rpm_index] = LSM::where('id','=',$value1->add_id)->first();
-                            $rpm[$key][$rpm_index]->rpm = Ad::where('name','lsm 1')->first()->last_rpm;
-                            $total += $rpm[$key][$rpm_index]->rpm;
-                            break;
+                    $adsense_id = DB::table('adsense_zones')->where('id', $adzone_id)->value('adsense_id');
+                    //print_r("adsense_id = $adsense_id");
+                            
+                    //print_r($adsense_id);
+                    $myRpm=DB::table('zone_reports')->where('adunit_id', $adsense_id)->value('rpm');
+                    // print_r("rpm is");
+                    //                      print_r($rpm);
+                    $rpm[$key][$rpm_index]->rpm=$myRpm;
+                            
+                    //$zone_report_id = DB::table('adsenses')->where('id', $adzone_id)->value('adsense_zone');
+                    //print_r($zone_report_id);
+                    //$adsense_id = DB::table('adsense_zones')->where('id', $zone_report_id)->value('adsense_id');
+                    //print_r($adsense_id);
+                    //$rpm=DB::table('zone_reports')->where('adunit_id', $adsense_id)->value('rpm');
+                            
+                            
+                    $total += $rpm[$key][$rpm_index]->rpm;
+                    break;
+                case 'lsm':
+                    $rpm[$key][$rpm_index] = LSM::where('id', '=', $value1->add_id)->first();
+                    $rpm[$key][$rpm_index]->rpm = Ad::where('name', 'lsm 1')->first()->last_rpm;
+                    $total += $rpm[$key][$rpm_index]->rpm;
+                    break;
                         
-                        default:
-                            //get the custom add details
-                            $rpm[$key][$rpm_index] = CustomAdd::where('id','=',$value1->add_id)->first();
-                            $total += $rpm[$key][$rpm_index]->rpm;
-                            break;
-                    }
-                    $rpm_index++;
+                default:
+                    //get the custom add details
+                    $rpm[$key][$rpm_index] = CustomAdd::where('id', '=', $value1->add_id)->first();
+                    $total += $rpm[$key][$rpm_index]->rpm;
+                    break;
                 }
-                //Total Original RPM per zone is in $total
-                if ($total == 0)
-                {
-                    $total = 0.1;
-                }
-                // Total RPM Average per zone is in $average
-                // if (count($ad_id[$key]) != 0)
-                // {
-                //    $average = $total/count($ad_id[$key]);
-                // }
-                // $average = $total;
-                // error_log("Average: ".count($ad_id[$key]));
-                // if (!$ad_id[$key]):
-                  $logging .= "<br />Key: ".$key;
-                // if($key != 0) {
-                //     dd($rpm[$key]);
-                // }
-                if(isset($rpm) && isset($rpm[$key])) {
+                $rpm_index++;
+            }
+            //Total Original RPM per zone is in $total
+            if ($total == 0) {
+                $total = 0.1;
+            }
+            // Total RPM Average per zone is in $average
+            // if (count($ad_id[$key]) != 0)
+            // {
+            //    $average = $total/count($ad_id[$key]);
+            // }
+            // $average = $total;
+            // error_log("Average: ".count($ad_id[$key]));
+            // if (!$ad_id[$key]):
+              $logging .= "<br />Key: ".$key;
+            // if($key != 0) {
+            //     dd($rpm[$key]);
+            // }
+            if(isset($rpm) && isset($rpm[$key])) {
                 foreach ($rpm[$key] as $value2) {
                     $total_cms += $value2->rpm + 0.001;// + $average;
                     $rpm_c[$ipx++] = $value2->rpm + 0.001;// + $average;
@@ -288,7 +287,7 @@ class AdzoneController extends Controller
                 //print_r("rpm is");
                 //print_r($rpm);
 
-                 // $logging .= "<br />Key done";
+                // $logging .= "<br />Key done";
                 // endif;
                 // Added Average RPM per ad is in $rpm_c
                 // Total Added Average RPM Per Zone is in $total_cms
@@ -298,13 +297,13 @@ class AdzoneController extends Controller
                     // error_log("Total: ".$total_cms." key:".$key3);
                     $ad_id[$key][$key3]->save();
                 }
-                }
-                //Reset all the variables
-                $rpm_index = $total = $ipx = $total_cms = 0;
-                $rpm_c = array();
-                // $logging .= "<br />new done ".$value1->type;
             }
-//        }
+            //Reset all the variables
+            $rpm_index = $total = $ipx = $total_cms = 0;
+            $rpm_c = array();
+            // $logging .= "<br />new done ".$value1->type;
+        }
+        //        }
         // catch(Exception $e)
         // {
         //     $logging .= "<br />!!! Error updating AdZones - ".$e->getMessage()." !!!";

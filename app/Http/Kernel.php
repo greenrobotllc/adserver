@@ -15,7 +15,7 @@ class Kernel extends HttpKernel
     protected $middleware = [
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
         \App\Http\Middleware\TimeZone::class,
-		
+        
     ];
 
     /**
@@ -54,6 +54,6 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'timezone_check' => \App\Http\Middleware\TimeZone::class,
-		
+        
     ];
 }

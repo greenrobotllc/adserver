@@ -26,8 +26,8 @@ class AdsenseController extends Controller
 
     public function __construct()
     {
-		
-       // $this->middleware(function(){
+        
+        // $this->middleware(function(){
         //    if (!\Auth::check())
         // {
         //    if (\Request::ajax())
@@ -36,9 +36,9 @@ class AdsenseController extends Controller
         //     }
         //     return \Redirect::to('login');
         // }
-		$this->middleware('auth');
+        $this->middleware('auth');
         $this::updateValues();
-       // });
+        // });
 
     }
     /**
@@ -51,24 +51,26 @@ class AdsenseController extends Controller
         $data  = Adsense::all();
         $zones = AdZone::all();
         $adsense_zones = AdsenseZone::orderBy('name')->get();//AdsenseZone::all();
-		//AdsenseZone::orderBy('name')->get();
+        //AdsenseZone::orderBy('name')->get();
                //get table name
         $zones_tablename =  with(new AdZone)->getTable();
         $zone_mapping_tablename = with(new AdZoneMapping)->getTable();
 
         //get the data by joining different tables
         foreach ($data as $key => $value) {
-            $temp = AdZoneMapping::where('add_id','=',$value->id)->where('type',$this->type)->join($zones_tablename, $zones_tablename.'.id', '=', $zone_mapping_tablename.'.adzone')->first();
+            $temp = AdZoneMapping::where('add_id', '=', $value->id)->where('type', $this->type)->join($zones_tablename, $zones_tablename.'.id', '=', $zone_mapping_tablename.'.adzone')->first();
             $data[$key]->zonename = $temp->name;
             $data[$key]->weight = $temp->weight*100 . "%";
         }
 
-        return \View::make('adsense.manage',[
+        return \View::make(
+            'adsense.manage', [
             'data'=>$data,
             'page'=>"adsense",
             'zones'=>$zones,
-			'adsense_zones'=>$adsense_zones
-            ]);
+            'adsense_zones'=>$adsense_zones
+            ]
+        );
     }
 
     /**
@@ -84,7 +86,7 @@ class AdsenseController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(AdsenseRequest $request)
@@ -96,7 +98,7 @@ class AdsenseController extends Controller
         try{
             $adsense->name = $request->name;
             $adsense->adcode = $request->adcode;
-			$adsense->adsense_zone=$request->adsense_zone;
+            $adsense->adsense_zone=$request->adsense_zone;
             $adsense->save();
 
             $AdZoneMapping->adzone = $request->adzone;
@@ -108,7 +110,7 @@ class AdsenseController extends Controller
         }catch(Exception $e)
         {
             DB::rollBack();
-            return \Redirect::to('adsense')->with('error',$e->getMessage());
+            return \Redirect::to('adsense')->with('error', $e->getMessage());
         }
         
 
@@ -120,26 +122,26 @@ class AdsenseController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show()
     {
         $id = Input::get('id');
-        $data = Adsense::where('id','=',$id)->first();
+        $data = Adsense::where('id', '=', $id)->first();
         $data->zone = AdZone::all();
-		//$data->adsense_zone = AdsenseZone::all();
-		$data->my_ad=Adsense::whereId($id)->first()->adsense_zone;
-		
-		$data->adsense_zone = AdsenseZone::orderBy('name')->get();
-        $data->adzone = AdZoneMapping::where('add_id',$id)->where('type',$this->type)->first()->adzone;
-        return View::make('adsense.showsettings',['data'=>$data]);
+        //$data->adsense_zone = AdsenseZone::all();
+        $data->my_ad=Adsense::whereId($id)->first()->adsense_zone;
+        
+        $data->adsense_zone = AdsenseZone::orderBy('name')->get();
+        $data->adzone = AdZoneMapping::where('add_id', $id)->where('type', $this->type)->first()->adzone;
+        return View::make('adsense.showsettings', ['data'=>$data]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit()
@@ -150,15 +152,15 @@ class AdsenseController extends Controller
         $data->name = Input::get('name');
         $data->adzone = Input::get('adzone');
         $data->adsense_zone = Input::get('adsense_zone');
-		Log::debug($data->adsense_zone);
-		//$data->adsense_zone=2;
+        Log::debug($data->adsense_zone);
+        //$data->adsense_zone=2;
         $db_col = Adsense::whereId($data->id)->first();
-        $db_map = AdZoneMapping::where('add_id',$data->id)->where('type',$this->type)->first();
+        $db_map = AdZoneMapping::where('add_id', $data->id)->where('type', $this->type)->first();
         DB::beginTransaction();
         try{
             $db_col->name = $data->name;
             $db_col->adcode = $data->adcode;
-			$db_col->adsense_zone = $data->adsense_zone;
+            $db_col->adsense_zone = $data->adsense_zone;
             $db_col->save();
 
             $db_map->adzone = $data->adzone;
@@ -167,7 +169,7 @@ class AdsenseController extends Controller
         {
             DB::rollBack();
             error_log($e->getMessage());
-            return response("Error Updating Adsense",500);
+            return response("Error Updating Adsense", 500);
         }
         DB::commit();
         return response("Updated", 200);
@@ -177,8 +179,8 @@ class AdsenseController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int                      $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -189,7 +191,7 @@ class AdsenseController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy()
@@ -197,9 +199,8 @@ class AdsenseController extends Controller
         DB::beginTransaction();
         $id = \Input::get('id');
         $affected_rows = Adsense::where('id', $id)->delete();
-        if ($affected_rows > 0)
-        {
-            AdZoneMapping::where('add_id',$id)->where('type',$this->type)->delete();
+        if ($affected_rows > 0) {
+            AdZoneMapping::where('add_id', $id)->where('type', $this->type)->delete();
             echo "Successfully Deleted";
         }else{
             DB::rollBack();
@@ -207,7 +208,7 @@ class AdsenseController extends Controller
         }
         DB::commit();
     }
-     public function updateValues()
+    public function updateValues()
     {
         $up = new AdzoneController;
         $up->WeightageCalculator();

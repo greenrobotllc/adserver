@@ -37,7 +37,7 @@ class TimeZoneController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(TimeZoneRequest $request)
@@ -58,14 +58,13 @@ class TimeZoneController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id=0)
     {
-        $d = AdProviderConfig::where('type','timezone')->first();
-        if (!$d)
-        {
+        $d = AdProviderConfig::where('type', 'timezone')->first();
+        if (!$d) {
             return \Config::get('app.timezone');
         }
         return $d->config;
@@ -74,7 +73,7 @@ class TimeZoneController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -85,8 +84,8 @@ class TimeZoneController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int                      $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -97,7 +96,7 @@ class TimeZoneController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -107,9 +106,8 @@ class TimeZoneController extends Controller
 
     public static function isTimeZoneSet()
     {
-        $person = AdProviderConfig::where('type','timezone')->first();
-        if ($person)
-        {
+        $person = AdProviderConfig::where('type', 'timezone')->first();
+        if ($person) {
             return true;
         }
         return false;

@@ -8,5 +8,5 @@ class MoPub extends Model
 {
     //
     protected $table = "mopubs";
-	
+    
 }

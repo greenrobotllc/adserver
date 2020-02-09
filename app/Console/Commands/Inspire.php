@@ -32,7 +32,7 @@ class Inspire extends Command
         echo "Starting Refresh Ad RPM";
         $AdInfo = new AdInfoController();
         $output = $AdInfo->refresh();
-        echo str_replace(array('<br />','<hr>','</p>','<p>')," \n ",$output); //formatting output for terminal
+        echo str_replace(array('<br />','<hr>','</p>','<p>'), " \n ", $output); //formatting output for terminal
         echo "\n Done Refresh Ad RPM";
         // $this->comment(PHP_EOL.Inspiring::quote().PHP_EOL);
     }

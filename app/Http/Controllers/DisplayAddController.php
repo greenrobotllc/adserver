@@ -30,33 +30,33 @@ class DisplayAddController extends Controller
         try{
             $data = DB::table('ad_zone_mappings')->select('add_id', 'weight', 'type')->where('adzone', $ad_slot_id)->orderBy(DB::raw('-LOG(RAND())/weight'), 'asc')->take(1)->first();
             switch ($data->type) {
-                case 'adsense':
-                    $code= Adsense::where('id',$data->add_id)->first()->adcode;
-                    break;
-                case 'mopub':
-                    $code= MoPub::where('id',$data->add_id)->first()->adcode;
-                case 'liberty':
-                    //$code= Liberty::where('id',$data->add_id)->first()->adcode;
-                    $ad_unit_id=Liberty::where('id', $data->add_id)->first()->ad_unit_id;
-                    $code="<iframe width=\"728px\" height=\"90px\" scrolling=\"no\"  frameBorder=\"0\" src=\"https://dev.adnetwork.greenrobot.com/ads/randomad?wid=$ad_unit_id\"></iframe>";
-                    //dd($ad_unit_id);
-                    break;
-                case 'lsm':
-                    $query = LSM::where('id',$data->add_id)->first();
-                    $code = $query->adhead . $query->adcode;
-                    break;
-                default:
-                    $code = CustomAdd::where('id',$data->add_id)->first()->adcode;
-                    break;
+            case 'adsense':
+                $code= Adsense::where('id', $data->add_id)->first()->adcode;
+                break;
+            case 'mopub':
+                $code= MoPub::where('id', $data->add_id)->first()->adcode;
+            case 'liberty':
+                //$code= Liberty::where('id',$data->add_id)->first()->adcode;
+                $ad_unit_id=Liberty::where('id', $data->add_id)->first()->ad_unit_id;
+                $code="<iframe width=\"728px\" height=\"90px\" scrolling=\"no\"  frameBorder=\"0\" src=\"https://dev.adnetwork.greenrobot.com/ads/randomad?wid=$ad_unit_id\"></iframe>";
+                //dd($ad_unit_id);
+                break;
+            case 'lsm':
+                $query = LSM::where('id', $data->add_id)->first();
+                $code = $query->adhead . $query->adcode;
+                break;
+            default:
+                $code = CustomAdd::where('id', $data->add_id)->first()->adcode;
+                break;
             }
             //update views
-            $this::views($data->add_id,$data->type);
+            $this::views($data->add_id, $data->type);
 
             //reporting
             $this::incrementDaily($data->add_id, $data->type, $ad_slot_id);
 
             $codearray = explode("\n", addslashes($code));
-            $contents = View::make('uads',['add_code'=>$codearray]);
+            $contents = View::make('uads', ['add_code'=>$codearray]);
         }catch(Exception $e)
         {
             $contents = "";
@@ -71,7 +71,7 @@ class DisplayAddController extends Controller
 
 
 
-/**
+    /**
      * Display a listing of the resource for native mobile ads
      *
      * @return \Illuminate\Http\Response
@@ -128,21 +128,21 @@ class DisplayAddController extends Controller
     private function views($id, $type)
     {
         switch ($type) {
-            case 'adsense':
-                $code= Adsense::where('id',$id)->first();
-                break;
-            case 'lsm':
-                $code = LSM::where('id',$id)->first();
-                break;
-            case 'mopub':
-                $code = MoPub::where('id',$id)->first();
-                break;
-            case 'liberty':
-                $code = Liberty::where('id',$id)->first();
-                break;
-            default:
-                $code = CustomAdd::where('id',$id)->first();
-                break;
+        case 'adsense':
+            $code= Adsense::where('id', $id)->first();
+            break;
+        case 'lsm':
+            $code = LSM::where('id', $id)->first();
+            break;
+        case 'mopub':
+            $code = MoPub::where('id', $id)->first();
+            break;
+        case 'liberty':
+            $code = Liberty::where('id', $id)->first();
+            break;
+        default:
+            $code = CustomAdd::where('id', $id)->first();
+            break;
         }
         try{
             $code->increment('views');
@@ -167,7 +167,7 @@ class DisplayAddController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -178,7 +178,7 @@ class DisplayAddController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -189,7 +189,7 @@ class DisplayAddController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -200,8 +200,8 @@ class DisplayAddController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int                      $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -212,7 +212,7 @@ class DisplayAddController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

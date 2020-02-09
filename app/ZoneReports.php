@@ -8,5 +8,5 @@ class ZoneReports extends Model
 {
     //
     protected $fillable = ['adunit_id', 'revenue', 'rpm', 'adunit_name', 'date'];
-	
+    
 }

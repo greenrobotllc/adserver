@@ -9,5 +9,5 @@ class AdsenseZone extends Model
     //
     protected $table = 'adsense_zones';
     protected $fillable = ['name', 'adsense_id'];
-	
+    
 }

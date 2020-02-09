@@ -25,49 +25,49 @@ class ReportController extends Controller
         $d = Date('Y-m-d');
 
         $week_x = strtotime('- 7 Days');
-        $week_date =(gmdate("Y-m-d",$week_x));
+        $week_date =(gmdate("Y-m-d", $week_x));
 
         $last_x = strtotime('- 1 Days');
-        $last_date =(gmdate("Y-m-d",$last_x));
+        $last_date =(gmdate("Y-m-d", $last_x));
 
                             // TODAY
-        $views = DailyViews::where('date',$d)->sum('views');
-        $total_adsense_views = DailyViews::where('date',$d)->where('type','adsense')->sum('views');
-        $total_lsm_views = DailyViews::where('date',$d)->where('type','lsm')->sum('views');
-        $total_other_views = DailyViews::where('date',$d)->where('type','other')->sum('views');
+        $views = DailyViews::where('date', $d)->sum('views');
+        $total_adsense_views = DailyViews::where('date', $d)->where('type', 'adsense')->sum('views');
+        $total_lsm_views = DailyViews::where('date', $d)->where('type', 'lsm')->sum('views');
+        $total_other_views = DailyViews::where('date', $d)->where('type', 'other')->sum('views');
 
-        $lsm_earn_today = IncomeReport::where('date',$d)->where('type','lsm')->sum('income');
-        $adsense_earn_today = IncomeReport::where('date',$d)->where('type','adsense')->sum('income');
+        $lsm_earn_today = IncomeReport::where('date', $d)->where('type', 'lsm')->sum('income');
+        $adsense_earn_today = IncomeReport::where('date', $d)->where('type', 'adsense')->sum('income');
                                 // YESTERDAY
-        $views_yesterday = DailyViews::where('date',$last_date)->sum('views');
-        $total_adsense_views_yesterday = DailyViews::where('date',$last_date)->where('type','adsense')->sum('views');
-        $total_lsm_views_yesterday = DailyViews::where('date',$last_date)->where('type','lsm')->sum('views');
-        $total_other_views_yesterday = DailyViews::where('date',$last_date)->where('type','other')->sum('views');
-        $lsm_earn_yesterday = IncomeReport::where('date',$last_date)->where('type','lsm')->sum('income');
-        $adsense_earn_yesterday = IncomeReport::where('date',$last_date)->where('type','adsense')->sum('income');
+        $views_yesterday = DailyViews::where('date', $last_date)->sum('views');
+        $total_adsense_views_yesterday = DailyViews::where('date', $last_date)->where('type', 'adsense')->sum('views');
+        $total_lsm_views_yesterday = DailyViews::where('date', $last_date)->where('type', 'lsm')->sum('views');
+        $total_other_views_yesterday = DailyViews::where('date', $last_date)->where('type', 'other')->sum('views');
+        $lsm_earn_yesterday = IncomeReport::where('date', $last_date)->where('type', 'lsm')->sum('income');
+        $adsense_earn_yesterday = IncomeReport::where('date', $last_date)->where('type', 'adsense')->sum('income');
                         // WEEK
-        $lsm_earn_week = IncomeReport::where('date','>=',$week_date)->where('type','lsm')->get();
-        $adsense_earn_week = IncomeReport::where('date','>=',$week_date)->where('type','adsense')->get();
-        $total_weekly_income = IncomeReport::where('date','>=',$week_date)->sum('income');
+        $lsm_earn_week = IncomeReport::where('date', '>=', $week_date)->where('type', 'lsm')->get();
+        $adsense_earn_week = IncomeReport::where('date', '>=', $week_date)->where('type', 'adsense')->get();
+        $total_weekly_income = IncomeReport::where('date', '>=', $week_date)->sum('income');
 
-        $lsm_rpm_week = RpmReport::where('date','>=',$week_date)->where('type','lsm')->get();
-        $adsense_rpm_week = RpmReport::where('date','>=',$week_date)->where('type','adsense')->get();
+        $lsm_rpm_week = RpmReport::where('date', '>=', $week_date)->where('type', 'lsm')->get();
+        $adsense_rpm_week = RpmReport::where('date', '>=', $week_date)->where('type', 'adsense')->get();
 
-        $lsm_view_week = DailyViews::where('date','>=',$week_date)->where('type','lsm')->sum('views');
-        $adsense_view_week = DailyViews::where('date','>=',$week_date)->where('type','adsense')->sum('views');
-        $other_view_week = DailyViews::where('date','>=',$week_date)->where('type','other')->sum('views');
+        $lsm_view_week = DailyViews::where('date', '>=', $week_date)->where('type', 'lsm')->sum('views');
+        $adsense_view_week = DailyViews::where('date', '>=', $week_date)->where('type', 'adsense')->sum('views');
+        $other_view_week = DailyViews::where('date', '>=', $week_date)->where('type', 'other')->sum('views');
         
         /*
         * Changes made by Sohail
         * $adzones_view_daily = DailyViews::where('date',$d)->select('adzone','date', DB::raw("sum(views) as totalviews"))->groupBy('adzone')->get();
         */
         
-        $adzones_view_daily = DailyViews::where('date',$d)->select('adzone','date', DB::raw("sum(views) as totalviews"))->groupBy('adzone','date')->get();
+        $adzones_view_daily = DailyViews::where('date', $d)->select('adzone', 'date', DB::raw("sum(views) as totalviews"))->groupBy('adzone', 'date')->get();
 
         $lsm_rpm = DB::table('ads')->where('id', 2)->first();
-        $adsense_rpm = DB::table('ads')->where('id',1)->first();
+        $adsense_rpm = DB::table('ads')->where('id', 1)->first();
 
-        $adsense_ads = AdZoneMapping::where('type','adsense')->get();
+        $adsense_ads = AdZoneMapping::where('type', 'adsense')->get();
         foreach($adsense_ads as $key=>$ad) {
             $adzone_id=$ad->adzone;
             $zone_report_id = DB::table('adsenses')->where('id', $adzone_id)->value('adsense_zone');
@@ -82,7 +82,7 @@ class ReportController extends Controller
 
 
 
-        $mopub_ads = AdZoneMapping::where('type','mopub')->get();
+        $mopub_ads = AdZoneMapping::where('type', 'mopub')->get();
         //print_r("mopub ads: " . $mopub_ads . "\n");
 
         foreach($mopub_ads as $key=>$ad) {
@@ -100,7 +100,7 @@ class ReportController extends Controller
         }
 
 
-        $liberty_ads = AdZoneMapping::where('type','liberty')->get();
+        $liberty_ads = AdZoneMapping::where('type', 'liberty')->get();
         //print_r("mopub ads: " . $mopub_ads . "\n");
 
         foreach($liberty_ads as $key=>$ad) {
@@ -119,43 +119,42 @@ class ReportController extends Controller
 
 
 
-		//print_r($adsense_ads);
-        $lsm_ads = AdZoneMapping::where('type','lsm')->get();
-        $other_ads = AdZoneMapping::where('type','other')->get();
+        //print_r($adsense_ads);
+        $lsm_ads = AdZoneMapping::where('type', 'lsm')->get();
+        $other_ads = AdZoneMapping::where('type', 'other')->get();
 
-        $mapDataToday = GeographicReport::where('date',$d)->get();
+        $mapDataToday = GeographicReport::where('date', $d)->get();
         $rep = new GeographicReportController;
         $mapJsonToday = $rep->makeOutput($mapDataToday);
 
-        $mapDataYesterday = GeographicReport::where('date',$last_date)->get();
+        $mapDataYesterday = GeographicReport::where('date', $last_date)->get();
         $mapJsonYesterday = $rep->makeOutput($mapDataYesterday);
 
         //Adsense calculated benifit of rotation
         $rpm_adsense_last_day = 0;
         foreach ($adsense_rpm_week as $key => $value) {
-            if ($value['date'] == $last_date)
-            {
+            if ($value['date'] == $last_date) {
                 $rpm_adsense_last_day = $value['rpm'];
                 break;
             }
         }
-        $adsense_income_without_rotation = round((($total_adsense_views_yesterday - $total_adsense_views_yesterday*0.25)/1000) * $rpm_adsense_last_day,2);
+        $adsense_income_without_rotation = round((($total_adsense_views_yesterday - $total_adsense_views_yesterday*0.25)/1000) * $rpm_adsense_last_day, 2);
 
 
         // LSM calculated benifit of rotation
         $rpm_lsm_last_day = 0;
         foreach ($lsm_rpm_week as $key => $value) {
-            if ($value['date'] == $last_date)
-            {
+            if ($value['date'] == $last_date) {
                 $rpm_lsm_last_day = $value['rpm'];
                 break;
             }
         }
-        $lsm_income_without_rotation = round((($total_lsm_views_yesterday - $total_lsm_views_yesterday*0.25)/1000) * $rpm_lsm_last_day,2);
+        $lsm_income_without_rotation = round((($total_lsm_views_yesterday - $total_lsm_views_yesterday*0.25)/1000) * $rpm_lsm_last_day, 2);
 
         $total_without_rotation = $lsm_income_without_rotation + $adsense_income_without_rotation;
 
-        return view('reports.index',
+        return view(
+            'reports.index',
             [
             'page'=>'report',
             'total_views'=>$views,
@@ -199,7 +198,8 @@ class ReportController extends Controller
             'total_without_rotation'=>$total_without_rotation,
             'adsense_income_without_rotation'=>$adsense_income_without_rotation,
             'lsm_income_without_rotation'=>$lsm_income_without_rotation,
-            ]);
+            ]
+        );
     }
 
     /**
@@ -215,7 +215,7 @@ class ReportController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -226,7 +226,7 @@ class ReportController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -237,7 +237,7 @@ class ReportController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -248,8 +248,8 @@ class ReportController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int                      $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -260,7 +260,7 @@ class ReportController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

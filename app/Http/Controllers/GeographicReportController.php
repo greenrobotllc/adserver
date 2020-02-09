@@ -32,7 +32,7 @@ class GeographicReportController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -43,7 +43,7 @@ class GeographicReportController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -54,7 +54,7 @@ class GeographicReportController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -65,8 +65,8 @@ class GeographicReportController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int                      $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -77,7 +77,7 @@ class GeographicReportController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -91,10 +91,8 @@ class GeographicReportController extends Controller
         $mapData = $this::getMapArray();
         foreach ($data as $key => $value) {
             foreach ($mapData as $mapKey => $mapValue) {
-                if (strcmp($mapValue->name,$value->country) == 0)
-                {
-                    if ($value->type=="adsense")
-                    {
+                if (strcmp($mapValue->name, $value->country) == 0) {
+                    if ($value->type=="adsense") {
                         $mapValue->color = "#00a65a";
                         $mapValue->name = "Adsense: ".$mapValue->name;
                     }else{
@@ -102,8 +100,7 @@ class GeographicReportController extends Controller
                         $mapValue->name = "LSM: ".$mapValue->name;
                     }
                     $mapValue->value = $value->impressions;
-                    if ($value->impressions > 0)
-                    {
+                    if ($value->impressions > 0) {
                         array_push($array, $mapValue);
                     }
                     break;
