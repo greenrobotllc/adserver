@@ -4,7 +4,7 @@
     "gulp": "^4.0.2"
   },
   "dependencies": {
-    "acorn": "^6.3.0",
+    "acorn": "^6.4.1",
     "babel-runtime": "^5.8.38",
     "bootstrap-sass": "^3.0.0",
     "laravel-mix": "^4.1.2",
