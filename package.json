@@ -1,7 +1,7 @@
 {
   "private": true,
   "devDependencies": {
-    "gulp": "^4.0.2"
+    "gulp": "^5.0.0"
   },
   "dependencies": {
     "acorn": "^6.4.1",
