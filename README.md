@@ -1,3 +1,5 @@
+Warning: I have not used this adserver for quite some time as I don't have enough impressions to warrant it. I did merge in some dependabot PRs without testing. I hope to one day have enough ad impresions to use this project again.
+
 ## GreenRobot Open-source Adserver
 This adserver rotates banner ads between AdSense/AdMob, LifeStreetmedia, and others based on RPM. For AdSense/AdMob and Lifestreetmedia, the RPM is automatically retrieved by the server using network APIs, for other networks you will have to edit the RPM yourself.
 
